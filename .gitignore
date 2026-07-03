@@ -27,3 +27,4 @@ _freeze/
 renv/library/
 /.quarto/
 **/*.quarto_ipynb
+.positai

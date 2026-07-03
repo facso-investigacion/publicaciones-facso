@@ -8,14 +8,14 @@ project:
     - assets/favicon-2025-20251031.svg  # Asegura que el favicon versionado llegue a docs/
 
 book:
-  title: Reportes FACSO - Plantilla Quarto
-  subtitle: Tesis, informes e investigaciones
+  title: Publicaciones Académicos y Académicas FACSO
+  subtitle: 2020-2025
   output-file: reportes-facso-plantilla
-  repo-url: https://github.com/KAravena/reportesfacsobook_template  #URL del repositorio del libro (cambia segun tu repo)
+  repo-url: https://github.com/facso-investigacion/publicaciones-facso  #URL del repositorio del libro (cambia segun tu repo)
   author:
-    - name: Nombre Apellido
-      affiliation: Departamento de Sociologia, Universidad de Chile
-      orcid: 0000-0000-0000-0000
+    - name: Gabriel Cortés
+      affiliation: Dirección de Investigación y Publicaciones, Facultad de Ciencias Sociales de la Universidad de Chile
+      orcid: 0009-0003-4064-2737
   date: today              # Usa fecha fija (YYYY-MM-DD) si necesitas control editorial
   date-format: D [de] MMMM [de] YYYY
   doi: ""
@@ -43,9 +43,9 @@ book:
     - references.qmd
     # Para agregar un nuevo capitulo duplica un archivo .qmd y agregalo aqui:
     # ej: - 07-analisis-cualitativo.qmd
-  appendices:
-    - apendices/A-encuestas.qmd
-    - apendices/B-tablas.qmd
+  # appendices:
+  #   - apendices/A-encuestas.qmd
+  #   - apendices/B-tablas.qmd
     # Guarda anexos extensos en apendices/ y listalos aqui.
 
 csl: refs/apa.csl                # Estilo de citas (cambia a otro .csl si lo prefieres)

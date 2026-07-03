@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.24">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -94,7 +94,7 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-b33f1839d1ae7e37d8eaf9c424345f9b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -127,16 +127,27 @@ div.csl-indent {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 <style>
+
 #quarto-document-content p,
+
 .page-columns .content p,
+
 .page-columns p,
+
 .quarto-article p,
+
 main.content p,
+
 p {
+
   text-align: justify !important;
+
   text-justify: inter-word;
+
 }
+
 </style>
+
 
 
 <link rel="stylesheet" href="assets/styles.scss">
@@ -826,468 +837,931 @@ a[role="doc-biblioref"]:focus-visible {
 </style>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", () => {
+
   const parseNumberParts = (value) =>
+
     (value || "")
+
       .split(".")
+
       .map((part) => parseInt(part, 10))
+
       .filter((num) => !Number.isNaN(num));
+
+
 
   const formatNumberParts = (parts) => parts.join(".");
 
+
+
   const adjustNumber = (value) => {
+
     const trimmed = (value || "").trim();
+
     if (!/^\d/.test(trimmed)) {
+
       return trimmed;
+
     }
+
     const parts = parseNumberParts(trimmed);
+
     if (!parts.length) {
+
       return "";
+
     }
+
   parts[0] = parts[0] - 1;
+
     if (parts[0] <= 0) {
+
       return "";
+
     }
+
     return formatNumberParts(parts);
+
   };
+
+
 
   const removeSpacer = (node) => {
+
     let sibling = node.nextSibling;
+
     while (sibling && sibling.nodeType === Node.TEXT_NODE) {
+
       const cleaned = sibling.textContent.replace(/\u00a0/g, "").trim();
+
       const next = sibling.nextSibling;
+
       if (cleaned.length === 0) {
+
         sibling.remove();
+
         sibling = next;
+
       } else {
+
         break;
+
       }
+
     }
+
   };
+
+
 
   const clearNumber = (node) => {
+
     if (!node) return;
+
     node.textContent = "";
+
     node.classList.add("chapter-number--hidden");
+
     node.style.display = "none";
+
     removeSpacer(node);
+
   };
 
+
+
   const ensureChapterSpacing = (node) => {
+
     if (!node || !node.classList.contains("chapter-number")) return;
 
+
+
     let numeric = (node.textContent || "").replace(/\.+\s*$/u, "");
+
     if (!numeric) return;
+
+
 
     node.textContent = numeric;
 
+
+
     const contextsNeedingSpace = node.closest(".quarto-title-block") ||
+
       node.closest("nav.quarto-page-breadcrumbs");
+
+
 
     node.textContent = `${numeric}.`;
 
+
+
     if (contextsNeedingSpace) {
+
       const next = node.nextSibling;
+
       const hasWhitespaceText =
+
         next &&
+
         next.nodeType === Node.TEXT_NODE &&
+
         /\s/.test(next.textContent || "");
+
       if (!hasWhitespaceText) {
+
         node.insertAdjacentText("afterend", "\u00a0");
+
       }
+
     }
+
   };
+
+
 
   const applyNumber = (node) => {
+
     if (!node) return;
+
     const adjusted = adjustNumber(node.textContent);
+
     if (!adjusted) {
+
       clearNumber(node);
+
     } else {
+
       node.textContent = adjusted;
+
       node.classList.remove("chapter-number--hidden");
+
       node.style.display = "inline-block";
+
       removeSpacer(node);
+
       ensureChapterSpacing(node);
+
     }
+
   };
+
+
 
   const updateDataNumber = (node) => {
+
     const current = node.getAttribute("data-number");
+
     if (current === null) return;
+
     const adjusted = adjustNumber(current);
+
     if (adjusted) {
+
       node.setAttribute("data-number", adjusted);
+
     } else {
+
       node.removeAttribute("data-number");
+
     }
+
   };
 
+
+
   const isFrontMatterHref = (href) =>
+
     /\/?index\.html(?:#|$)/i.test(href || "") ||
+
     /\/?00-prefacio\.html(?:#|$)/i.test(href || "");
 
+
+
   document
+
     .querySelectorAll(".sidebar .chapter-number")
+
     .forEach((node) => {
+
       const link = node.closest("a");
+
       const href = link ? link.getAttribute("href") : "";
+
       if (isFrontMatterHref(href)) {
+
         clearNumber(node);
+
       } else {
+
         applyNumber(node);
+
       }
+
     });
+
+
 
   const pathname = window.location.pathname || "";
 
+
+
   document
+
     .querySelectorAll('.quarto-title-block .chapter-number')
+
     .forEach((node) => {
+
       if (isFrontMatterHref(pathname)) {
+
         clearNumber(node);
+
       } else {
+
         applyNumber(node);
+
       }
+
     });
 
+
+
   document
+
     .querySelectorAll('nav.quarto-page-breadcrumbs .chapter-number')
+
     .forEach((node) => {
+
       const link = node.closest('a');
+
       const href = link ? link.getAttribute('href') : pathname;
+
       if (isFrontMatterHref(href)) {
+
         clearNumber(node);
+
       } else {
+
         applyNumber(node);
+
       }
+
     });
 
+
+
   document
+
     .querySelectorAll("main .header-section-number")
+
     .forEach((node) => {
+
       if (isFrontMatterHref(pathname)) {
+
         const section = node.closest("section");
+
         if (section && section.matches(".level1:first-of-type, .level2:first-of-type")) {
+
           clearNumber(node);
+
           return;
+
         }
+
       }
+
       applyNumber(node);
+
     });
 
+
+
   document
+
     .querySelectorAll("main [data-number]")
+
     .forEach(updateDataNumber);
 
+
+
   document
+
     .querySelectorAll("#TOC .header-section-number")
+
     .forEach((node) => {
+
       const link = node.closest("a");
+
       const href = link ? link.getAttribute("href") : "";
+
       if (isFrontMatterHref(href)) {
+
         clearNumber(node);
+
       } else {
+
         applyNumber(node);
+
       }
+
     });
 
-  document
-    .querySelectorAll("#TOC [data-number]")
-    .forEach(updateDataNumber);
+
 
   document
-    .querySelectorAll('#TOC a[data-scroll-target][data-number]')
+
+    .querySelectorAll("#TOC [data-number]")
+
     .forEach(updateDataNumber);
+
+
+
+  document
+
+    .querySelectorAll('#TOC a[data-scroll-target][data-number]')
+
+    .forEach(updateDataNumber);
+
+
 
   const expandMarginToc = () => {
+
     const toc = document.getElementById("TOC");
+
     if (!toc) return;
+
     toc.querySelectorAll("ul.collapse").forEach((node) => {
+
       node.classList.remove("collapse");
+
       node.classList.add("toc-expanded");
+
     });
+
     toc.querySelectorAll("[data-bs-toggle='collapse']").forEach((trigger) => {
+
       trigger.removeAttribute("data-bs-toggle");
+
       trigger.setAttribute("aria-expanded", "true");
+
     });
+
   };
 
+
+
   expandMarginToc();
+
 });
+
 </script>
+
 <style>
+
 .sidebar .chapter-number {
+
   display: inline-block;
+
   min-width: 1ch;
+
   margin-right: 0.1ch;
+
   text-align: right;
+
   font-variant-numeric: tabular-nums;
+
 }
+
 .chapter-number--hidden {
+
   visibility: hidden !important;
+
   display: none !important;
+
 }
+
 .toc-expanded {
+
   display: block !important;
+
   visibility: visible !important;
+
   height: auto !important;
+
   overflow: visible !important;
+
 }
+
 </style>
 
+
+
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
+
   const codeSelectors = [
+
     '.cell > .code-copy-outer-scaffold',
+
     '.cell > .sourceCode',
+
     'pre.sourceCode',
+
     'div.sourceCode'
+
   ];
 
+
+
   const LABEL_SHOW = 'Mostrar el codigo';
+
   const LABEL_HIDE = 'Ocultar el codigo';
+
   const LABEL_EMPTY = 'Sin fragmentos de codigo';
+
   const ICON_SHOW = 'bi bi-code';
+
   const ICON_HIDE = 'bi bi-code-slash';
 
+
+
   const toolsContainer = document.querySelector('.sidebar-tools-main');
+
   let buttonHost = toolsContainer;
+
   let floatingContainer = null;
 
+
+
   if (!buttonHost) {
+
     floatingContainer = document.createElement('div');
+
     floatingContainer.className = 'global-code-toggle-container';
+
     document.body.appendChild(floatingContainer);
+
     buttonHost = floatingContainer;
+
   }
+
+
 
   const repoLink = toolsContainer ? toolsContainer.querySelector('a[href*="github.com"]') : null;
+
   if (repoLink) {
+
     repoLink.title = 'Repositorio';
+
     repoLink.setAttribute('aria-label', 'Repositorio');
+
   }
+
+
 
   const button = document.createElement('a');
+
   button.href = '#';
+
   button.className = 'quarto-navigation-tool px-1 global-code-toggle';
+
   button.setAttribute('role', 'button');
 
+
+
   if (!toolsContainer) {
+
     button.classList.add('global-code-toggle-floating');
+
   }
+
+
 
   const icon = document.createElement('i');
+
   icon.className = ICON_HIDE;
+
   button.appendChild(icon);
 
+
+
   const pdfLink = toolsContainer ? toolsContainer.querySelector('a[href$=".pdf"]') : null;
+
   if (pdfLink && buttonHost === toolsContainer) {
+
     buttonHost.insertBefore(button, pdfLink);
+
   } else {
+
     buttonHost.appendChild(button);
+
   }
 
+
+
   const pageHasCode = codeSelectors.some(function (selector) {
+
     return document.querySelector(selector);
+
   });
+
+
 
   let showingCode = true;
 
+
+
   const setIcon = function (iconClass) {
+
     icon.className = iconClass;
+
   };
+
+
 
   const disableButton = function () {
+
     button.classList.add('global-code-toggle-disabled');
+
     button.classList.add('disabled');
+
     button.setAttribute('aria-disabled', 'true');
+
     button.setAttribute('aria-pressed', 'false');
+
     button.setAttribute('aria-label', LABEL_EMPTY);
+
     button.title = LABEL_EMPTY;
+
     button.tabIndex = -1;
+
     setIcon(ICON_SHOW);
+
   };
+
+
 
   const enableButton = function () {
+
     button.classList.remove('global-code-toggle-disabled');
+
     button.classList.remove('disabled');
+
     button.removeAttribute('aria-disabled');
+
     button.tabIndex = 0;
+
   };
 
+
+
   const update = function () {
+
     if (!pageHasCode) {
+
       disableButton();
+
       document.body.classList.remove('global-code-hidden');
+
       return;
+
     }
+
+
 
     enableButton();
 
+
+
     if (showingCode) {
+
       document.body.classList.remove('global-code-hidden');
+
       button.setAttribute('aria-pressed', 'false');
+
       button.setAttribute('aria-label', LABEL_HIDE);
+
       button.title = LABEL_HIDE;
+
       setIcon(ICON_HIDE);
+
     } else {
+
       document.body.classList.add('global-code-hidden');
+
       button.setAttribute('aria-pressed', 'true');
+
       button.setAttribute('aria-label', LABEL_SHOW);
+
       button.title = LABEL_SHOW;
+
       setIcon(ICON_SHOW);
+
     }
+
   };
+
+
 
   button.addEventListener('click', function (event) {
+
     event.preventDefault();
 
+
+
     if (!pageHasCode) {
+
       return;
+
     }
+
+
 
     showingCode = !showingCode;
+
     update();
+
   });
+
+
 
   button.addEventListener('keydown', function (event) {
+
     if (event.key === ' ' || event.key === 'Spacebar') {
+
       event.preventDefault();
+
       button.click();
+
     }
+
   });
+
+
 
   update();
+
 });
+
 </script>
+
 <style>
+
 body.global-code-hidden .cell > .code-copy-outer-scaffold,
+
 body.global-code-hidden .cell > .sourceCode,
+
 body.global-code-hidden pre.sourceCode,
+
 body.global-code-hidden div.sourceCode {
+
   display: none;
+
 }
+
+
 
 .global-code-toggle {
+
   text-decoration: none;
+
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
   cursor: pointer;
+
 }
+
+
 
 .global-code-toggle i {
+
   font-size: 1.05rem;
+
 }
+
+
 
 .global-code-toggle-disabled {
+
   opacity: 0.6;
+
   cursor: default;
+
   pointer-events: none;
+
 }
+
+
 
 .global-code-toggle-container {
+
   position: fixed;
+
   right: 1.5rem;
+
   bottom: 1.5rem;
+
   z-index: 1030;
+
 }
+
+
 
 .global-code-toggle-floating {
+
   background-color: var(--bs-body-bg, #ffffff);
+
   border-radius: 0.375rem;
+
   padding: 0.4rem 0.55rem;
+
   box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.2);
+
 }
+
+
 
 .global-code-toggle-floating i {
+
   font-size: 1.15rem;
+
 }
+
+
 
 @media (max-width: 768px) {
+
   .global-code-toggle-container {
+
     right: 1rem;
+
     bottom: 1rem;
+
   }
+
 }
+
 </style>
+
 <script>
+
 document.addEventListener("DOMContentLoaded", () => {
+
   const toc = document.querySelector("nav#TOC, nav.toc-active");
+
   if (!toc) {
+
     return;
+
   }
+
+
 
   const tocLinks = toc.querySelectorAll("a.nav-link[data-scroll-target]");
+
   if (!tocLinks.length) {
+
     return;
+
   }
 
+
+
   const sections = Array.from(tocLinks)
+
     .map((link) => {
+
       const target = document.querySelector(link.getAttribute("data-scroll-target"));
+
       return target ? { link, target, top: 0 } : null;
+
     })
+
     .filter(Boolean);
 
+
+
   const updateOffsets = () => {
+
     sections.forEach((section) => {
+
       section.top = section.target.getBoundingClientRect().top + window.scrollY;
+
     });
+
   };
+
+
 
   const activateLink = (targetLink) => {
+
     tocLinks.forEach((link) => link.classList.remove("active"));
+
     if (targetLink) {
+
       targetLink.classList.add("active");
+
     }
+
   };
+
+
 
   const OFFSET = 140;
+
   let ticking = false;
 
+
+
   const updateActiveSection = () => {
+
     const scrollPosition = window.scrollY + OFFSET;
+
     let current = sections[0];
 
+
+
     for (const section of sections) {
+
       if (section.top <= scrollPosition) {
+
         current = section;
+
       } else {
+
         break;
+
       }
+
     }
+
+
 
     activateLink(current ? current.link : null);
+
     ticking = false;
+
   };
+
+
 
   const onScroll = () => {
+
     if (!ticking) {
+
       window.requestAnimationFrame(updateActiveSection);
+
       ticking = true;
+
     }
+
   };
 
+
+
   updateOffsets();
+
   updateActiveSection();
 
+
+
   window.addEventListener("scroll", onScroll, { passive: true });
+
   window.addEventListener("resize", () => {
+
     updateOffsets();
+
     updateActiveSection();
+
   });
 
+
+
   window.addEventListener("hashchange", () => {
+
     const hash = window.location.hash;
+
     const match = sections.find((section) => section.link.getAttribute("data-scroll-target") === hash);
+
     if (match) {
+
       activateLink(match.link);
+
     }
+
   });
+
 });
+
 </script>
+
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
