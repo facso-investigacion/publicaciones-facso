@@ -74,7 +74,12 @@ consolidado_long <- consolidado |> clean_names() |>
          "doi",
          "tipo_documento",
          rut = "rut_autor",
-         num_autor)
+         num_autor,
+         issn_p,
+         issn_e)
+
+
+save(consolidado_long, file="input/consolidado-publicaciones.rdata")
 
 # procesar las bases de ademicos
 
@@ -104,19 +109,21 @@ acad <- acad |> clean_names() |>
   ungroup() %>%
   select(-suma_horas)
 
-retirados_periodo <- academicos_historico |> 
-  filter(retiro>2019 & retiro<=2025) |> 
-  select(rut=rut_investigador,
-         reparticion,
-         cargo=jerarquia,
-         edad,
-         nombre_completo,
-         horas_reales)
+save(acad, file="input/acad-proc.rdata")
 
-acad_bind <- bind_rows(acad, retirados_periodo)
+# retirados_periodo <- academicos_historico |> 
+#   filter(retiro>2019 & retiro<=2025) |> 
+#   select(rut=rut_investigador,
+#          reparticion,
+#          cargo=jerarquia,
+#          edad,
+#          nombre_completo,
+#          horas_reales)
+# 
+# acad_bind <- bind_rows(acad, retirados_periodo)
 
 
-base_long <- inner_join(consolidado_long, acad_bind, by="rut") |> 
+base_long <- inner_join(consolidado_long, acad, by="rut") |> 
   filter(tipo_documento %in% c("Artículo", "Capítulo de libro", "Libro", "LIBRO")) |> 
   mutate(departamento = case_when(
     str_detect(str_to_lower(reparticion), "psicología|psicologia") ~ "Psicología",
@@ -174,5 +181,5 @@ base_wide <- base_long |>
   names_glue = "rut_autor_{num_autor}"
 )
 
-save(base_wide, file="output/publicaciones_facso.rdata")
+save(base_wide, file="output/publicaciones_facso_proc.rdata")
 

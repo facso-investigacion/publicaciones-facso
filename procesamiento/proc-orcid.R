@@ -11,6 +11,9 @@ library(httr)
 library(jsonlite)
 library(dplyr)
 library(purrr)
+library(readxl)
+library(janitor)
+library(stringr)
 
 # -----------------------------------------------------------
 # 1. Obtener las publicaciones (works) de un autor en ORCID
@@ -287,7 +290,128 @@ run_pipeline_multi <- function(orcid_ids, pausa_seg = 1,
   )
 resultado_multi <- run_pipeline_multi(orcid_ids)
 
+save(resultado_multi, file="output/orcid.rdata")
+
+load("output/orcid.rdata")
+load("output/publicaciones_facso.rdata")
+load("input/primera_jeraq.rdata")
+load("input/consolidado-publicaciones.rdata")
+
 
 books <- resultado_multi |> filter(tipo=="book" | tipo=="book-chapter",
                                    anio>2019 & anio<2026)
-# write.csv(resultado_multi, "publicaciones_orcid_multi.csv", row.names = FALSE)
+
+articulos_doi <- resultado_multi |>  filter(tipo=="journal-article" & !is.na(doi), anio>2019 & anio<2026)
+
+articulos_doi_subset <- articulos_doi |>  filter(!doi %in% consolidado_long$doi) |>  distinct(doi, .keep_all = T)
+
+### Cargar base colab y academicos
+
+acad <- read_xlsx("input/acad.xlsx")
+colab <- read_xlsx("input/colab.xlsx")
+
+
+acad <- acad |> clean_names() |> 
+  mutate(
+    nombre_completo = paste0(nombres, " ", paterno, " ", materno),
+    # Limpieza de materno: NA, vacío, "NULL"/"NA" en texto, o solo simbolos/puntuacion -> NA real
+    materno_limpio = materno |>
+      str_trim() |>
+      na_if("") |>
+      (\(x) if_else(str_detect(x, regex("^(na|null|n/a|s/n|sin dato)$", ignore_case = TRUE)), NA_character_, x))() |>
+      (\(x) if_else(str_detect(x, "^[[:punct:][:space:]]*$"), NA_character_, x))(),
+    
+    apellidos = paste(paterno, coalesce(materno_limpio, "")) |> str_squish()
+  )  |> 
+  select(reparticion,
+         cargo,
+         sexo,
+         edad,
+         rut,
+         apellidos,
+         nombre_completo,
+         horas_reales) |> 
+  group_by(rut) %>%
+  mutate(suma_horas = sum(horas_reales, na.rm = TRUE)) %>%
+  {
+    # Casos donde la suma es <= 44: colapsar sumando horas
+    casos_suma <- filter(., suma_horas <= 44) %>%
+      slice(1) %>%                          # se queda con un registro representativo
+      mutate(horas_reales = suma_horas)      # pero con la suma de horas
+    
+    # Casos donde la suma es > 44: quedarse con el de mayor horas_reales
+    casos_max <- filter(., suma_horas > 44) %>%
+      slice_max(horas_reales, n = 1, with_ties = FALSE)
+    
+    bind_rows(casos_suma, casos_max)
+  } %>%
+  ungroup() %>%
+  select(-suma_horas)
+
+
+colab <- colab |>  clean_names() |> 
+  mutate(
+    # Limpieza de materno: NA, vacío, "NULL"/"NA" en texto, o solo simbolos/puntuacion -> NA real
+    materno_limpio = ap_materno |>
+      str_trim() |>
+      na_if("") |>
+      (\(x) if_else(str_detect(x, regex("^(na|null|n/a|s/n|sin dato)$", ignore_case = TRUE)), NA_character_, x))() |>
+      (\(x) if_else(str_detect(x, "^[[:punct:][:space:]]*$"), NA_character_, x))(),
+    
+    apellidos = paste(ap_paterno, coalesce(materno_limpio, "")) |> str_squish()
+  )  |> 
+  select(id_orcid, apellidos)
+
+primera_jeraq <- primera_jeraq |>  rename(rut= rut_investigador)
+
+
+acad_colab <- acad |> 
+  left_join(colab, by="apellidos") |> 
+  left_join(primera_jeraq, by="rut")
+
+base_books <- books |> 
+  mutate(id_orcid = orcid_id) |> 
+  left_join(acad_colab, by = "id_orcid")
+
+
+acad_articulos_doi <- articulos_doi_subset |> 
+  mutate(id_orcid = orcid_id) |> 
+  left_join(acad_colab, by="id_orcid") |> 
+  filter(anio>= jerarquizacion)
+
+base_orcid <- bind_rows(acad_articulos_doi, base_books)
+
+
+base_orcid <- base_orcid |> 
+  mutate(departamento = case_when(
+    str_detect(str_to_lower(reparticion), "psicología|psicologia") ~ "Psicología",
+    str_detect(str_to_lower(reparticion), "sociología|sociologia") ~ "Sociología",
+    str_detect(str_to_lower(reparticion), "antropología|antropologia") ~ "Antropología",
+    str_detect(str_to_lower(reparticion), "trabajo social") ~ "Trabajo social",
+    str_detect(str_to_lower(reparticion), "educación|educacion") ~ "Educación",
+    str_detect(str_to_lower(reparticion), "postgrado") ~ "Postgrado",
+    TRUE ~ NA),
+    jerarquia = case_when(
+      str_detect(str_to_lower(cargo), "titular")      ~ "Titular",
+      str_detect(str_to_lower(cargo), "asociado")     ~ "Asociado",
+      str_detect(str_to_lower(cargo), "asistente")    ~ "Asistente",
+      str_detect(str_to_lower(cargo), "postdoctoral") ~ "Investigador Postdoctoral",
+      str_detect(str_to_lower(cargo), "adjunto")      ~ "Adjunto",
+      str_detect(str_to_lower(cargo), "instructor")   ~ "Instructor",
+      str_detect(str_to_lower(cargo), "ayudante")     ~ NA_character_,
+      str_detect(str_to_lower(cargo), "evaluado")     ~ NA_character_)) |> 
+  filter(jerarquia %in% c("Titular", "Asociado", "Asistente", "Adjunto", "Instructor")) |> 
+  select(titulo,
+         nombre_revista=revista,
+         anio,
+         doi,
+         tipo_documento = tipo,
+         rut,
+         sexo,
+         edad,
+         nombre_completo,
+         horas_reales,
+         issn)
+
+save(base_orcid, file="output/base_orcid.rdata")
+# save(base_books, file="output/base_books.rdata")
