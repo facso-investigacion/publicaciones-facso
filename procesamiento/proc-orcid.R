@@ -411,7 +411,7 @@ base_orcid <- base_orcid |>
          edad,
          nombre_completo,
          horas_reales,
-         issn)
+         issn, departamento, jerarquia)
 
 save(base_orcid, file="output/base_orcid.rdata")
 # save(base_books, file="output/base_books.rdata")

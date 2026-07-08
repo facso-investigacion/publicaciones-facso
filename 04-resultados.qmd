@@ -1,137 +1,578 @@
-﻿---
+---
 title: "Resultados"
 ---
-## Analisis descriptivo
 
-Resumen de las estadisticas descriptivas clave y visualizaciones de apoyo.
-```{r grafico-ejemplo}
-#| fig-cap: "Relacion X^2"
-#| warning: false
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-  library(ggplot2)
-  ggplot(mtcars, aes(wt, mpg)) + geom_point()
-}
+```{r}
+library(tidyverse)
+
+load("output/base_final.rdata")
+load("output/base-completa-facso.rdata")
+load("output/base-completa-depto.rdata")
+load("input/acad-proc.rdata")
+
+jce <- acad |> group_by(departamento) |>  summarise(jce=sum(horas_reales)/44)
+
+acad <- acad |> 
+  filter(jerarquia!="Investigador Postdoctoral")
 ```
 
-## Modelos
 
-Presentacion de los resultados de los modelos propuestos, con interpretacion y conclusiones.
+## Caractertización de las publicaciones de académicos FACSO
 
-```{r ejemplo-modelo-tabla}
-#| echo: false
-#| warning: false
-#| tbl-cap: "Resumen comparativo de modelos"
-#| tbl-label: tbl-modelos
-if (requireNamespace("broom", quietly = TRUE) &&
-    requireNamespace("dplyr", quietly = TRUE) &&
-    requireNamespace("tibble", quietly = TRUE)) {
-  library(broom)
-  library(dplyr)
-  library(tibble)
+### Volúmen total de Publicaciones (2020-2025)
 
-  modelo <- lm(mpg ~ wt + hp, data = mtcars)
+```{r}
+#| label: fig-tipo-publicaciones
+#| fig-cap: "Cantidad de publicaciones por tipo de publicación"
 
-  tabla <- tidy(modelo, conf.int = TRUE) |>
-    mutate(
-      term = recode(
-        term,
-        "(Intercept)" = "Constante",
-        "wt" = "Capital social barrial",
-        "hp" = "Precariedad laboral"
-      ),
-      `Coef.` = sprintf("%0.3f", estimate),
-      `Std. Err.` = sprintf("%0.3f", std.error),
-      `t-valor` = sprintf("%0.2f", statistic),
-      p_valor_num = p.value,
-      `p-valor` = if_else(p.value < 0.001, "<0.001", sprintf("%0.3f", p.value)),
-      `Sig.` = case_when(
-        p.value < 0.001 ~ "***",
-        p.value < 0.01 ~ "**",
-        p.value < 0.05 ~ "*",
-        p.value < 0.1 ~ ".",
-        TRUE ~ ""
-      ),
-      `IC 95 %` = sprintf("[%0.3f, %0.3f]", conf.low, conf.high)
-    ) |>
-    select(Predictor = term, `Coef.`, `Std. Err.`, `t-valor`, `p-valor`, `Sig.`, `IC 95 %`, p_valor_num)
+figura_1 <- consolidado_wide |> 
+  mutate(tipo_documento = recode(tipo_documento,
+                                 "journal-article" = "Artículo",
+                                 "book" = "Libro",
+                                 "book-chapter" = "Capítulo de Libro")) |>
+  count(tipo_documento) |> 
+  mutate(tasa_jce = n / 155) |> 
+  pivot_longer(cols = c(n, tasa_jce), names_to = "metrica", values_to = "valor") |> 
+  mutate(metrica = recode(metrica,
+                          "n" = "Cantidad de publicaciones",
+                          "tasa_jce" = "Publicaciones por JCE")) |> 
+  ggplot(aes(x = reorder(tipo_documento, -valor), y = valor)) +
+  geom_col(fill = "#4C72B0") +
+  geom_text(aes(label = round(valor, 2)), vjust = -0.5, size = 3.5) +
+  facet_wrap(~ metrica, scales = "free_y") +
+  labs(
+    x = "Tipo de publicación",
+    y = NULL,
+    caption = "Nota: JCE de referencia corresponde al valor de 2025 (155)."
+  ) +
+  theme_minimal() +
+  theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
 
-  gof <- glance(modelo)
-  tabla <- bind_rows(
-    tabla,
-    tibble(
-      Predictor = c("N", "R^2", "R^2 ajustado"),
-      `Coef.` = c(sprintf("%0.0f", gof$nobs), sprintf("%0.3f", gof$r.squared), sprintf("%0.3f", gof$adj.r.squared)),
-      `Std. Err.` = "",
-      `t-valor` = "",
-      `p-valor` = "",
-      `Sig.` = "",
-      `IC 95 %` = "",
-      p_valor_num = NA_real_
-    )
+figura_1
+
+ggsave(
+  filename = "output/graficos/tipo_publicaciones.png",
+  plot = figura_1,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+
+```
+
+En el período de referencia (2020-2025), se encontraron un total de 1218 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 77% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 18% del total, mientras que los libros monográficos o editados son solo el 6% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE). Esto significa que el período estudiado se registraron 7.85 publicaciones por JCE: 6.1 artículos, 1.41 capítulos de libros y 0.34 libros.  
+
+```{r}
+#| label: fig-publicacion-anio
+#| fig-cap: "Publicaciones por año"
+
+figura_2 <- consolidado_wide |> 
+  group_by(tipo_documento, anio) |> 
+  mutate(tipo_documento = recode(tipo_documento,
+                                 "journal-article" = "Artículo",
+                                 "book" = "Libro",
+                                 "book-chapter" = "Capítulo de Libro")) |> 
+  count() |> 
+  ggplot(aes(x = factor(anio), y = n, fill = tipo_documento)) +
+  geom_text(
+    aes(label = n),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3.5
+  ) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = c(
+    "Artículo" = "#4C72B0",
+    "Capítulo de Libro" = "#C22828",
+    "Libro" = "#E0A458"
+  )) +
+  labs(
+    x = "Año",
+    y = "Cantidad",
+    fill = "Tipo de documento"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+figura_2
+
+
+ggsave(
+  filename = "output/graficos/tipo_publicaciones_anio.png",
+  plot = figura_2,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+```
+
+Observando la evolución por año en el período de referencia se aprecia que entre 2020 y 2021 aumentaron la cantidad de publicaciones de manera sustancial para los tres tipos de publicaciones analizadas. Desde ahí, se observan fluctuaciones con relativa estabilidad. Así, los artículos se mantienen entre 148 y 185, los capítulos de libro entre 37 y 48, y entre 7 y 13 libros monográficos o editados. 
+
+```{r}
+#| label: fig-publicacion-dispersion
+#| eval: false
+#| fig-cap: Dispersión de publicaciones por autor/a (2020-2025)
+#| include: false
+
+
+figura_7 <- acad |> 
+  distinct(rut) |> 
+  crossing(tipo_documento = c("Artículo", "Libro", "Capítulo de Libro")) |> 
+  left_join(
+    base_final |> 
+      mutate(tipo_documento = recode(tipo_documento,
+                                     "journal-article" = "Artículo",
+                                     "book" = "Libro",
+                                     "book-chapter" = "Capítulo de Libro")) |> 
+      count(rut, tipo_documento, name = "n_publicaciones"),
+    by = c("rut", "tipo_documento")
+  ) |> 
+  mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |> 
+  ggplot(aes(x = tipo_documento, y = n_publicaciones, fill = tipo_documento)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c(
+    "Artículo" = "#4C72B0",
+    "Capítulo de Libro" = "#C22828",
+    "Libro" = "#E0A458"
+  )) +
+  labs(
+    x = "Tipo de publicación",
+    y = "Cantidad de publicaciones por académico",
+    fill = "Tipo de documento"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+figura_7
+
+
+tabla_resumen <- acad |>
+  distinct(rut) |>
+  # Genera todas las combinaciones posibles: cada académico x cada tipo de documento
+  crossing(tipo_documento = c("Artículo", "Libro", "Capítulo de Libro")) |>
+  left_join(
+    base_final |>
+      mutate(tipo_documento = recode(tipo_documento,
+                                     "journal-article" = "Artículo",
+                                     "book" = "Libro",
+                                     "book-chapter" = "Capítulo de Libro")) |>
+      count(rut, tipo_documento, name = "n_publicaciones"),
+    by = c("rut", "tipo_documento")
+  ) |>
+  mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |>
+  group_by(tipo_documento) |>
+  summarise(
+    minimo = min(n_publicaciones),
+    q1 = quantile(n_publicaciones, 0.25),
+    mediana = median(n_publicaciones),
+    q3 = quantile(n_publicaciones, 0.75),
+    maximo = max(n_publicaciones),
+    .groups = "drop"
   )
 
-  if (knitr::is_latex_output()) {
-    tabla_latex <- select(tabla, -p_valor_num)
-    knitr::kable(
-      tabla_latex,
-      format = "pipe",
-      escape = FALSE,
-      align = c("l", rep("c", ncol(tabla_latex) - 1))
-    )
-  } else if (requireNamespace("gt", quietly = TRUE)) {
-    tabla_display <- tabla |>
-      mutate(`p-valor` = gsub("<", "&lt;", `p-valor`, fixed = TRUE)) |>
-      select(-p_valor_num)
+tabla_resumen
+# 
+# tabla_resumen_total <- acad |> 
+#   distinct(rut) |> 
+#   left_join(
+#     base_final |> 
+#       count(rut, name = "n_publicaciones"),
+#     by = "rut"
+#   ) |> 
+#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |> 
+#   filter(n_publicaciones==0)
+# 
+# tabla_resumen_total
 
-    gt::gt(tabla_display) |>
-      gt::tab_header(
-        title = gt::md("**Resultados del modelo de regresiÃ³n**"),
-        subtitle = gt::md("Coeficientes estimados para mpg ~ wt + hp")
-      ) |>
-      gt::cols_label(
-        Predictor = "Predictor",
-        `Coef.` = "Coef.",
-        `Std. Err.` = "Std. Err.",
-        `t-valor` = "t-valor",
-        `p-valor` = "p-valor",
-        `Sig.` = "Sig.",
-        `IC 95 %` = "IC 95 %"
-      ) |>
-      gt::cols_align(align = "center", columns = c(`Coef.`, `Std. Err.`, `t-valor`, `p-valor`, `Sig.`, `IC 95 %`)) |>
-      gt::cols_align(align = "left", columns = Predictor) |>
-      gt::tab_options(
-        table.width = gt::pct(85),
-        heading.title.font.size = gt::px(16),
-        heading.subtitle.font.size = gt::px(11),
-        table.border.top.width = gt::px(1.5),
-        table.border.top.color = "#000000",
-        table.border.bottom.width = gt::px(1.5),
-        table.border.bottom.color = "#000000",
-        column_labels.border.top.width = gt::px(1.2),
-        column_labels.border.top.color = "#000000",
-        column_labels.border.bottom.width = gt::px(1.2),
-        column_labels.border.bottom.color = "#000000",
-        data_row.padding = gt::px(4),
-        table.font.size = 13
-      ) |>
-      gt::opt_table_font(
-        font = list(
-          gt::google_font("Source Sans Pro"),
-          gt::default_fonts()
-        )
-      ) |>
-      gt::tab_source_note(gt::md("Notas: *** p < 0.001, ** p < 0.01, * p < 0.05, . p < 0.10"))
-  } else {
-    tabla_ligera <- select(tabla, -p_valor_num)
-    knitr::kable(
-      tabla_ligera,
-      format = "html",
-      escape = FALSE,
-      align = c("l", rep("c", ncol(tabla_ligera) - 1)),
-      table.attr = "class='table table-sm table-striped align-middle w-100'"
-    )
-  }
-}
+ggsave(
+  filename = "output/graficos/tipo_publicaciones_dispersion.png",
+  plot = figura_7,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+
 ```
 
+La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produjo entre 1 y 10 publicaciones en el período mencionado, con máximos que llegan hasta las 50 publicaciones.  La @fig-publicacion-lorenz permite observar la concentración en la cantidad de publicaciones entre los académicos y académicas más productivos. Así, el 13% de los académicos/as más productividos concentran aproximadamente el 50% del total de las publicaciones en el período de referencia. 
+
+```{r}
+#| label: fig-publicacion-lorenz
+#| fig-cap: "Concentración de publicaciones por porcentaje de académicos acumulado (2020-2025)"
+
+
+lorenz_data <- acad |> 
+  distinct(rut) |> 
+  left_join(
+    base_final |> 
+      count(rut, name = "n_publicaciones"),
+    by = "rut"
+  ) |> 
+  mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |> 
+  arrange(n_publicaciones) |> 
+  mutate(
+    pct_academicos = row_number() / n() * 100,
+    pct_publicaciones = cumsum(n_publicaciones) / sum(n_publicaciones) * 100
+  )
+
+figura_8 <- lorenz_data |> 
+  ggplot(aes(x = pct_academicos, y = pct_publicaciones)) +
+  geom_line(color = "#4C72B0", linewidth = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray50") +
+  geom_area(fill = "#4C72B0", alpha = 0.2) +
+  labs(
+    x = "Porcentaje acumulado de académicos",
+    y = "Porcentaje acumulado de publicaciones",
+    caption = "Línea punteada: distribución perfectamente equitativa (referencia)"
+  ) +
+  theme_minimal() +
+  theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
+
+figura_8
+# 
+# punto_50 <- lorenz_data |>
+#   filter(pct_publicaciones >= 50) |>
+#   slice(1)
+# 
+# punto_50
+# 
+# # El % de académicos MÁS productivos que acumula el 50% de publicaciones:
+# pct_top_50 <- 100 - punto_50$pct_academicos
+# pct_top_50
+# 
+# 
+# lorenz_data_invertido <- acad |> 
+#   distinct(rut) |> 
+#   left_join(
+#     base_final |> count(rut, name = "n_publicaciones"),
+#     by = "rut"
+#   ) |> 
+#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |> 
+#   arrange(desc(n_publicaciones)) |> 
+#   mutate(
+#     pct_academicos = row_number() / n() * 100,
+#     pct_publicaciones = cumsum(n_publicaciones) / sum(n_publicaciones) * 100
+#   )
+# 
+# figura_7_invertido <- lorenz_data_invertido |> 
+#   ggplot(aes(x = pct_academicos, y = pct_publicaciones)) +
+#   geom_line(color = "#4C72B0", linewidth = 1) +
+#   geom_point(data = lorenz_data_invertido |> filter(abs(pct_academicos - 10) == min(abs(pct_academicos - 10))),
+#              color = "#C22828", size = 3) +
+#   geom_vline(xintercept = 10, linetype = "dotted", color = "gray50") +
+#   labs(
+#     x = "Porcentaje acumulado de académicos (ordenados de mayor a menor productividad)",
+#     y = "Porcentaje acumulado de publicaciones",
+#     caption = "El punto rojo marca el 10% de académicos más productivos"
+#   ) +
+#   theme_minimal() +
+#   theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
+# 
+# figura_7_invertido
+# 
+# punto_20 <- lorenz_data_invertido |> 
+#   filter(pct_academicos >= 20) |> 
+#   slice(1)
+# 
+# punto_20
+# 
+# # El % de publicaciones que concentra el 20% más productivo:
+# punto_20$pct_publicaciones
+
+ggsave(
+  filename = "output/graficos/lorenz.png",
+  plot = figura_8,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+
+```
+
+### Caracterización de los autores
+
+```{r}
+#| layout-ncol: 1
+#| label: fig-publicacion-depto
+#| fig-cap: "Publicaciones por Departamento por JCE (2020-2025)"
+
+# figura_3 <- base_final |> 
+#   mutate(tipo_documento = recode(tipo_documento,
+#                                  "journal-article" = "Artículo",
+#                                  "book" = "Libro",
+#                                  "book-chapter" = "Capítulo de Libro")) |> 
+#   filter(departamento != "Postgrado") |> 
+#   count(departamento, tipo_documento) |> 
+#   # group_by(departamento) |> 
+#   # mutate(pct = n / sum(n) * 100) |> 
+#   # ungroup() |> 
+#   ggplot(aes(x = reorder(departamento, -n), y = n, fill = tipo_documento)) +
+#   geom_col(position = position_dodge(width = 0.9)) +
+#   geom_text(
+#     aes(label = n),
+#     position = position_dodge(width = 0.9),
+#     vjust = -0.5,
+#     size = 3
+#   ) +
+#   scale_fill_manual(values = c(
+#     "Artículo" = "#4C72B0",
+#     "Capítulo de Libro" = "#C22828",
+#     "Libro" = "#E0A458"
+#   )) +
+#   labs(
+#     x = "Departamento",
+#     y = "Porcentaje (%)",
+#     fill = "Tipo de documento"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     legend.position = "bottom"
+#   ) 
+# 
+# figura_3
+
+figura_3_jce <- base_final |> 
+  mutate(tipo_documento = recode(tipo_documento,
+                                 "journal-article" = "Artículo",
+                                 "book" = "Libro",
+                                 "book-chapter" = "Capítulo de Libro")) |> 
+  filter(departamento != "Postgrado") |> 
+  count(departamento, tipo_documento) |> 
+  left_join(jce, by = "departamento") |> 
+  mutate(tasa_jce = n / jce) |> 
+  ggplot(aes(x = reorder(departamento, -tasa_jce), y = tasa_jce, fill = tipo_documento)) +
+  geom_col(position = position_dodge(width = 0.9)) +
+  geom_text(
+    aes(label = round(tasa_jce, 2)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_fill_manual(values = c(
+    "Artículo" = "#4C72B0",
+    "Capítulo de Libro" = "#C22828",
+    "Libro" = "#E0A458"
+  )) +
+  labs(
+    x = "Departamento",
+    y = "Tasa por JCE",
+    fill = "Tipo de documento",
+    caption = "Nota: JCE de referencia corresponde al valor de 2025."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, size = 8, face = "italic")
+  )
+
+figura_3_jce
+
+
+ggsave(
+  filename = "output/graficos/tipo_publicaciones_depto_jce.png",
+  plot = figura_3_jce,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+```
+Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, SOciología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 14.8 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.94 publicaciones por JCE, Psicología con 8.41, Antropología con 7.83 y Educación con 4.41. 
+
+```{r}
+#| label: fig-publicacion-genero
+#| fig-cap: "Publicaciones por Género (2020-2025)"
+
+
+jce_genero <- acad |>  group_by(sexo) |> summarise(jce = sum(horas_reales)/44)
+
+
+figura_4 <- base_final |> 
+  mutate(tipo_documento = recode(tipo_documento,
+                                 "journal-article" = "Artículo",
+                                 "book" = "Libro",
+                                 "book-chapter" = "Capítulo de Libro")) |> 
+  count(sexo, tipo_documento) |> 
+  left_join(jce_genero, by = "sexo") |> 
+  mutate(tasa_jce = n / jce) |> 
+  ggplot(aes(x = reorder(sexo, -tasa_jce), y = tasa_jce, fill = tipo_documento)) +
+  geom_col(position = position_dodge(width = 0.9)) +
+  geom_text(
+    aes(label = round(tasa_jce, 2)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_fill_manual(values = c(
+    "Artículo" = "#4C72B0",
+    "Capítulo de Libro" = "#C22828",
+    "Libro" = "#E0A458"
+  )) +
+  labs(
+    x = "Género",
+    y = "Tasa por JCE",
+    fill = "Tipo de documento",
+    caption = "Nota: JCE de referencia corresponde al valor de 2025."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, size = 8, face = "italic")
+  )
+
+figura_4
+
+
+ggsave(
+  filename = "output/graficos/tipo_publicaciones_genero.png",
+  plot = figura_4,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+```
+En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.65 publicaciones por JCE en le período analizado, contra 7.32 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
+
+
+```{r}
+#| label: fig-publicacion-edad
+#| fig-cap: "Publicaciones por Edad y Departamento (2020-2025)"
+
+
+jce_edad <- acad |> mutate(edad_tramo = case_when(edad < 50 ~ "Menos de 50 años",
+                                edad >= 50 & edad <60 ~ "50 a 59 años",
+                                edad >= 60 ~ "60 años o más"),
+                           edad_tramo = factor(edad_tramo, 
+                             levels = c("Menos de 50 años", 
+                                       "50 a 59 años", 
+                                       "60 años o más"))) |> 
+  group_by(edad_tramo) |> summarise(jce = sum(horas_reales)/44)
+
+figura_5 <- base_final |> 
+  mutate(tipo_documento = recode(tipo_documento,
+                                 "journal-article" = "Artículo",
+                                 "book" = "Libro",
+                                 "book-chapter" = "Capítulo de Libro"),
+         edad_tramo = case_when(edad < 50 ~ "Menos de 50 años",
+                                edad >= 50 & edad <60 ~ "50 a 59 años",
+                                edad >= 60 ~ "60 años o más"),
+         edad_tramo = factor(edad_tramo, 
+                             levels = c("Menos de 50 años", 
+                                       "50 a 59 años", 
+                                       "60 años o más"))) |> 
+  count(edad_tramo, tipo_documento) |> 
+  left_join(jce_edad, by = "edad_tramo") |> 
+  mutate(tasa_jce = n / jce) |> 
+  ggplot(aes(x = edad_tramo, y = tasa_jce, fill = tipo_documento)) +
+  geom_col(position = position_dodge(width = 0.9)) +
+  geom_text(
+    aes(label = round(tasa_jce, 2)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_fill_manual(values = c(
+    "Artículo" = "#4C72B0",
+    "Capítulo de Libro" = "#C22828",
+    "Libro" = "#E0A458"
+  )) +
+  labs(
+    x = "Edad",
+    y = "Tasa por JCE",
+    fill = "Tipo de documento",
+    caption = "Nota: JCE de referencia corresponde al valor de 2025."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, size = 8, face = "italic")
+  )
+
+figura_5
+
+
+ggsave(
+  filename = "output/graficos/tipo_publicaciones_edad.png",
+  plot = figura_5,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+# tabla_edad <- base_final |> 
+#   count(edad, name = "n_publicaciones") |> 
+#   full_join(
+#     acad |> count(edad, name = "n_academicos"),
+#     by = "edad"
+#   ) |> 
+#   arrange(edad) |> 
+#   mutate(across(c(n_publicaciones, n_academicos), ~replace_na(.x, 0)),
+#          tasa = n_publicaciones/n_academicos)
+# 
+# tabla_edad
+
+
+```
+El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10.85 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 9.55 publicaciones por JCE, aunque con un menor peso relativo de los artículos en oposición a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de de 60 años es de 5.03 publicaciones por JCE.
+
+```{r}
+#| label: fig-publicacion-jerarquia
+#| fig-cap: "Publicaciones por Jerarquía y Departamento (2020-2025)"
+
+jce_jerarquia <- acad |>  
+  group_by(jerarquia) |> 
+  summarise(jce = sum(horas_reales)/44)
+
+figura_6 <- base_final |> 
+  mutate(tipo_documento = recode(tipo_documento,
+                                 "journal-article" = "Artículo",
+                                 "book" = "Libro",
+                                 "book-chapter" = "Capítulo de Libro")) |> 
+  filter(jerarquia %in% c("Titular", "Asociado", "Asistente")) |> 
+  count(jerarquia, tipo_documento) |> 
+  left_join(jce_jerarquia, by = "jerarquia") |> 
+  mutate(tasa_jce = n / jce) |> 
+  ggplot(aes(x = jerarquia, y = tasa_jce, fill = tipo_documento)) +
+  geom_col(position = position_dodge(width = 0.9)) +
+  geom_text(
+    aes(label = round(tasa_jce, 2)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_fill_manual(values = c(
+    "Artículo" = "#4C72B0",
+    "Capítulo de Libro" = "#C22828",
+    "Libro" = "#E0A458"
+  )) +
+  labs(
+    x = "Jerarquía",
+    y = "Tasa por JCE",
+    fill = "Tipo de documento",
+    caption = "Nota: JCE de referencia corresponde al valor de 2025."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, size = 8, face = "italic")
+  )
+
+figura_6
+
+
+ggsave(
+  filename = "output/graficos/tipo_publicaciones_jerarquia.png",
+  plot = figura_6,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+
+```
+
+LA @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4.96 publicaciones por JCE a 12.39. La diferencia entre profesores asociados y titulares es menor, con los primeros teniendo una mayor proporción de artículos publicados y los segundo teniendo una mayor cantidad de publicaciones en capítulos de libro en relación a otras jerarquías. 
 

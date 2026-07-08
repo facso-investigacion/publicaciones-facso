@@ -1,4 +1,4 @@
-﻿---
+---
 title: ""
 number-sections: false
 numbered: false
@@ -8,6 +8,8 @@ format:
     toc: false
   pdf:
     title-block-style: none
+    
+lang: es
 ---
 
 ::: {.content-visible when-format="pdf"}

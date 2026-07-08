@@ -81,7 +81,6 @@ arg,Boletín del Instituto de Historia Argentina y Americana Dr. Emilio Ravignan
 arg,Boletín del Instituto de Historia Argentina y Americana Dr. Emilio Ravignani,es,es; en,18502563
 arg,Revista de la Escuela de Ciencias de la Educación,es,es,23623349
 arg,Revista de la Escuela de Ciencias de la Educación,es,es,18516297
-arg,BAG. Journal of basic and applied genetics,es,es; en,18526233
 arg,Enfoques,es,es; en,16692721
 arg,Revista argentina de radiología,es,es; en,18529992
 arg,Astrolabio. Nueva Época,es,es; en,16687515
@@ -113,7 +112,6 @@ arg,Postdata,es,es; en,18519601
 arg,Boletín de la Sociedad Argentina de Botánica,es,es; en,18512372
 arg,Revista industrial y agrícola de Tucumán,es,es; en,18513018
 arg,Psocial,es,es; en,2422619X
-arg,Agriscientia,es,es; en,1668298X
 arg,"Darwiniana, nueva serie",es,es; en,18501699
 arg,"Darwiniana, nueva serie",es,es; en,00116793
 arg,Prismas,es,es; en,18520499
@@ -171,7 +169,6 @@ arg,Revista de la Sociedad Entomológica Argentina,es,es; en,03735680
 arg,Revista de la Sociedad Entomológica Argentina,es,es; en,18517471
 arg,Revista argentina de cardiología,es,es; en,18503748
 arg,El taco en la brea,es,es; en,23624191
-arg,Argentinian journal of respiratory and physical therapy,en,en,26184095
 arg,Revista de la Asociación Argentina de Ortopedia y Traumatología,es,es; en,18527434
 arg,Revista Teología,es,es; en,26837307
 arg,RIA. Revista de investigaciones agropecuarias,es,es; en,16692314
@@ -195,8 +192,6 @@ arg,Serie correlación geológica,es,es; en,16669479
 arg,"Ciclos en la historia, la economía y la sociedad",es,es; en,18513735
 arg,Revista Iberoamericana de Tecnología en Educación y Educación en Tecnología,es,es; en; pt,18510086
 arg,Revista Iberoamericana de Tecnología en Educación y Educación en Tecnología,es,es; en; pt,18509959
-arg,Archivos argentinos de pediatría,es,es; en,16683501
-arg,Archivos argentinos de pediatría,es,es; en,03250075
 arg,Sociedad y religión,es,es; en,18537081
 arg,Sociedad y religión,es,es; en,03269795
 arg,Revista Argentina de Salud Pública,es,es; en,1853810X
@@ -219,7 +214,6 @@ arg,Cuadernos del Centro de Estudios en Diseño y Comunicación. Ensayos,es,es; 
 arg,Cuaderno urbano,es,es; en,18533655
 arg,Historia & Guerra,es,es; en,27968650
 arg,Revista FAVE. Sección Ciencias veterinarias,es,es; en,23625589
-arg,Anuario Centro de Estudios Económicos de la Empresa y el Desarrollo,es,es; en,25458299
 arg,Andes,es,es; en,16688090
 arg,Cuadernos del CILHA,es,es; en,18529615
 arg,Tópicos,es,es; en,1668723X
@@ -248,6 +242,12 @@ arg,Revista de la Facultad de Ciencias Económicas,es,es; en,16686365
 arg,Espacios en blanco. Serie indagaciones,es,es; en,23139927
 arg,Espacios en blanco. Serie indagaciones,es,es; en,15159485
 arg,Boletín de Estética,es,es; en,24084417
+arg,Agriscientia,es,es; en,1668298X
+arg,BAG. Journal of basic and applied genetics,es,es; en,18526233
+arg,Argentinian journal of respiratory and physical therapy,en,en,26184095
+arg,Archivos argentinos de pediatría,es,es; en,03250075
+arg,Archivos argentinos de pediatría,es,es; en,16683501
+arg,Anuario Centro de Estudios Económicos de la Empresa y el Desarrollo,es,es; en,25458299
 chl,Electronic Journal of Biotechnology,en,en,07173458
 chl,Revista chilena de cirugía,es,es; en,07184026
 chl,Boletín chileno de parasitología,es,es; en,03659402

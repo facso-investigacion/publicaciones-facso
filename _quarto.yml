@@ -100,9 +100,11 @@ format:
     include-after-body: includes/backmatter.tex  # Material posterior (glosario, licencias, etc.)
     fig-cap-location: top
     tbl-cap-location: top
+    variables:
+      babel-lang: spanish
 
 execute:
-  echo: true                    # Cambia a false si quieres ocultar codigo por defecto
+  echo: false                    # Cambia a false si quieres ocultar codigo por defecto
   warning: false
   message: false
   freeze: auto                  # Usa true para congelar resultados, false para ejecutar siempre

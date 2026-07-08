@@ -107,7 +107,24 @@ acad <- acad |> clean_names() |>
     bind_rows(casos_suma, casos_max)
   } %>%
   ungroup() %>%
-  select(-suma_horas)
+  select(-suma_horas) |> 
+  mutate(departamento = case_when(
+    str_detect(str_to_lower(reparticion), "psicología|psicologia") ~ "Psicología",
+    str_detect(str_to_lower(reparticion), "sociología|sociologia") ~ "Sociología",
+    str_detect(str_to_lower(reparticion), "antropología|antropologia") ~ "Antropología",
+    str_detect(str_to_lower(reparticion), "trabajo social") ~ "Trabajo social",
+    str_detect(str_to_lower(reparticion), "educación|educacion") ~ "Educación",
+    str_detect(str_to_lower(reparticion), "postgrado") ~ "Postgrado",
+    TRUE ~ NA),
+    jerarquia = case_when(
+      str_detect(str_to_lower(cargo), "titular")      ~ "Titular",
+      str_detect(str_to_lower(cargo), "asociado")     ~ "Asociado",
+      str_detect(str_to_lower(cargo), "asistente")    ~ "Asistente",
+      str_detect(str_to_lower(cargo), "postdoctoral") ~ "Investigador Postdoctoral",
+      str_detect(str_to_lower(cargo), "adjunto")      ~ "Adjunto",
+      str_detect(str_to_lower(cargo), "instructor")   ~ "Instructor",
+      str_detect(str_to_lower(cargo), "ayudante")     ~ NA_character_,
+      str_detect(str_to_lower(cargo), "evaluado")     ~ NA_character_))
 
 save(acad, file="input/acad-proc.rdata")
 
@@ -125,23 +142,7 @@ save(acad, file="input/acad-proc.rdata")
 
 base_long <- inner_join(consolidado_long, acad, by="rut") |> 
   filter(tipo_documento %in% c("Artículo", "Capítulo de libro", "Libro", "LIBRO")) |> 
-  mutate(departamento = case_when(
-    str_detect(str_to_lower(reparticion), "psicología|psicologia") ~ "Psicología",
-    str_detect(str_to_lower(reparticion), "sociología|sociologia") ~ "Sociología",
-    str_detect(str_to_lower(reparticion), "antropología|antropologia") ~ "Antropología",
-    str_detect(str_to_lower(reparticion), "trabajo social") ~ "Trabajo social",
-    str_detect(str_to_lower(reparticion), "educación|educacion") ~ "Educación",
-    str_detect(str_to_lower(reparticion), "postgrado") ~ "Postgrado",
-    TRUE ~ NA),
-    jerarquia = case_when(
-      str_detect(str_to_lower(cargo), "titular")      ~ "Titular",
-      str_detect(str_to_lower(cargo), "asociado")     ~ "Asociado",
-      str_detect(str_to_lower(cargo), "asistente")    ~ "Asistente",
-      str_detect(str_to_lower(cargo), "postdoctoral") ~ "Investigador Postdoctoral",
-      str_detect(str_to_lower(cargo), "adjunto")      ~ "Adjunto",
-      str_detect(str_to_lower(cargo), "instructor")   ~ "Instructor",
-      str_detect(str_to_lower(cargo), "ayudante")     ~ NA_character_,
-      str_detect(str_to_lower(cargo), "evaluado")     ~ NA_character_),
+  mutate(,
     indexacion = case_when(
       str_detect(indexado_en, regex("wos", ignore_case = TRUE)) ~ "WoS",
       str_detect(indexado_en, regex("scopus", ignore_case = TRUE)) ~ "Scopus",
