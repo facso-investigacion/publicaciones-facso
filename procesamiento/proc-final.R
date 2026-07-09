@@ -4,8 +4,7 @@ library(tidyverse)
 library(readr)
 
 
-
-base_final <- read_csv("output/base_final.csv")
+load("output/base_final.rdata")
 
 
 # Base publicaciones-departamento
@@ -14,7 +13,7 @@ consolidado_depto <- base_final |>
   distinct(doi, departamento, .keep_all=TRUE) |> 
   dplyr::select(doi, anio, departamento, tipo_documento, indexacion, titulo, 
                 revista, issn_p, issn_e, issn, n_citas=scopus_citas,
-                quartil=cuartil_sjr, idioma, oa)
+                quartil=cuartil_sjr, idioma, oa, revista_id)
 
 save(consolidado_depto, file="output/base-completa-depto.rdata")
 
@@ -28,7 +27,7 @@ consolidado_wide <- base_final |>
   tidyr::pivot_wider(
     id_cols = c(doi, anio, indexacion, tipo_documento, titulo,
                 revista, issn, issn_e, issn_p, cuartil_sjr, scopus_citas, 
-                scopus_abstract, scopus_keywords, idioma, oa),
+                scopus_abstract, scopus_keywords, idioma, oa, revista_id),
     names_from = autor_n,
     values_from = rut
   ) |> 
