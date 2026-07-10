@@ -5,7 +5,18 @@ library(readr)
 
 
 load("output/base_final.rdata")
+load("output/base_book_lu.rdata")
 
+
+base_final <- base_final %>%
+  filter(
+    tipo_documento == "journal-article" |
+      (tipo_documento %in% c("book-chapter", "book") & titulo %in% base_books$titulo) |
+      !is.na(indexacion)
+  )
+
+
+save(base_final, file="output/base_final.rdata")
 
 # Base publicaciones-departamento
 

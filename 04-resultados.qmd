@@ -37,7 +37,7 @@ figura_1 <- consolidado_wide |>
                           "n" = "Cantidad de publicaciones",
                           "tasa_jce" = "Publicaciones por JCE")) |> 
   ggplot(aes(x = reorder(tipo_documento, -valor), y = valor)) +
-  geom_col(fill = "#4C72B0") +
+  geom_col(fill = "steelblue") +
   geom_text(aes(label = round(valor, 2)), vjust = -0.5, size = 3.5) +
   facet_wrap(~ metrica, scales = "free_y") +
   labs(
@@ -61,7 +61,7 @@ ggsave(
 
 ```
 
-En el período de referencia (2020-2025), se encontraron un total de 1218 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 77% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 18% del total, mientras que los libros monográficos o editados son solo el 6% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE). Esto significa que el período estudiado se registraron 7.85 publicaciones por JCE: 6.1 artículos, 1.41 capítulos de libros y 0.34 libros.  
+En el período de referencia (2020-2025), se encontraron un total de 1162 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE), esto significa que el período estudiado se registraron 7.49 publicaciones por JCE: 6.1 artículos, 1.11 capítulos de libros y 0.29 libros.  
 
 ```{r}
 #| label: fig-publicacion-anio
@@ -83,8 +83,8 @@ figura_2 <- consolidado_wide |>
   ) +
   geom_col(position = "dodge") +
   scale_fill_manual(values = c(
-    "Artículo" = "#4C72B0",
-    "Capítulo de Libro" = "#C22828",
+    "Artículo" = "steelblue",
+    "Capítulo de Libro" = "firebrick",
     "Libro" = "#E0A458"
   )) +
   labs(
@@ -108,7 +108,7 @@ ggsave(
 
 ```
 
-Observando la evolución por año en el período de referencia se aprecia que entre 2020 y 2021 aumentaron la cantidad de publicaciones de manera sustancial para los tres tipos de publicaciones analizadas. Desde ahí, se observan fluctuaciones con relativa estabilidad. Así, los artículos se mantienen entre 148 y 185, los capítulos de libro entre 37 y 48, y entre 7 y 13 libros monográficos o editados. 
+Observando la evolución por año en el período de referencia se aprecia que entre 2020 y 2021 aumentaron la cantidad de publicaciones de manera sustancial para los tres tipos de publicaciones analizadas, posiblemente por un efecto de rebote tras el inicio de la Pandemia por COVID19 en 2020. Desde ahí, se observan fluctuaciones con relativa estabilidad. Así, los artículos se mantienen entre 148 y 185, los capítulos de libro entre 22 y 39, y entre 3 y 11 libros monográficos o editados. 
 
 ```{r}
 #| label: fig-publicacion-dispersion
@@ -133,8 +133,8 @@ figura_7 <- acad |>
   ggplot(aes(x = tipo_documento, y = n_publicaciones, fill = tipo_documento)) +
   geom_boxplot() +
   scale_fill_manual(values = c(
-    "Artículo" = "#4C72B0",
-    "Capítulo de Libro" = "#C22828",
+    "Artículo" = "steelblue",
+    "Capítulo de Libro" = "firebrick",
     "Libro" = "#E0A458"
   )) +
   labs(
@@ -150,7 +150,6 @@ figura_7
 
 tabla_resumen <- acad |>
   distinct(rut) |>
-  # Genera todas las combinaciones posibles: cada académico x cada tipo de documento
   crossing(tipo_documento = c("Artículo", "Libro", "Capítulo de Libro")) |>
   left_join(
     base_final |>
@@ -162,27 +161,36 @@ tabla_resumen <- acad |>
     by = c("rut", "tipo_documento")
   ) |>
   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |>
-  group_by(tipo_documento) |>
+  group_by(rut) |>
+  summarise(total_publicaciones = sum(n_publicaciones), .groups = "drop") |>
   summarise(
-    minimo = min(n_publicaciones),
-    q1 = quantile(n_publicaciones, 0.25),
-    mediana = median(n_publicaciones),
-    q3 = quantile(n_publicaciones, 0.75),
-    maximo = max(n_publicaciones),
+    minimo = min(total_publicaciones),
+    q1 = quantile(total_publicaciones, 0.25),
+    mediana = median(total_publicaciones),
+    q3 = quantile(total_publicaciones, 0.75),
+    maximo = max(total_publicaciones),
     .groups = "drop"
   )
 
 tabla_resumen
-# 
-# tabla_resumen_total <- acad |> 
-#   distinct(rut) |> 
+# # 
+# tabla_resumen_total <- acad |>
+#   distinct(rut) |>
 #   left_join(
-#     base_final |> 
+#     base_final |>
 #       count(rut, name = "n_publicaciones"),
 #     by = "rut"
-#   ) |> 
-#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |> 
-#   filter(n_publicaciones==0)
+#   ) |>
+#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |>
+#   filter(n_publicaciones==0) |>
+#   summarise(
+#     minimo = min(n_publicaciones),
+#     q1 = quantile(n_publicaciones, 0.25),
+#     mediana = median(n_publicaciones),
+#     q3 = quantile(n_publicaciones, 0.75),
+#     maximo = max(n_publicaciones),
+#     .groups = "drop"
+#   )
 # 
 # tabla_resumen_total
 
@@ -197,7 +205,7 @@ ggsave(
 
 ```
 
-La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produjo entre 1 y 10 publicaciones en el período mencionado, con máximos que llegan hasta las 50 publicaciones.  La @fig-publicacion-lorenz permite observar la concentración en la cantidad de publicaciones entre los académicos y académicas más productivos. Así, el 13% de los académicos/as más productividos concentran aproximadamente el 50% del total de las publicaciones en el período de referencia. 
+La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produciendo entre 1 y 9 publicaciones en el período mencionado, con máximos que llegan hasta las 45 publicaciones. Esto indica una alta dispersión y una concentración de publicaciones entre los académicos más productivos, como se observan en la @fig-publicacion-lorenz. Así, el 20% de los académicos más productivos concentra dos tercios de las publicaciones; el 50% del total de las publicaciones de la Facultad corresponden al 13% de los académicos con mayor productividad. 
 
 ```{r}
 #| label: fig-publicacion-lorenz
@@ -220,9 +228,9 @@ lorenz_data <- acad |>
 
 figura_8 <- lorenz_data |> 
   ggplot(aes(x = pct_academicos, y = pct_publicaciones)) +
-  geom_line(color = "#4C72B0", linewidth = 1) +
+  geom_line(color = "steelblue", linewidth = 1) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray50") +
-  geom_area(fill = "#4C72B0", alpha = 0.2) +
+  geom_area(fill = "steelblue", alpha = 0.2) +
   labs(
     x = "Porcentaje acumulado de académicos",
     y = "Porcentaje acumulado de publicaciones",
@@ -242,26 +250,26 @@ figura_8
 # # El % de académicos MÁS productivos que acumula el 50% de publicaciones:
 # pct_top_50 <- 100 - punto_50$pct_academicos
 # pct_top_50
-# 
-# 
-# lorenz_data_invertido <- acad |> 
-#   distinct(rut) |> 
+# # 
+# # 
+# lorenz_data_invertido <- acad |>
+#   distinct(rut) |>
 #   left_join(
 #     base_final |> count(rut, name = "n_publicaciones"),
 #     by = "rut"
-#   ) |> 
-#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |> 
-#   arrange(desc(n_publicaciones)) |> 
+#   ) |>
+#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |>
+#   arrange(desc(n_publicaciones)) |>
 #   mutate(
 #     pct_academicos = row_number() / n() * 100,
 #     pct_publicaciones = cumsum(n_publicaciones) / sum(n_publicaciones) * 100
 #   )
-# 
-# figura_7_invertido <- lorenz_data_invertido |> 
+
+# figura_7_invertido <- lorenz_data_invertido |>
 #   ggplot(aes(x = pct_academicos, y = pct_publicaciones)) +
-#   geom_line(color = "#4C72B0", linewidth = 1) +
+#   geom_line(color = "steelblue", linewidth = 1) +
 #   geom_point(data = lorenz_data_invertido |> filter(abs(pct_academicos - 10) == min(abs(pct_academicos - 10))),
-#              color = "#C22828", size = 3) +
+#              color = "firebrick", size = 3) +
 #   geom_vline(xintercept = 10, linetype = "dotted", color = "gray50") +
 #   labs(
 #     x = "Porcentaje acumulado de académicos (ordenados de mayor a menor productividad)",
@@ -272,9 +280,9 @@ figura_8
 #   theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
 # 
 # figura_7_invertido
-# 
-# punto_20 <- lorenz_data_invertido |> 
-#   filter(pct_academicos >= 20) |> 
+
+# punto_20 <- lorenz_data_invertido |>
+#   filter(pct_academicos >= 20) |>
 #   slice(1)
 # 
 # punto_20
@@ -319,8 +327,8 @@ ggsave(
 #     size = 3
 #   ) +
 #   scale_fill_manual(values = c(
-#     "Artículo" = "#4C72B0",
-#     "Capítulo de Libro" = "#C22828",
+#     "Artículo" = "steelblue",
+#     "Capítulo de Libro" = "firebrick",
 #     "Libro" = "#E0A458"
 #   )) +
 #   labs(
@@ -353,8 +361,8 @@ figura_3_jce <- base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "Artículo" = "#4C72B0",
-    "Capítulo de Libro" = "#C22828",
+    "Artículo" = "steelblue",
+    "Capítulo de Libro" = "firebrick",
     "Libro" = "#E0A458"
   )) +
   labs(
@@ -380,7 +388,8 @@ ggsave(
   dpi = 300
 )
 ```
-Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, SOciología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 14.8 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.94 publicaciones por JCE, Psicología con 8.41, Antropología con 7.83 y Educación con 4.41. 
+
+Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.35 publicaciones por JCE, Psicología con 8.08, Antropología con 7.72 y Educación con 4.22. 
 
 ```{r}
 #| label: fig-publicacion-genero
@@ -407,8 +416,8 @@ figura_4 <- base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "Artículo" = "#4C72B0",
-    "Capítulo de Libro" = "#C22828",
+    "Artículo" = "steelblue",
+    "Capítulo de Libro" = "firebrick",
     "Libro" = "#E0A458"
   )) +
   labs(
@@ -434,7 +443,7 @@ ggsave(
   dpi = 300
 )
 ```
-En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.65 publicaciones por JCE en le período analizado, contra 7.32 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
+En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.73 publicaciones por JCE en le período analizado, contra 7.19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
 
 
 ```{r}
@@ -475,8 +484,8 @@ figura_5 <- base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "Artículo" = "#4C72B0",
-    "Capítulo de Libro" = "#C22828",
+    "Artículo" = "steelblue",
+    "Capítulo de Libro" = "firebrick",
     "Libro" = "#E0A458"
   )) +
   labs(
@@ -516,7 +525,7 @@ ggsave(
 
 
 ```
-El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10.85 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 9.55 publicaciones por JCE, aunque con un menor peso relativo de los artículos en oposición a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de de 60 años es de 5.03 publicaciones por JCE.
+El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10.58 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 10.03 publicaciones por JCE, aunque con un menor peso relativo de los artículos en comparación a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de de 60 años es de 4.79 publicaciones por JCE.
 
 ```{r}
 #| label: fig-publicacion-jerarquia
@@ -544,8 +553,8 @@ figura_6 <- base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "Artículo" = "#4C72B0",
-    "Capítulo de Libro" = "#C22828",
+    "Artículo" = "steelblue",
+    "Capítulo de Libro" = "firebrick",
     "Libro" = "#E0A458"
   )) +
   labs(
@@ -574,7 +583,7 @@ ggsave(
 
 ```
 
-LA @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4.96 publicaciones por JCE a 12.39. La diferencia entre profesores asociados y titulares es menor, con los primeros teniendo una mayor proporción de artículos publicados y los segundo teniendo una mayor cantidad de publicaciones en capítulos de libro en relación a otras jerarquías. 
+LA @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4.49 publicaciones por JCE a 12.19. La diferencia entre profesores asociados y titulares es menor, con los segundos registrando 11.49 publicaciones por JCE. 
 
 ## Artículos y Revistas
 
@@ -601,8 +610,8 @@ figura_9 <- consolidado_wide |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "WoS"="#4C72B0",
-    "Scopus"="#C22828",
+    "WoS"="steelblue",
+    "Scopus"="firebrick",
     "Scielo"="#E0A458",
     "Otra" = "grey",
     "white"
@@ -647,8 +656,8 @@ consolidado_wide |>
     segment.color = "grey70"
   ) +
   scale_color_manual(values = c(
-    "WoS" = "#4C72B0",
-    "Scopus" = "#C22828",
+    "WoS" = "steelblue",
+    "Scopus" = "firebrick",
     "Scielo" = "#E0A458",
     "Otra" = "grey"
   )) +
@@ -664,6 +673,7 @@ consolidado_wide |>
   )
 
 ```
+
 La @fig-index-evolucion muestra la evolución de la cantidad de publicaciones en cada indexación durante el período analizado. La predominancia de WoS y Scopus se mantiene en todo los años, particularmente tras la recuperación post-pandemia en 2021. Durante 2021 y 2022, prácticamente no hay diferencias entre ambas bases de datos. Sin embargo, desde 2023 se abre una brecha en favor a Web of Science que ha fluctuado entre 7 y 12 publicaciones por año. También es interesante que las publicaciones indexadas en Scielo se habían mantenido entrw 14 y 22, incluso en 2020 durante la pandemia, para caer bruscamente en 2025. Por supuesto, no es posible establecer aún las causas o si esto es una tendencia que se mantendrá en el tiempo. 
 
 
@@ -685,8 +695,8 @@ consolidado_depto |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "WoS" = "#4C72B0",
-    "Scopus" = "#C22828",
+    "WoS" = "steelblue",
+    "Scopus" = "firebrick",
     "Scielo" = "#E0A458",
     "Otra" = "grey"
   )) +
@@ -704,6 +714,7 @@ consolidado_depto |>
 
 
 ```
+
 La @fig-index-depto muestra que hay diferencias importantes entre los departamentos. Por un lado, en Antropología predominan las publicaciones en WoS, principalmente en revistas relaciondas a la arqueología y la antropología física. Mientras tanto, el Departamento de Trabajo Social muestra una mayor cantidad de publicaciones en Scopus por JCE, al igual que el Departamento de Educación. El Departamento de Psicología y el Departamento de Sociología, por su lado, muestran un mayor nivel de paridad entre entre ambas bases de datos, con un leve predominio de WoS. La @tbl-index-depto muestra las revistas con mayor frecuencia por departamento, reflejando las tendencias antes mencionadas. Asimismo, se observa una fuerte presencia de la revistas de la Facultad, tales como Enfoques Educaciones (Departamento de Educación), Revista de Psicología (Departamento de Psicología), Última Década y Revista de Sociología (Departamento de Sociología), y Propuestas Críticas en Trabajo Social y Revista MAD (Departamento de Trabajo Social). 
 
 ```{r}
@@ -780,8 +791,8 @@ base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "WoS" = "#4C72B0",
-    "Scopus" = "#C22828",
+    "WoS" = "steelblue",
+    "Scopus" = "firebrick",
     "Scielo" = "#E0A458",
     "Otra" = "grey"
   )) +
@@ -817,8 +828,8 @@ base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "WoS" = "#4C72B0",
-    "Scopus" = "#C22828",
+    "WoS" = "steelblue",
+    "Scopus" = "firebrick",
     "Scielo" = "#E0A458",
     "Otra" = "grey"
   )) +
@@ -851,8 +862,8 @@ base_final |>
     size = 3
   ) +
   scale_fill_manual(values = c(
-    "WoS" = "#4C72B0",
-    "Scopus" = "#C22828",
+    "WoS" = "steelblue",
+    "Scopus" = "firebrick",
     "Scielo" = "#E0A458",
     "Otra" = "grey"
   )) +
@@ -867,6 +878,7 @@ base_final |>
     plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
 
 ```
+
 ### Número de Citas
 
 A través de la API de Scopus, se encontraron registro de las citas de 674 artículos durante el período estudiado. La suma de citas entre 2020 y 2025 asciende a un total de 4854, lo que equivale a un promedio de 6.7 citas por artículos. Si se ordenan las citas de mayor a menor, es posible observar que el índice h agregado de la institución es igual a 30. En otras palabras, entre 2020 y 2025 los académicos de la Facultad publicaron un total de 30 artículos que registran 30 citas o más. 
@@ -927,6 +939,7 @@ ggplot(datos, aes(x = citas)) +
   theme_minimal()
 
 ```
+
 La @tbl-citas-depto muestra la cantidad de artículo, el total de citas y el índice h para cada Departamento de la Facultad. El departamento de Psicología tiene la mayor cantidad de citas en el período analizado, con 2148 citas y un índice h de 22. Le siguen el departamento de Antropología con 1169 citas y un índice h de 16; el departamento de Sociología con 951 citas y un índice h de 15; el departamento de Trabajo Social y el departamento de Educación con 90 citas y un índice h de 5. 
 
 ```{r}
@@ -1022,4 +1035,484 @@ tabla_final %>%
             nrow(tabla_sexo) + nrow(tabla_edad) + nrow(tabla_jerarquia))
 
 ```
+
+### Cuartil de las revistas
+
+Se registraron un total de 741 publicaciones en revistas con un SJR (*SCImago Journal Rank*) registrado. La @tbl-sjr muestra la distribución por Cuartil de SJR de las publicaciones analizadas. Se destaca que la mayoría de las publicación se encuentran en el rango de Q1, con un 42%. En conjunto, el 67% de las publicaciones en revistas con factor de impacto en SCImago durante el período de referencia corresponden a revitas Q1 o Q2. 
+
+```{r}
+#| label: tbl-sjr
+#| tbl-cap: "Cuartil en SJR publicaciones FACSO (2020-2025)"
+
+
+tabla_quartiles <- consolidado_wide |>
+  filter(quartil %in% c("Q1", "Q2", "Q3", "Q4")) |>
+  count(quartil) |>
+  mutate(pct = n / sum(n))
+
+tabla_quartiles |>
+  mutate(
+    quartil = quartil,
+    n = format(n, big.mark = ".", decimal.mark = ","),
+    pct = scales::percent(pct, accuracy = 0.1, decimal.mark = ",")
+  ) |>
+  rename(
+    "Cuartil" = quartil,
+    "N" = n,
+    "Porcentaje" = pct
+  ) |>
+  kbl(
+    align = c("l", "r", "r"),
+    booktabs = TRUE  # necesario para que se vea bien en PDF (LaTeX)
+  ) |>
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),  # aplica en HTML
+    latex_options = c("striped", "hold_position"),           # aplica en PDF
+    full_width = FALSE,
+    position = "center"
+  ) |>
+  row_spec(0, bold = TRUE, background = "#f2f2f2")  # encabezado destacado
+
+
+```
+
+La @fig-sjr muestra la evolución de la cantidad y proporción de de publicacione de académicos FACSO en revistas Q1 y Q2 durante el período de referencia. Como era de esperar, se repite el patrón de recuperación tras el 2020, alcanzando un peak en de 103 publicaciones Q1 o Q2 que representan un 73% del total de artículos con SJR. Desde ahí, se produce una tendencia a la baja hasta 2023, revirtiendose para 2024. En 2025, se vuelve a niveles similares a 2021 on 102 publicaciones Q1 o Q2, lo que representa un 70% de los artículos analizados. 
+
+```{r}
+#| label: fig-sjr
+#| tbl-cap: "Evolución Cantidad y Proporción de Publicación FACSO en revistas Q1 y Q2 (2020-2025)"
+
+
+library(scales)
+
+# 1. Total de publicaciones por año (todas las categorías, sin filtrar)
+total_anual <- consolidado_wide |>
+  filter(anio >= 2020, anio <= 2025,
+         quartil %in% c("Q1", "Q2", "Q3", "Q4")) |>
+  count(anio, name = "total")
+
+# 2. Volumen de Q1 y Q2 por año (para las barras apiladas)
+datos_q1q2 <- consolidado_wide |>
+  filter(quartil %in% c("Q1", "Q2"), anio >= 2020, anio <= 2025) |>
+  count(anio, quartil)
+
+# 3. Porcentaje combinado (Q1+Q2) / total (para la línea)
+datos_pct <- datos_q1q2 |>
+  group_by(anio) |>
+  summarise(n_q1q2 = sum(n), .groups = "drop") |>
+  left_join(total_anual, by = "anio") |>
+  mutate(pct = n_q1q2 / total)
+
+# 4. Factor de escala para el eje secundario
+max_n   <- max(datos_pct$n_q1q2)
+max_pct <- max(datos_pct$pct)
+factor_escala <- max_n / max_pct
+
+# 5. Gráfico combinado: barras apiladas + etiquetas + línea única
+ggplot() +
+  geom_col(data = datos_q1q2, aes(x = factor(anio), y = n, fill = quartil),
+            width = 0.6, alpha = 0.9) +
+  geom_text(data = datos_q1q2, aes(x = factor(anio), y = n, fill = quartil, label = n),
+            position = position_stack(vjust = 0.5), size = 3.2, color = "white", fontface = "bold") +
+  geom_line(data = datos_pct, aes(x = factor(anio), y = pct * factor_escala, group = 1),
+            color = "firebrick", linewidth = 1.1) +
+  geom_point(data = datos_pct, aes(x = factor(anio), y = pct * factor_escala),
+             color = "firebrick", size = 2.5) +
+  geom_text(data = datos_pct, aes(x = factor(anio), y = pct * factor_escala,
+                                   label = percent(pct, accuracy = 1)),
+            vjust = -1, size = 3.2, color = "firebrick") +
+  scale_y_continuous(
+    name = "N° publicaciones (barras apiladas)",
+    sec.axis = sec_axis(~ . / factor_escala, labels = percent_format(accuracy = 1),
+                         name =  "Proporción publicaciones Q1 o Q2")
+  ) +
+  scale_fill_manual(values = c("Q1" = "steelblue", "Q2" = "#7FB5D5")) +
+  labs(
+    x = "Año", fill = "Cuartil"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    axis.title.y.right = element_text(color = "firebrick"),
+    axis.title.y.left = element_text(color = "steelblue")
+  )
+
+```
+ 
+La @fig-sjr-depto permite describir el volúmen y la proporción de publicaciones en revistas Q1y Q2 por departamento, ajustadas por JCE. Antropología destaca por tener la mayor cantidad de publicaciones Q1 y Q2 durante el período analizado, con 4.4 artículos por JCE. Asimismo, es el departamento que tiene una mayor proporción de artículos en estas categorías. Por su lado, el Departamento de Trabajo Social registra la mayor cantidad de publicaciones en revistas Q1, con 2.8 artículos por JCE. 
+
+```{r}
+#| label: fig-sjr-depto
+#| tbl-cap: "Cantidad y proporción de publicaciones en revistas Q1 y Q2 por JCE por Departamento (2020-2025)"
+
+# 1. Total de publicaciones por departamento (todas las categorías, sin filtrar)
+total_depto <- consolidado_depto |>
+  filter(quartil %in% c("Q1", "Q2", "Q3", "Q4"),
+         departamento != "Postgrado") |>
+  count(departamento, name = "total")
+
+# 2. Volumen de Q1 y Q2 por departamento (para las barras apiladas)
+datos_q1q2 <- consolidado_depto |>
+  filter(quartil %in% c("Q1", "Q2"),
+         departamento != "Postgrado") |>
+  count(departamento, quartil)
+
+# 3. Unir JCE y ponderar el volumen absoluto (n / jce = tasa por JCE)
+datos_q1q2 <- datos_q1q2 |>
+  left_join(jce, by = "departamento") |>
+  mutate(n_pond = n / jce)
+
+# 4. Porcentaje combinado (Q1+Q2) / total — no requiere ponderación, se cancela
+datos_pct <- datos_q1q2 |>
+  group_by(departamento) |>
+  summarise(n_q1q2 = sum(n), .groups = "drop") |>
+  left_join(total_depto, by = "departamento") |>
+  mutate(pct = n_q1q2 / total)
+
+# 5. Ordenar departamentos por volumen ponderado descendente
+orden_depto <- datos_q1q2 |>
+  group_by(departamento) |>
+  summarise(total_pond = sum(n_pond), .groups = "drop") |>
+  arrange(desc(total_pond)) |>
+  pull(departamento)
+
+datos_q1q2 <- datos_q1q2 |> mutate(departamento = factor(departamento, levels = orden_depto))
+datos_pct  <- datos_pct  |> mutate(departamento = factor(departamento, levels = orden_depto))
+
+# 6. Factor de escala para el eje secundario (usando el volumen ponderado)
+max_n_pond <- max(datos_q1q2 |> group_by(departamento) |> summarise(s = sum(n_pond)) |> pull(s))
+max_pct    <- max(datos_pct$pct)
+factor_escala <- max_n_pond / max_pct
+
+# 7. Gráfico
+ggplot() +
+  geom_col(data = datos_q1q2, aes(x = departamento, y = n_pond, fill = quartil),
+            width = 0.6, alpha = 0.9) +
+  geom_text(data = datos_q1q2, aes(x = departamento, y = n_pond, fill = quartil,
+                                    label = round(n_pond, 1)),
+            position = position_stack(vjust = 0.5), size = 3.2, color = "white", fontface = "bold") +
+  # geom_line(data = datos_pct, aes(x = departamento, y = pct * factor_escala, group = 1),
+  #           color = "firebrick", linewidth = 1.1) +
+  geom_point(data = datos_pct, aes(x = departamento, y = pct * factor_escala),
+             color = "firebrick", size = 2.5) +
+  geom_text(data = datos_pct, aes(x = departamento, y = pct * factor_escala,
+                                   label = percent(pct, accuracy = 1)),
+            vjust = -1, size = 3.2, color = "firebrick") +
+  scale_y_continuous(
+    name = "Publicaciones ponderadas por JCE (barras apiladas)",
+    sec.axis = sec_axis(~ . / factor_escala, labels = percent_format(accuracy = 1),
+                         name = "Proporción publicaciones Q1 o Q2")
+  ) +
+  scale_fill_manual(values = c("Q1" = "steelblue", "Q2" = "#7FB5D5")) +
+  labs(
+    x = "Departamento", fill = "Cuartil"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    axis.title.y.right = element_text(color = "firebrick"),
+    axis.title.y.left = element_text(color = "steelblue"))
+
+```
+La @tbl-sjr-depto expone las principales revistas Q1 o Q2 en que han publicado los académicos de la Facultad durante el período analizado. Los resultados son similares a los observados en @tbl-index-depto, especialmente en Antropología y Trabajo Social. Destacan publicaciones en revistas tales como *Earth Future* (Q1 en Ciencias del Medioambiente), *Journal of Archaeological Science* (Q1 en Arqueología), *BMC Psychiatry* (Q1 en Psiquiatría y Salud Mental), *Frontiers in Sociology* (Q1 en Ciencias Sociales) y *Frontiers in Psychology* (Q1 en Psicología). Por otro lado, vuelve a aparecen una revista de la Facultad: *Cintia de Moebio*, que se encuentra calificada como Q2 en el área de Filosofía. 
+
+```{r}
+#| label: tbl-sjr-depto
+#| tbl-cap: "Revistas con mayor cantidad de publicaciones por Departamento (2020-2025)"
+
+top5 <- consolidado_depto |>
+  filter(quartil %in% c("Q1", "Q2"),
+         departamento!="Postgrado") |>
+  # nombre e indexación representativos por revista (los más frecuentes)
+  group_by(revista_id) |>
+  mutate(
+    revista    = names(sort(table(revista),    decreasing = TRUE))[1],
+    cuartil = names(sort(table(quartil), decreasing = TRUE))[1]
+  ) |>
+  ungroup() |>
+  count(departamento, revista_id, revista, quartil, name = "frecuencia") |>
+  group_by(departamento) |>
+  slice_max(frecuencia, n = 5, with_ties = FALSE) |>
+  arrange(departamento, desc(frecuencia)) |>
+  ungroup() |>
+  select(Departamento = departamento,
+         Publicacion  = revista,
+         Cuartil   = quartil,
+         Frecuencia   = frecuencia)
+
+# format = "html" para HTML, format = "latex" para PDF/LaTeX.
+# Si usas R Markdown/Quarto, omite 'format' y kable lo detecta solo.
+top5 |>
+  select(-Departamento) |>
+  kbl(
+    booktabs = TRUE,
+    col.names = c("Publicación", "Cuartil", "Frecuencia"),
+    align    = "llr"
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  ) |>
+  pack_rows(index = table(top5$Departamento))
+
+```
+
+En @tbl-sjr-carac se muestran las diferencias por características del autor en la cantidad y proporción de publicaciones en Q1 y Q2. En líneas generales, todos los grupos muestran proporciones de publicación en estas categorías sobre el 60%, con porcentajes especialmente altos entre las mujeres (71%) y los profesores titulares (72%). Nuevamente, las académicas mujeres muestran una mayor productividad que sus pares masculinos, publicando 1.8 artículos más por JCE. La diferencia entre académicos menores de 50 años y aquellos entre 50 y 59 es menor, pero la cantidad de publicaciones cae bruscamente en el grupo mayor de 60. Por último, se observa una gran brecha entre los profesores asistentes y los asociados o titulares, con estos últimos mostrando una productividad levemente superior (0.5 artículos más por JCE, en relación a la jerarquía de Asociado).
+
+```{r}
+#| label: tbl-sjr-carac
+#| tbl-cap: "Cantidad por JCE y proporción de publicaciones en revistas Q1 y Q2 por características del autor (2020-2025)"
+
+library(rlang)
+
+# Función genérica para calcular publicaciones ponderadas y % Q1+Q2 por una variable
+calcular_metricas <- function(data, var, jce_df) {
+  var <- rlang::ensym(var)
+  
+  total_var <- data |>
+     filter(quartil %in% c("Q1", "Q2", "Q3", "Q4")) |> 
+    count(!!var, name = "total")
+  
+  q1q2_var <- data |>
+    filter(quartil %in% c("Q1", "Q2")) |>
+    count(!!var, name = "n_q1q2")
+  
+  total_var |>
+    left_join(q1q2_var, by = as_string(var)) |>
+    mutate(n_q1q2 = coalesce(n_q1q2, 0)) |>
+    left_join(jce_df, by = as_string(var)) |>
+    mutate(
+      n_pond = n_q1q2 / jce,
+      pct = n_q1q2 / total
+    ) |>
+    rename(categoria = !!var) |>
+    select(categoria, n_pond, pct)
+}
+
+base_final_recode <- base_final |> 
+  filter(jerarquia %in% c("Asistente", "Asociado", "Titular")) |> 
+  mutate(edad_tramo = case_when(edad < 50 ~ "Menos de 50 años",
+                                edad >= 50 & edad <60 ~ "50 a 59 años",
+                                edad >= 60 ~ "60 años o más"),
+         edad_tramo = factor(edad_tramo, 
+                             levels = c("Menos de 50 años", 
+                                       "50 a 59 años", 
+                                       "60 años o más")),
+         quartil = cuartil_sjr
+         )
+
+# Calcular para cada dimensión
+tabla_genero    <- calcular_metricas(base_final_recode, sexo, jce_genero)
+tabla_edad      <- calcular_metricas(base_final_recode, edad_tramo, jce_edad)
+tabla_jerarquia <- calcular_metricas(base_final_recode, jerarquia, jce_jerarquia)
+
+# Unir todo en una sola tabla, con formato
+tabla_final <- bind_rows(tabla_genero, tabla_edad, tabla_jerarquia) |>
+  mutate(
+    n_pond = round(n_pond, 1),
+    pct = percent(pct, accuracy = 1)
+  ) |>
+  rename(
+    "Categoría" = categoria,
+    "Publicaciones por JCE" = n_pond,
+    "% Q1+Q2" = pct
+  )
+
+# Construir la tabla con pack_rows
+tabla_final |>
+  kbl(
+    align = c("c", "c", "c"),
+    booktabs = TRUE
+  ) |>
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    latex_options = c("striped", "hold_position"),
+    full_width = FALSE,
+    position = "center"
+  ) |>
+  row_spec(0, bold = TRUE, background = "#f2f2f2") |>
+  pack_rows("Género", 1, nrow(tabla_genero)) |>
+  pack_rows("Edad", nrow(tabla_genero) + 1, nrow(tabla_genero) + nrow(tabla_edad)) |>
+  pack_rows("Jerarquía", nrow(tabla_genero) + nrow(tabla_edad) + 1, nrow(tabla_final))
+
+
+```
+
+### Revistas de Acceso Abierto
+
+A partir de las base de revistas de Scopus, es posible analizar los artículos de académicos de la Facultad publicadas en revistas de acceso abierto[^1]. Se encontró información para 746 artículos. Cabe destacar, que aunque muchas revistas que están indexadas en Scielo se encuentran en Scopus, no siempre es el caso. Por ello, dado que Scielo requiere que las revistas que integran su base de datos sean de acceso abierto, es muy posible que la cantidad de artículos de libre acceso publicados en la Facultad sea mayor que la aquí reportada. 
+
+Hecha esa consideración metodológica, se observa que 362 publicaciones, o un 49% de los artículos analizados, fueron publicados en revistas de acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza el 70%; Para Web of Science, en cambio, es del solo el 30%. En @fig-oa, se grafica la evolución de este indicador en el período estudiado. Se observa un peak durante la pandemia en 2020, con un 56%, para luego bajar y mantenerse estable en los años subsiguiente, oscilando entre un 44% y un 50%.
+
+
+```{r}
+#| label: fig-oa
+#| tbl-cap: "Porcentaje de publicaciones en revistas de acceso abierto (2020-2025)"
+
+# consolidado_wide |>
+#   filter(!is.na(oa)) |>
+#   mutate(anio = as.numeric(anio)) |> 
+#   count(oa) |>
+#   mutate(pct = n / sum(n)) |>
+#   filter(oa == "Sí")
+
+# 1. Preparar los datos
+datos_oa <- consolidado_wide |>
+  filter(!is.na(oa)) |>
+  mutate(anio = as.numeric(anio)) |> 
+  group_by(anio) |>
+  count(oa) |>
+  mutate(pct = n / sum(n)) |>
+  filter(oa == "Sí")
+
+# 2. Gráfico de línea
+ggplot(datos_oa, aes(x = anio, y = pct, group = 1)) +
+  geom_line(color = "firebrick", linewidth = 1.1) +
+  geom_point(color = "firebrick", size = 2.5) +
+  geom_text(aes(label = percent(pct, accuracy = 1)),
+            vjust = -1.2, size = 3.2, color = "firebrick") +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                      limits = c(0, max(datos_oa$pct) * 1.15)) +
+  scale_x_continuous(breaks = unique(datos_oa$anio)) +
+  labs(x = "Año",
+    y = "% de publicaciones en OA"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold")
+  )
+```
+Como se puede apreciar en a @tbl-oa, las tendencias se mantienen bastante constante en distintos grupos. La proporción de publicaciones en acceso abieto es algo superior en los Departamento de Sociología (52%) y Trabajo Social (55%), académicos de 50 a 59 años (53%) y profesores asociados (53%). En cambio, es algo menor en los académicos menores de 50 años (42%) y los profesores con jerarquía académicas de Asistente (41%)
+
+```{r}
+#| label: tbl-oa
+#| tbl-cap: "Cantidad y porcentaje de publicaciones en acceso abierto por características del autor (2020-2025)"
+
+# 1. Calcular cada dimensión, renombrando la columna de grupo a "categoria"
+tabla_departamento <- consolidado_depto |>
+  filter(!is.na(oa), departamento != "Postgrado") |>
+  mutate(anio = as.numeric(anio)) |>
+  group_by(departamento) |>
+  count(oa) |>
+  mutate(pct = n / sum(n)) |>
+  filter(oa == "Sí") |>
+  ungroup() |>
+  rename(categoria = departamento) |>
+  select(categoria, n, pct)
+
+tabla_sexo <- base_final_recode |>
+  filter(!is.na(oa), departamento != "Postgrado") |>
+  mutate(anio = as.numeric(anio)) |>
+  group_by(sexo) |>
+  count(oa) |>
+  mutate(pct = n / sum(n)) |>
+  filter(oa == "Sí") |>
+  ungroup() |>
+  rename(categoria = sexo) |>
+  select(categoria, n, pct)
+
+tabla_edad <- base_final_recode |>
+  filter(!is.na(oa), departamento != "Postgrado") |>
+  mutate(anio = as.numeric(anio)) |>
+  group_by(edad_tramo) |>
+  count(oa) |>
+  mutate(pct = n / sum(n)) |>
+  filter(oa == "Sí") |>
+  ungroup() |>
+  rename(categoria = edad_tramo) |>
+  select(categoria, n, pct)
+
+tabla_jerarquia <- base_final_recode |>
+  filter(!is.na(oa), departamento != "Postgrado") |>
+  mutate(anio = as.numeric(anio)) |>
+  group_by(jerarquia) |>
+  count(oa) |>
+  mutate(pct = n / sum(n)) |>
+  filter(oa == "Sí") |>
+  ungroup() |>
+  rename(categoria = jerarquia) |>
+  select(categoria, n, pct)
+
+# 2. Unir todo y formatear
+tabla_final <- bind_rows(tabla_departamento, tabla_sexo, tabla_edad, tabla_jerarquia) |>
+  mutate(
+    n = format(n, big.mark = ".", decimal.mark = ","),
+    pct = percent(pct, accuracy = 1)
+  ) |>
+  rename(
+    "Categoría" = categoria,
+    "N publicaciones OA" = n,
+    "% en acceso abierto" = pct
+  )
+
+# 3. Construir la tabla con pack_rows
+tabla_final |>
+  kbl(
+    caption = "Publicaciones en acceso abierto (OA) por departamento, sexo, edad y jerarquía",
+    align = c("l", "r", "r"),
+    booktabs = TRUE
+  ) |>
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    latex_options = c("striped", "hold_position", "condensed"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 13
+  ) |>
+  row_spec(0, bold = TRUE, background = "#f2f2f2") |>
+  pack_rows("Departamento", 1, nrow(tabla_departamento),
+            label_row_css = "background-color: #f2f2f2; text-align: center;") |>
+  pack_rows("Sexo", nrow(tabla_departamento) + 1,
+            nrow(tabla_departamento) + nrow(tabla_sexo),
+            label_row_css = "background-color: #f2f2f2; text-align: center;") |>
+  pack_rows("Edad", nrow(tabla_departamento) + nrow(tabla_sexo) + 1,
+            nrow(tabla_departamento) + nrow(tabla_sexo) + nrow(tabla_edad),
+            label_row_css = "background-color: #f2f2f2; text-align: center;") |>
+  pack_rows("Jerarquía", nrow(tabla_departamento) + nrow(tabla_sexo) + nrow(tabla_edad) + 1,
+            nrow(tabla_final),
+            label_row_css = "background-color: #f2f2f2; text-align: center;")
+```
+
+[^1]: Acceso abierto implica que el usuario puede acceder de manera gratuita a los artículos publicados. Con los datos disponibles, no es posible distinguir si esto implica o no el pago de un APC por parte del autor. 
+
+### Idioma de la publicación
+
+Se utiliza el idioma principal de la revista reportado por WoS, Scopus o Scielo como *proxy* para el idioma de la publicación. Dado que algunas revistas permiten publicaciones en múltiples idiomas, éstas fueron recodificadas como multidiomas. De tal forma se encontró información para 927 publicaciones. Los datos apuntan a que el principal idioma de publicación es el inglés, con 374 artículos, o el 45% del total. Le sigue el español, con 189 publicaciones que representan el 23% del total. Fuera de estos dos idiomas, solo es relevante el portugués, con un 4% del total de artículos. Asimismo, existe una amplía proporción (28%) de publicaciones en revistas que permiten escribir en más de un idioma, muy posiblemente incluyendo alguno de los idiomas antes menconados. Finalmente, existe una cantidad cerca al 1% de escritos en otros idiomas, como el alemán, el francés y el italiano. 
+
+```{r}
+#| label: fig-idioma
+#| 
+otros_idiomas <- c("Alemán", "Francés", "Italiano")
+
+# 1. Preparar los datos
+datos_idioma <- consolidado_wide |>
+  filter(!is.na(idioma), !is.na(indexacion)) |>
+  mutate(idioma = if_else(idioma %in% otros_idiomas, "Otro", idioma)) |>
+  group_by(indexacion) |>
+  count(idioma) |>
+  mutate(pct = n / sum(n)) |>
+  ungroup()
+
+# 2. Gráfico de barras con facetas, estilo consistente
+ggplot(datos_idioma, aes(x = reorder(idioma, pct), y = pct)) +
+  geom_col(width = 0.7, fill = "steelblue", alpha = 0.9) +
+  geom_text(aes(label = percent(pct, accuracy = 1)),
+            hjust = -0.15, size = 3.2, color = "steelblue") +
+  coord_flip() +
+  facet_wrap(~ indexacion, scales = "free_y") +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                      expand = expansion(mult = c(0, 0.15))) +
+  labs(x = NULL, y = "% dentro de cada indexación"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold", size = 11),
+    strip.background = element_rect(fill = "#f2f2f2", color = NA),
+    panel.spacing = unit(1, "lines")
+  )
+```
+En @fig-idioma se pueden apreciar las diferencias para cada tipo de indexación. En Scielo, predominan ampliamente las publicaciones en más de un idioma. Dado el carácter latinoamericano de esta base de datos, es posible asumir que la mayoría de estos artículos fueron escritos en español o, en menor medida, en portugués. El caso de Scopus muestra mayor diversidad, coon el Español (32%), las revistas multidiomas (32%) y el inglés (28%) corresponden a tercios prácticamente iguales. Finalmente, en WoS se observa un marcado predominio del inglés (68%) sobre otros idiomas. 
+
 

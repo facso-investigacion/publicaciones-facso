@@ -1,27 +1,16 @@
-﻿---
+---
 title: "Metodología"
 ---
 
 ## Datos
 
-Texto de muestra para describir las fuentes de datos utilizadas.
-```{r cargar-paquetes}
-#| message: false
-#| warning: false
-#| echo: true
+### Publicaciones
 
-# Carga paquetes de ejemplo
-library(tidyverse)
-```
+La principal fuente de datos para publicaciones fue el mantenedor de publicaciones de SEPA-VID gestionado por la Unidad de Datos e Indicadores de la VID. Se filtraron las publicaciones adscritas a la Facultad de Ciencias Sociales para el período comprendido entre 2020 y 2025. Cabe destacar que SEPA-VID contiene únicamente las publicaciones de un académicos durante la vigencia de su nombramiento en la Universidad, por lo que publicaciones previas al ingreso de un académico no se consideran en el análisis. Además, SEPA-VID contiene mayoritaríamente artículos indexados en las bases de datos de WoS, Scopus y Scielo. 
 
-```{r resumen-datos}
-#| echo: false
+Esta base fue complementada a través de la API de ORCID para los 72 investigadores incluídos en el [Colaboratorio de Investigación en Ciencias Sociales](https://colaboratoriocienciassociales.uchile.cl/) de la Facultad. Este procedimiento resultó particularmente útil para recoger información de libros, capítulos de libros y artículos indexados en bases de datos distintas a las mencionadas.
 
-# Resumen estadístico
-summary(mtcars)
-```
-
-
+Además, la base fue enriquecida a través de la [Web of Science Master List](https://www.webofscience.com/wos/mjl/collection-list-downloads), la [Scopus Source title list](https://www.elsevier.com/products/scopus/content#4-titles-on-scopus) y la API de Scielo con el fin de identificar la indexación de revistas sin ese registro. Además, se extrajo de estas listas información sobre el idioma de la revista o si la publicación tiene acceso abierto. Se utilizó la API de Scopus para recoger la cantidad de citas para cada publicación identificada. Por último, se utilizó el [SCImago Journal Rank](https://www.scimagojr.com/journalrank.php) para obtener información sobre impacto y el cuartil en que se posicionan las revistas registradas. 
 
 ## Variables
 
