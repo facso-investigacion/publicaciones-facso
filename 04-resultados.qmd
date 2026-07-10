@@ -45,6 +45,7 @@ figura_1 <- consolidado_wide |>
     y = NULL,
     caption = "Nota: JCE de referencia corresponde al valor de 2025 (155)."
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
 
@@ -92,6 +93,7 @@ figura_2 <- consolidado_wide |>
     y = "Cantidad",
     fill = "Tipo de documento"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -303,6 +305,8 @@ ggsave(
 
 ### Caracterización de los autores
 
+Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.35 publicaciones por JCE, Psicología con 8.08, Antropología con 7.72 y Educación con 4.22. 
+
 ```{r}
 #| layout-ncol: 1
 #| label: fig-publicacion-depto
@@ -371,6 +375,7 @@ figura_3_jce <- base_final |>
     fill = "Tipo de documento",
     caption = "Nota: JCE de referencia corresponde al valor de 2025."
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -389,7 +394,7 @@ ggsave(
 )
 ```
 
-Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.35 publicaciones por JCE, Psicología con 8.08, Antropología con 7.72 y Educación con 4.22. 
+En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.73 publicaciones por JCE en le período analizado, contra 7.19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
 
 ```{r}
 #| label: fig-publicacion-genero
@@ -426,6 +431,7 @@ figura_4 <- base_final |>
     fill = "Tipo de documento",
     caption = "Nota: JCE de referencia corresponde al valor de 2025."
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -443,8 +449,8 @@ ggsave(
   dpi = 300
 )
 ```
-En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.73 publicaciones por JCE en le período analizado, contra 7.19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
 
+El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10.58 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 10.03 publicaciones por JCE, aunque con un menor peso relativo de los artículos en comparación a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de de 60 años es de 4.79 publicaciones por JCE.
 
 ```{r}
 #| label: fig-publicacion-edad
@@ -494,6 +500,7 @@ figura_5 <- base_final |>
     fill = "Tipo de documento",
     caption = "Nota: JCE de referencia corresponde al valor de 2025."
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -525,7 +532,8 @@ ggsave(
 
 
 ```
-El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10.58 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 10.03 publicaciones por JCE, aunque con un menor peso relativo de los artículos en comparación a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de de 60 años es de 4.79 publicaciones por JCE.
+
+LA @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4.49 publicaciones por JCE a 12.19. La diferencia entre profesores asociados y titulares es menor, con los segundos registrando 11.49 publicaciones por JCE. 
 
 ```{r}
 #| label: fig-publicacion-jerarquia
@@ -563,6 +571,7 @@ figura_6 <- base_final |>
     fill = "Tipo de documento",
     caption = "Nota: JCE de referencia corresponde al valor de 2025."
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -583,7 +592,6 @@ ggsave(
 
 ```
 
-LA @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4.49 publicaciones por JCE a 12.19. La diferencia entre profesores asociados y titulares es menor, con los segundos registrando 11.49 publicaciones por JCE. 
 
 ## Artículos y Revistas
 
@@ -621,6 +629,7 @@ figura_9 <- consolidado_wide |>
     y = "Porcentaje (%)",
     fill = "Indexación"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -705,6 +714,7 @@ consolidado_depto |>
     y = "Tasa por JCE",
     fill = "Indexación"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -756,10 +766,10 @@ top5 |>
     align    = "llr"
   ) |>
   kable_styling(
-    latex_options = c("hold_position"),
+    
     bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = FALSE
-  ) |>
+    full_width = FALSE) |>
+  column_spec(1, width = "11cm") %>% 
   pack_rows(index = table(top5$Departamento))
 
 ```
@@ -774,6 +784,7 @@ top5 |>
 #|          - "Publicaciones por Indexación de la Revista por Género del autor(2020-2025)"
 #|          - "Publicaciones por Indexación de la Revista por Edad del autor(2020-2025)"
 #|          - "Publicaciones por Indexación de la Revista por Jerarquia del autor(2020-2025)"
+#| fig-pos: "H"
 
 
 
@@ -801,6 +812,7 @@ base_final |>
     y = "Tasa por JCE",
     fill = "Indexación"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -838,6 +850,7 @@ base_final |>
     y = "Tasa por JCE",
     fill = "Indexación"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -861,6 +874,7 @@ base_final |>
     vjust = -0.5,
     size = 3
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   scale_fill_manual(values = c(
     "WoS" = "steelblue",
     "Scopus" = "firebrick",
@@ -962,7 +976,7 @@ articulos_depto %>%
   ) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
-    latex_options = c("hold_position"),
+    
     full_width = FALSE,
     position = "center"
   )
@@ -1067,7 +1081,6 @@ tabla_quartiles |>
   ) |>
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),  # aplica en HTML
-    latex_options = c("striped", "hold_position"),           # aplica en PDF
     full_width = FALSE,
     position = "center"
   ) |>
@@ -1080,7 +1093,7 @@ La @fig-sjr muestra la evolución de la cantidad y proporción de de publicacion
 
 ```{r}
 #| label: fig-sjr
-#| tbl-cap: "Evolución Cantidad y Proporción de Publicación FACSO en revistas Q1 y Q2 (2020-2025)"
+#| fig-cap: "Evolución Cantidad y Proporción de Publicación FACSO en revistas Q1 y Q2 (2020-2025)"
 
 
 library(scales)
@@ -1130,6 +1143,7 @@ ggplot() +
   labs(
     x = "Año", fill = "Cuartil"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal(base_size = 12) +
   theme(
     legend.position = "bottom",
@@ -1143,7 +1157,7 @@ La @fig-sjr-depto permite describir el volúmen y la proporción de publicacione
 
 ```{r}
 #| label: fig-sjr-depto
-#| tbl-cap: "Cantidad y proporción de publicaciones en revistas Q1 y Q2 por JCE por Departamento (2020-2025)"
+#| fig-cap: "Cantidad y proporción de publicaciones en revistas Q1 y Q2 por JCE por Departamento (2020-2025)"
 
 # 1. Total de publicaciones por departamento (todas las categorías, sin filtrar)
 total_depto <- consolidado_depto |>
@@ -1207,6 +1221,7 @@ ggplot() +
   labs(
     x = "Departamento", fill = "Cuartil"
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal(base_size = 12) +
   theme(
     legend.position = "bottom",
@@ -1250,10 +1265,10 @@ top5 |>
     align    = "llr"
   ) |>
   kable_styling(
-    latex_options = c("hold_position"),
+    
     bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = FALSE
-  ) |>
+    full_width = FALSE) |>
+  column_spec(1, width = "11cm") %>% 
   pack_rows(index = table(top5$Departamento))
 
 ```
@@ -1327,7 +1342,6 @@ tabla_final |>
   ) |>
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
-    latex_options = c("striped", "hold_position"),
     full_width = FALSE,
     position = "center"
   ) |>
@@ -1348,7 +1362,7 @@ Hecha esa consideración metodológica, se observa que 362 publicaciones, o un 4
 
 ```{r}
 #| label: fig-oa
-#| tbl-cap: "Porcentaje de publicaciones en revistas de acceso abierto (2020-2025)"
+#| fig-cap: "Porcentaje de publicaciones en revistas de acceso abierto (2020-2025)"
 
 # consolidado_wide |>
 #   filter(!is.na(oa)) |>
@@ -1448,14 +1462,12 @@ tabla_final <- bind_rows(tabla_departamento, tabla_sexo, tabla_edad, tabla_jerar
 
 # 3. Construir la tabla con pack_rows
 tabla_final |>
-  kbl(
-    caption = "Publicaciones en acceso abierto (OA) por departamento, sexo, edad y jerarquía",
-    align = c("l", "r", "r"),
+  kbl(align = c("l", "r", "r"),
     booktabs = TRUE
   ) |>
   kable_styling(
     bootstrap_options = c("striped", "condensed"),
-    latex_options = c("striped", "hold_position", "condensed"),
+    latex_options = c("striped", "condensed"),
     full_width = FALSE,
     position = "center",
     font_size = 13
@@ -1482,7 +1494,9 @@ Se utiliza el idioma principal de la revista reportado por WoS, Scopus o Scielo 
 
 ```{r}
 #| label: fig-idioma
-#| 
+#| fig-cap: "Distribución de publicaciones por idioma según indexación (2020-2025)"
+
+
 otros_idiomas <- c("Alemán", "Francés", "Italiano")
 
 # 1. Preparar los datos
@@ -1500,7 +1514,7 @@ ggplot(datos_idioma, aes(x = reorder(idioma, pct), y = pct)) +
   geom_text(aes(label = percent(pct, accuracy = 1)),
             hjust = -0.15, size = 3.2, color = "steelblue") +
   coord_flip() +
-  facet_wrap(~ indexacion, scales = "free_y") +
+  facet_wrap(~ indexacion, scales = "free_y", ncol=1) +
   scale_y_continuous(labels = percent_format(accuracy = 1),
                       expand = expansion(mult = c(0, 0.15))) +
   labs(x = NULL, y = "% dentro de cada indexación"
