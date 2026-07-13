@@ -788,7 +788,8 @@ top5 |>
 #|          - "Publicaciones por Indexación de la Revista por Género del autor(2020-2025)"
 #|          - "Publicaciones por Indexación de la Revista por Edad del autor(2020-2025)"
 #|          - "Publicaciones por Indexación de la Revista por Jerarquia del autor(2020-2025)"
-#| fig-pos: "H"
+#| fig-pos: "p"
+#| out-height: "85%"
 
 
 
