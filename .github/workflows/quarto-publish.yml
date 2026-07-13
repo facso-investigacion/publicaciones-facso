@@ -24,6 +24,7 @@ jobs:
           TEXLIVE_DIR="${HOME}/.TinyTeX"
           TEXLIVE_BIN="$TEXLIVE_DIR/bin/$(uname -m)-linux"
           export PATH="$TEXLIVE_BIN:$PATH"
+          tlmgr update --self
           tlmgr install tex-gyre collection-fontsrecommended collection-langspanish babel-spanish hyphen-spanish
           tlmgr path add
       - name: Install R packages
