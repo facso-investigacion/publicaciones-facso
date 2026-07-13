@@ -33,6 +33,11 @@ jobs:
             any::knitr
             any::rmarkdown
             any::tidyverse
+            any::ggrepel
+            any::kablExtra
+            any::scales
+            any::rlang
+            
       - name: Render
         run: quarto render
       - name: Check gh-pages branch
