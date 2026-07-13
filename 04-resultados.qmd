@@ -10,10 +10,13 @@ load("output/base-completa-facso.rdata")
 load("output/base-completa-depto.rdata")
 load("input/acad-proc.rdata")
 
+acad <- acad |>
+  filter(jerarquia!="Investigador Postdoctoral")
+
 jce <- acad |> group_by(departamento) |>  summarise(jce=sum(horas_reales)/44)
 
-acad <- acad |> 
-  filter(jerarquia!="Investigador Postdoctoral")
+jce_totales <- acad |> 
+  summarise(grupo = "Total", jce = sum(horas_reales)/44)
 ```
 
 
@@ -31,7 +34,7 @@ figura_1 <- consolidado_wide |>
                                  "book" = "Libro",
                                  "book-chapter" = "Capítulo de Libro")) |>
   count(tipo_documento) |> 
-  mutate(tasa_jce = n / 155) |> 
+  mutate(tasa_jce = n / jce_totales$jce) |> 
   pivot_longer(cols = c(n, tasa_jce), names_to = "metrica", values_to = "valor") |> 
   mutate(metrica = recode(metrica,
                           "n" = "Cantidad de publicaciones",
@@ -43,7 +46,7 @@ figura_1 <- consolidado_wide |>
   labs(
     x = "Tipo de publicación",
     y = NULL,
-    caption = "Nota: JCE de referencia corresponde al valor de 2025 (155)."
+    caption = "Nota: JCE de referencia corresponde al valor de 2025 (148.9)."
   ) +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
   theme_minimal() +
@@ -62,7 +65,7 @@ ggsave(
 
 ```
 
-En el período de referencia (2020-2025), se encontraron un total de 1162 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE), esto significa que el período estudiado se registraron 7.49 publicaciones por JCE: 6.1 artículos, 1.11 capítulos de libros y 0.29 libros.  
+En el período de referencia (2020-2025), se encontraron un total de 1162 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE), esto significa que el período estudiado se registraron 7.8 publicaciones por JCE: 6.35 artículos, 1.15 capítulos de libros y 0.3 libros.  
 
 ```{r}
 #| label: fig-publicacion-anio
@@ -305,7 +308,7 @@ ggsave(
 
 ### Caracterización de los autores
 
-Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.35 publicaciones por JCE, Psicología con 8.08, Antropología con 7.72 y Educación con 4.22. 
+Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.4 publicaciones por JCE, Psicología con 8.5, Antropología con 8.2 y Educación con 4.7. 
 
 ```{r}
 #| layout-ncol: 1

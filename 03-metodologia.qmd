@@ -6,109 +6,156 @@ title: "Metodología"
 
 ### Publicaciones
 
-La principal fuente de datos para publicaciones fue el mantenedor de publicaciones de SEPA-VID gestionado por la Unidad de Datos e Indicadores de la VID. Se filtraron las publicaciones adscritas a la Facultad de Ciencias Sociales para el período comprendido entre 2020 y 2025. Cabe destacar que SEPA-VID contiene únicamente las publicaciones de un académicos durante la vigencia de su nombramiento en la Universidad, por lo que publicaciones previas al ingreso de un académico no se consideran en el análisis. Además, SEPA-VID contiene mayoritaríamente artículos indexados en las bases de datos de WoS, Scopus y Scielo. 
+La principal fuente de datos para publicaciones fue el mantenedor de publicaciones de SEPA-VID gestionado por la Unidad de Datos e Indicadores de la VID. Se filtraron las publicaciones adscritas a la Facultad de Ciencias Sociales para el período comprendido entre 2020 y 2025. Cabe destacar que SEPA-VID contiene únicamente las publicaciones de un académicos durante la vigencia de su nombramiento en la Universidad, por lo que publicaciones previas al ingreso de un académico no se consideran en el análisis. Además, SEPA-VID contiene mayoritaríamente artículos indexados en las bases de datos de WoS, Scopus y Scielo.
 
 Esta base fue complementada a través de la API de ORCID para los 72 investigadores incluídos en el [Colaboratorio de Investigación en Ciencias Sociales](https://colaboratoriocienciassociales.uchile.cl/) de la Facultad. Este procedimiento resultó particularmente útil para recoger información de libros, capítulos de libros y artículos indexados en bases de datos distintas a las mencionadas.
 
-Además, la base fue enriquecida a través de la [Web of Science Master List](https://www.webofscience.com/wos/mjl/collection-list-downloads), la [Scopus Source title list](https://www.elsevier.com/products/scopus/content#4-titles-on-scopus) y la API de Scielo con el fin de identificar la indexación de revistas sin ese registro. Además, se extrajo de estas listas información sobre el idioma de la revista o si la publicación tiene acceso abierto. Se utilizó la API de Scopus para recoger la cantidad de citas para cada publicación identificada. Por último, se utilizó el [SCImago Journal Rank](https://www.scimagojr.com/journalrank.php) para obtener información sobre impacto y el cuartil en que se posicionan las revistas registradas. 
+Además, la base fue enriquecida a través de la [Web of Science Master List](https://www.webofscience.com/wos/mjl/collection-list-downloads), la [Scopus Source title list](https://www.elsevier.com/products/scopus/content#4-titles-on-scopus) y la API de Scielo con el fin de identificar la indexación de revistas sin ese registro. Además, se extrajo de estas listas información sobre el idioma de la revista o si la publicación tiene acceso abierto. Se utilizó la API de Scopus para recoger la cantidad de citas para cada publicación identificada. Por último, se utilizó el [SCImago Journal Rank](https://www.scimagojr.com/journalrank.php) para obtener información sobre impacto y el cuartil en que se posicionan las revistas registradas.
+
+### Académicos
+
+Se utilizó la base de personal académico de la Facultad de Ciencias Sociales para extraer información sobre características del cuerpo académico de la Facultad. Se incluyeron en este estudio todos los nombramientos vigentes al 31 de diciembre del 2025, excluyendo a los investigadores postdoctorales.
 
 ## Variables
 
-Detalle de las variables incluidas en el análisis, así como escalas de medición.
+La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta "libros" aplica a ambos tipos de publicaciones. Se exluyeron del análisis material editorial, corecciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total 1162 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (946), seguido de 171 capítulos de libros y 45 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontaron un total de 1328 publicaciones-autor.
 
+Se consideraron, adeás, variables de caracterización de los académicos de la Facultad tales como departamento, género, edad y jerarquía. Para posibilitar la comparación entre estas variables, la mayoría de los análisis se ponderaron por Jornadas Completas Equivalentes (JCE), calculadas como:
 
-```{r tabla-estadisticas-variables}
-#| echo: false
-#| warning: false
-#| tbl-cap: "Estadísticas descriptivas por variable (ejemplo)"
-#| tbl-label: tbl-estadisticas-variables
-if (requireNamespace("dplyr", quietly = TRUE) &&
-    requireNamespace("tidyr", quietly = TRUE)) {
-  tabla_stats <- dplyr::select(mtcars, mpg, wt, hp, drat, qsec) |>
-    dplyr::summarise(
-      dplyr::across(
-        .cols = dplyr::everything(),
-        .fns = list(
-          N = ~sum(!is.na(.)),
-          Media = ~mean(., na.rm = TRUE),
-          `Desv. Est.` = ~sd(., na.rm = TRUE),
-          Min = ~min(., na.rm = TRUE),
-          Max = ~max(., na.rm = TRUE)
-        )
-      )
-    ) |>
-    tidyr::pivot_longer(
-      cols = dplyr::everything(),
-      names_to = c("Variable", ".value"),
-      names_sep = "_"
-    ) |>
-    dplyr::mutate(
-      Variable = dplyr::recode(
-        Variable,
-        mpg = "Ingreso per cápita (mensual)",
-        wt = "Capital social barrial",
-        hp = "Precariedad laboral",
-        drat = "Capital institucional",
-        qsec = "Participación comunitaria"
-      ),
-      Media = sprintf("%0.3f", Media),
-      `Desv. Est.` = sprintf("%0.3f", `Desv. Est.`),
-      Min = sprintf("%0.3f", Min),
-      Max = sprintf("%0.3f", Max)
-    )
+$$JCE = \frac{\sum_{i=1}^{n} h_i}{44}$$
 
-  if (!knitr::is_latex_output() && requireNamespace("gt", quietly = TRUE)) {
-    gt::gt(tabla_stats) |>
-      gt::tab_header(
-        title = gt::md("**Estadísticas descriptivas de ejemplo**"),
-        subtitle = gt::md("Variables seleccionadas del conjunto `mtcars`")
-      ) |>
-      gt::cols_label(
-        Variable = "Statistic",
-        N = "N",
-        Media = "Mean",
-        `Desv. Est.` = "St. Dev.",
-        Min = "Min",
-        Max = "Max"
-      ) |>
-      gt::tab_options(
-        table.width = gt::pct(85),
-        heading.title.font.size = gt::px(16),
-        heading.subtitle.font.size = gt::px(11),
-        table.border.top.width = gt::px(1.5),
-        table.border.top.color = "#000000",
-        table.border.bottom.width = gt::px(1.5),
-        table.border.bottom.color = "#000000",
-        column_labels.border.top.width = gt::px(1.2),
-        column_labels.border.top.color = "#000000",
-        column_labels.border.bottom.width = gt::px(1.2),
-        column_labels.border.bottom.color = "#000000",
-        data_row.padding = gt::px(4),
-        table.font.size = 13
-      ) |>
-      gt::cols_align(align = "center", columns = c(N, Media, `Desv. Est.`, Min, Max)) |>
-      gt::cols_align(align = "left", columns = Variable) |>
-      gt::opt_table_font(
-        font = list(
-          gt::google_font("Source Sans Pro"),
-          gt::default_fonts()
-        )
-      ) |>
-      gt::tab_source_note(gt::md("Notas: resumen ilustrativo basado en datos `mtcars`."))
-  } else {
-    knitr::kable(
-      tabla_stats,
-      format = if (knitr::is_latex_output()) "pipe" else "html",
-      align = c("l", "c", "c", "c", "c", "c"),
-      escape = FALSE
-    )
-  }
-}
+Donde:
+
+- $h_i$ = horas reales de dedicación académica de la persona $i$
+
+- $n$= número total de personas consideradas en el cálculo
+
+- $44$= número de horas semanales definidas como una jornada completa
+
+Se tomó como referencia los académicos con nombramiento vigente al 31 de diciembre de 2025. En total, se encontraron 148.91 JCE. En la @tbl-acad, se presenta un resumen desagregado de Jornada Completas Equivalente por departamento, género, edad y jerarquía.
+
+```{r}
+#| label: tbl-acad
+#| fig-cap: "Jornadas Completas Equivalente Facultad de Ciencias Sociales"
+
+load("input/acad-proc.rdata")
+
+library(dplyr)
+library(kableExtra)
+
+acad <- acad |> filter(jerarquia != "Investigador Postdoctoral")
+
+# Total
+jce_totales <- acad |> 
+  summarise(grupo = "Total", jce = sum(horas_reales)/44)
+
+# Por departamento
+jce_depto <- acad |> 
+  group_by(departamento) |> 
+  summarise(jce = sum(horas_reales)/44) |> 
+  rename(grupo = departamento)
+
+# Por sexo
+jce_genero <- acad |> 
+  group_by(sexo) |> 
+  summarise(jce = sum(horas_reales)/44) |> 
+  rename(grupo = sexo)
+
+# Por tramo de edad (corregido: agrupa por edad_tramo, no por edad)
+jce_edad <- acad |> 
+  mutate(edad_tramo = case_when(
+    edad < 50 ~ "Menos de 50 años",
+    edad >= 50 & edad < 60 ~ "50 a 59 años",
+    edad >= 60 ~ "60 años o más"),
+    edad_tramo = factor(edad_tramo, 
+      levels = c("Menos de 50 años", "50 a 59 años", "60 años o más"))) |> 
+  group_by(edad_tramo) |> 
+  summarise(jce = sum(horas_reales)/44) |> 
+  rename(grupo = edad_tramo)
+
+# Por jerarquía
+jce_jerarquia <- acad |> 
+  filter(jerarquia != "Investigador Postdoctoral") |> 
+  group_by(jerarquia) |> 
+  summarise(jce = sum(horas_reales)/44) |> 
+  rename(grupo = jerarquia)
+
+# Combinar todo en una sola tabla
+tabla_jce <- bind_rows(
+  jce_totales,
+  jce_depto,
+  jce_genero,
+  jce_edad,
+  jce_jerarquia
+)
+
+# Construir la tabla con kbl y pack_rows
+tabla_jce |> 
+  mutate(jce = round(jce, 2)) |> 
+  kbl(
+    col.names = c("Grupo", "JCE"),
+    align = c("l", "c")) |> 
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover")) |> 
+  pack_rows("Total", 1, 1) |> 
+  pack_rows("Departamento", 2, 1 + nrow(jce_depto)) |> 
+  pack_rows("Sexo", 2 + nrow(jce_depto), 1 + nrow(jce_depto) + nrow(jce_genero)) |> 
+  pack_rows("Tramo de edad", 
+            2 + nrow(jce_depto) + nrow(jce_genero), 
+            1 + nrow(jce_depto) + nrow(jce_genero) + nrow(jce_edad)) |> 
+  pack_rows("Jerarquía", 
+            2 + nrow(jce_depto) + nrow(jce_genero) + nrow(jce_edad), 
+            nrow(tabla_jce))
+
 ```
+
+En el caso de los artículos, se utilizaron variables de caracterización tales como:
+
+- Indexación (WoS, Scopus, Scielo, Otras)
+
+- Número de Citas
+
+- Cuartil de Revistas
+
+- Acceso abierto
+
+- Idioma
+
+Dado que la base final se construyó desde diversas fuentes, el tamaño real de los datos analizados puede cambiar para cada variable. En @tbl-datos se resume la cantidad de artículos que cuentan con datos válidos para cada variable antes mencionada.
+
+```{r}
+#| label: tbl-datos
+#| caption: "N analítico por variable de análisis"
+
+load("output/base-completa-facso.rdata")
+
+# Tabla de conteos no-NA por variable
+tabla_conteos <- tibble(
+  variable = c("Indexación", "Cuartil", "N° de citas", "Acceso abierto (OA)", "Idioma"),
+  n = c(
+    consolidado_wide |> filter(!is.na(indexacion)) |> nrow(),
+    consolidado_wide |> filter(!is.na(quartil)) |> nrow(),
+    consolidado_wide |> filter(!is.na(n_citas)) |> nrow(),
+    consolidado_wide |> filter(!is.na(oa)) |> nrow(),
+    consolidado_wide |> filter(!is.na(idioma)) |> nrow()
+  )
+)
+
+# Tabla con kbl
+tabla_conteos |> 
+  kbl(
+    col.names = c("Variable", "N"),
+    align = c("l", "c")
+  ) |> 
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+
+
+```
+
+Por útlimo, como medida complementaria para medir el impacto académico de las publicaciones analizadas, se calculoó un índice h agregado a nivel de Facultad y departamento, así como por género, edad y jerarquía. Este índice no debe entenderse como la suma o el promedio de los índice h individuales de los académicos de la Facultad. Más bien, indica cuántas publicaciones $h$, del total analizado, cuentan con $h$ o más citas.
 
 ## Métodos
 
-Breve descripción de los procedimientos aplicados para procesar y analizar la información.
+Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas (n= 1162). En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizaron como unidad de análisis cada par de publicación-autor.
 
-
-
+Las bases de datos fueron recolectadas, procesadas y analizadas mediante el lenguaje de programación R. Los datos y el código de análisis, incluyendo el que produce este documento, se encuentran alojadas en un [repositorio de la Dirección de Investigación en Github](https://github.com/facso-investigacion/publicaciones-facso).
