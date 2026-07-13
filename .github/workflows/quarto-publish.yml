@@ -32,14 +32,16 @@ jobs:
           packages: |
             any::knitr
             any::rmarkdown
-            any::tidyverse
-            any::ggrepel
-            any::kableExtra
-            any::scales
-            any::rlang
-            
       - name: Render
         run: quarto render
+      - name: Upload render logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: render-logs
+          path: |
+            **/*.log
+            _output
       - name: Check gh-pages branch
         id: ghpages
         run: |
@@ -48,14 +50,6 @@ jobs:
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
-     - name: Upload render logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: render-logs
-          path: |
-            **/*.log
-            _output
       - name: Initialize gh-pages branch
         if: steps.ghpages.outputs.exists == 'false'
         id: initghpages
