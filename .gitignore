@@ -4,12 +4,10 @@ _book/
 _site/
 .DS_Store
 docs/
-_freeze/
 *.Rmd
 *.utf8.md
 *.knit.md
 *_cache/
-*_files/
 *.log
 *.aux
 *.toc

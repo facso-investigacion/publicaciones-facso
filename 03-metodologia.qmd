@@ -36,7 +36,7 @@ Se tomó como referencia los académicos con nombramiento vigente al 31 de dicie
 
 ```{r}
 #| label: tbl-acad
-#| fig-cap: "Jornadas Completas Equivalente Facultad de Ciencias Sociales"
+#| tbl-cap: "Jornadas Completas Equivalente Facultad de Ciencias Sociales"
 
 load("input/acad-proc.rdata")
 
@@ -124,7 +124,7 @@ Dado que la base final se construyó desde diversas fuentes, el tamaño real de 
 
 ```{r}
 #| label: tbl-datos
-#| caption: "N analítico por variable de análisis"
+#| tbl-cap: "N analítico por variable de análisis"
 
 load("output/base-completa-facso.rdata")
 
