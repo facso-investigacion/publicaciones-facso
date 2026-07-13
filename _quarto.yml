@@ -33,14 +33,10 @@ book:
   favicon: assets/favicon-2025-20251031.svg  # Apunta al favicon versionado para romper cache
   chapters:
     - index.qmd            # Capitulo inicial o resumen ejecutivo
-    - 00-prefacio.qmd
     - 01-introduccion.qmd
-    - 02-marco-teorico.qmd
-    - 03-metodologia.qmd
-    - 04-resultados.qmd
-    - 05-discusion.qmd
-    - 06-conclusiones.qmd
-    - references.qmd
+    - 02-metodologia.qmd
+    - 03-resultados.qmd
+    - 04-conclusiones.qmd
     # Para agregar un nuevo capitulo duplica un archivo .qmd y agregalo aqui:
     # ej: - 07-analisis-cualitativo.qmd
   # appendices:
@@ -55,8 +51,7 @@ reference-location: section      # Citas agrupadas al final de cada seccion
 
 format:
   html:
-    theme:
-      light: cosmo               # Cualquier tema Bootswatch (journal, litera, etc.)
+    theme: assets/datasoc.scss # Cualquier tema Bootswatch (journal, litera, etc.)
     toc: true                   
     toc-depth: 3
     toc-location: right

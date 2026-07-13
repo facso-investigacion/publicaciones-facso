@@ -1,0 +1,28 @@
+# Conclusiones {#sec-conclusiones}
+
+El presente informe ofreció una caracterización sistemática de la producción académica de la Facultad de Ciencias Sociales (FACSO) durante el período 2020-2025. A partir de la consolidación de 1.162 publicaciones únicas y su análisis según distintas variables de caracterización, es posible identificar un conjunto de fortalezas que consolidan la posición de la Facultad, así como desafíos y oportunidades que orientan la reflexión sobre futuras políticas de investigación.
+
+## Fortalezas
+
+La Facultad exhibe un volumen alto y sostenido de productividad académica. Lejos de responder a un repunte coyuntural, la producción se ha mantenido estable en los últimos años tras el incremento registrado entre 2020 y 2021, lo que sugiere una capacidad instalada de investigación y publicación robusta.
+
+A este volumen se suma un nivel destacado de calidad e impacto. Una proporción importante de la investigación de FACSO se publica en revistas de prestigio —mayoritariamente indexadas en Web of Science y Scopus— y una fracción relevante se ubica en los primeros cuartiles de sus respectivas áreas de conocimiento. Este posicionamiento, junto con el predominio de publicaciones con alcance internacional, refleja una producción que no solo es alta en volumen, sino también visible y con alcance internacional. 
+
+En consecuencia, la Facultad alberga un núcleo de investigadores altamente productivos, cuyo elevado volumen de publicación se traduce además en niveles de impacto sólidos, evidenciados en los indicadores de citas y en el índice h institucional. Se trata de un capital académico consolidado que constituye uno de los principales activos de la Facultad.
+
+Finalmente, cabe relevar la destacada productividad de las académicas de la Facultad, que superan a sus pares masculinos en todos los indicadores observados. Esto es consecuenten con los datos que muestran una mayor capacidad para adjudicarse proyectos de investigación, incluso con menos postulaciones, tanto a nivel nacional como de Facultad. 
+
+## Desafíos
+
+El principal desafío que emerge del análisis es la alta concentración de la producción y del impacto en una minoría del cuerpo académico. Tanto el volumen de publicaciones como las citas se distribuyen de manera marcadamente desigual, lo que implica que una parte significativa del cuerpo académico participa de forma más limitada en la producción científica formal.
+
+Esta concentración se expresa en brechas entre distintos grupos. En particular, los profesores de jerarquía Asistente y los académicos de 60 años o más presentan cifras significativamente más bajas en la mayoría de los indicadores. Estas diferencias pueden reflejar barreras para la productividad académica tanto en las etapas iniciales de una trayectoria académica como dinámicas propias de las fases más avanzadas de la carrera.
+
+A ello se añade una amplia heterogeneidad entre los departamentos de la Facultad, tanto en volumen como en impacto. Con todo, esta diversidad merece un análisis más profundo, pues es posible que esté reflejando culturas disciplinares y lógicas de productividad propias de la interdisciplinariedad que caracteriza a la Facultad. 
+
+## Oportunidades a futuro
+
+En términos de políticas de investigación y publicación, los resultados apuntan a la coexistencia de un núcleo altamente productivo con una fuerte concentración y dispersión en la cantidad e impacto de las publicaciones. Este diagnóstico abre la necesidad de diseñar políticas focalizadas en determinados grupos de académicos con el objetivo de fortalecer su productividad y reducir la dispersión observada, aprovechando además el potencial de mentoría que representa el núcleo consolidado.
+
+En términos de gestión de la información, la consolidación de datos de publicaciones realizada en este estudio constituye en sí misma un resultado valioso. Por una parte, sienta las bases para la elaboración de reportes periódicos que permitan monitorear la evolución de estos indicadores en el tiempo. Por otra, habilita el desarrollo de análisis más complejos, como modelos que expliquen las diferencias en productividad entre grupos, o la aplicación de técnicas de procesamiento de lenguaje natural para identificar los temas recurrentes en la producción de la Facultad. De este modo, el trabajo aquí presentado no se agota en un diagnóstico puntual, sino que abre una agenda de seguimiento y profundización analítica.
+

@@ -1,6 +1,4 @@
----
-title: "Resultados"
----
+# Resultados {#sec-results}
 
 ```{r}
 library(tidyverse)
@@ -247,7 +245,10 @@ figura_8 <- lorenz_data |>
 figura_8
 # 
 # punto_50 <- lorenz_data |>
-#   filter(pct_publicaciones >= 50) |>
+#     filter(pct_publicaciones >= 50)
+# 
+# 
+# |>
 #   slice(1)
 # 
 # punto_50
@@ -255,7 +256,7 @@ figura_8
 # # El % de académicos MÁS productivos que acumula el 50% de publicaciones:
 # pct_top_50 <- 100 - punto_50$pct_academicos
 # pct_top_50
-# # 
+#
 # # 
 # lorenz_data_invertido <- acad |>
 #   distinct(rut) |>
@@ -600,7 +601,7 @@ ggsave(
 
 ### Indexaciones
 
-Los artículos de investigación representan con diferencia la mayor parte de la producción académica de la Facultad, con 946 registros diferentes, o un 77% del total de las publicaciones identificadas. La @fig-index muestra la distribución de las indexaciones de las revistas en que publican los académicos de FACSO. De tal modo, se observa que el 78% de las publicaciones se encuentran en revistas indexadas en WoS (42%) o Scopus (36%), posiblemente en consonancia con los modelos de evaluación de ANID en sus fondos concursables. Más abajo se encuentran las revistas indexadas en Scielo, con un 11% de las publicaciones en el período analizada. La categoría "Otra" agrega revistas en indexadas en el *Emerging Sources Citacion Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras. En su conjunto, éstas acumulan el 11% de las publicaciones totales.  
+Los artículos de investigación representan con diferencia la mayor parte de la producción académica de la Facultad, con 946 registros diferentes, o un 77% del total de las publicaciones identificadas. La @fig-index muestra la distribución de las indexaciones de las revistas en que publican los académicos de FACSO. De tal modo, se observa que el 78% de las publicaciones se encuentran en revistas indexadas en WoS (42%) o Scopus (36%), posiblemente en consonancia con los modelos de evaluación de ANID en sus fondos concursables. Más abajo se encuentran las revistas indexadas en Scielo, con un 11% de las publicaciones en el período analizada. La categoría "Otra" agrega revistas en indexadas en el *Emerging Sources Citacion Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras.
 
 ```{r}
 #| label: fig-index

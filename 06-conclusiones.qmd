@@ -1,4 +1,0 @@
-﻿---
-title: "Conclusiones"
----
-Síntesis y proyecciones futuras.

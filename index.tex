@@ -348,6 +348,22 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\@ifpackageloaded{fontawesome5}{}{\usepackage{fontawesome5}}
+\definecolor{quarto-callout-color}{HTML}{909090}
+\definecolor{quarto-callout-note-color}{HTML}{0758E5}
+\definecolor{quarto-callout-important-color}{HTML}{CC1914}
+\definecolor{quarto-callout-warning-color}{HTML}{EB9113}
+\definecolor{quarto-callout-tip-color}{HTML}{00A047}
+\definecolor{quarto-callout-caution-color}{HTML}{FC5300}
+\definecolor{quarto-callout-color-frame}{HTML}{acacac}
+\definecolor{quarto-callout-note-color-frame}{HTML}{4582ec}
+\definecolor{quarto-callout-important-color-frame}{HTML}{d9534f}
+\definecolor{quarto-callout-warning-color-frame}{HTML}{f0ad4e}
+\definecolor{quarto-callout-tip-color-frame}{HTML}{02b875}
+\definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
+\makeatother
+\makeatletter
 \@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
 \makeatother
 \makeatletter
@@ -516,117 +532,321 @@
 \mainmatter
 \bookmarksetup{startatroot}
 
-\chapter*{Abstract}\label{abstract}
-\addcontentsline{toc}{chapter}{Abstract}
+\chapter*{Resumen ejecutivo}\label{resumen-ejecutivo}
+\addcontentsline{toc}{chapter}{Resumen ejecutivo}
 
-\markboth{Abstract}{Abstract}
+\markboth{Resumen ejecutivo}{Resumen ejecutivo}
 
-\small\textbf{Palabras clave:} Sociologia, educacion, Chile \normalsize
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, leftrule=.75mm, arc=.35mm, breakable, rightrule=.15mm, opacityback=0, colback=white]
+\begin{minipage}[t]{5.5mm}
+\textcolor{quarto-callout-note-color}{\faInfo}
+\end{minipage}%
+\begin{minipage}[t]{\textwidth - 5.5mm}
 
-Resumen en español (200-300). Expón propósito, método, resultados clave
-y conclusiones. Puede incluir citas como Xie
-(\citeproc{ref-xie2017bookdown}{2017}) y se actualizarán
-automáticamente.
+\textbf{Período de referencia:} 2020-2025 · Síntesis elaborada a partir
+de los capítulos de Metodología y Resultados del informe
+\emph{Publicaciones Académicos y Académicas FACSO}.
+
+\end{minipage}%
+\end{tcolorbox}
+
+\section{Propósito y alcance}\label{propuxf3sito-y-alcance}
+
+Este estudio corresponde a un análisis cuantitativo descriptivo que
+caracteriza el volumen, la composición y el impacto de la producción
+científica de la Facultad de Ciencias Sociales de la Univerisdad de
+Chile. El período de referencia corresponde a 2020-2025, con un universo
+de \textbf{1.162 publicaciones únicas} identificadas.
+
+\section{Metodología}\label{metodologuxeda}
+
+\textbf{Datos}
+
+La construcción de la base combinó múltiples fuentes:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Fuente principal:} el mantenedor de publicaciones de
+  \textbf{SEPA-VID}, filtrando las publicaciones adscritas a FACSO entre
+  2020 y 2025. Esta fuente contiene mayoritariamente artículos indexados
+  en WoS, Scopus y Scielo, y solo registra publicaciones producidas
+  durante la vigencia del nombramiento de cada académico.
+\item
+  \textbf{API de ORCID} aplicada a 72 investigadores del Colaboratorio
+  de de Investigación en Ciencias Sociales. Se utilizó para recuperar
+  libros, capítulos e indexaciones ausentes en la base de la SEPA-VID.
+\item
+  Bases como la WoS Master List, la Scopus Source title list y la API de
+  Scielo permitieron \textbf{enriquecer la base de datos}, identificando
+  la indexación, idioma y acceso abierto. De la \textbf{API de Scopus}
+  se extrajo el número de citas por publicación. El \textbf{SCImago
+  Journal Rank} (SJR) entregó los cuartiles e indicadores del impacto de
+  las revistas.
+\end{itemize}
+
+La caracterización del cuerpo académico se basó en la base de personal
+de la Facultad, considerando todos los nombramientos vigentes al 31 de
+dicimebre del 2025, exclyendo a investigadores postdoctorales.
+
+\textbf{Variables}
+
+Se incluyeron en el análisis artículos de revistas académicas, capítulos
+de libros y libros. Paa los análisis agregados a nivel de la Facultad,
+la unidad de análisis fue las publicaciones únicas (n=1.162). En tanto,
+para la caracterización según género, edad y jerarquía, la unidad fue
+cada par distinto de publicaicón autor (n=1.328). La mayoría de los
+análisis se ponderaron por Jornadas Completas Equivalente (JCE),
+calculadas como la suma de horas reales de dedicación académicas
+dividida por una jornada completa (44 horas).
+
+\section{Principales Hallazgos}\label{principales-hallazgos}
+
+\subsection{Volúmen y composición}\label{voluxfamen-y-composiciuxf3n}
+
+La producción total del período analizado fue de 1.162 publicaciones
+únicas, con un claro predominio de los artículos de revista (946, o un
+81\%), seguidos de 171 capítulos de libro (15\%) y 45 libros (4\%). La
+productividad total alcanzó las 7,8 publicaciones por JCE en 5 años.
+Tras un incremento sustancial entre 2020 y 2021, posiblemente atribuile
+a un efecto de rebote posterior a la pandemia, el volúmen se mantuvo con
+relativa estabilidad entre 2022 y 2025 (ver
+Figura~\ref{fig-publicacion-anio})
+
+\subsection{Concentración de la
+productividad}\label{concentraciuxf3n-de-la-productividad}
+
+Se detectó una alta dispersión en la producción académica en la
+Facultad. La media de publicaciones en el período es de 3 publicaciones
+por académico, mientras que el 20\% más productivo concentra dos tercios
+de las publicaciones. Es más, la mitad de la producción total
+corresponde a cerca del 13\% del cuerpo académico, es decir, a los 25
+académicos más productivos de la Facultad (ver
+Figura~\ref{fig-publicacion-lorenz})
+
+\subsection{Perfiles de los autores}\label{perfiles-de-los-autores}
+
+El análisis desagrado revela diferencias sistemáticas según las
+características de los autores:
+
+\textbf{Departamento}: Destaca el Departamento de Trabajo Social con el
+mayor volumen de publicaciones por Jornadas Completas Equivalente, con
+13,9 (Figura~\ref{fig-publicacion-depto}). Por otro lado, el
+Departamento de Antropología lidera en la proporción de publicaciones en
+cuartiles altos de impacto.
+
+\textbf{Género}: Las académicas son sistemáticamente más productivas que
+sus pares masculinos (10,73 frente 7,19 publicaciones por JCE, ver
+Figura~\ref{fig-publicacion-genero}). Esta brecha se observa también
+cantidad de citas, índice h y en la proporción de publicaciones en
+cuartiles altos.
+
+\textbf{Edad}: La mayor productividad se concentra en el tramo de entre
+50 a 59 años (10,58 por JCE), con una caída abrupta en el grupo de más
+de 60 años (ver Figura~\ref{fig-publicacion-edad}). Estas diferencias se
+replican en los indicadores de impacto académico.
+
+\textbf{Jerarquía}: Existe una brecha importante entre la Jerarquía de
+Asistente (4,49 por JCE) y la de Asociado. La brecha entre Asociados y
+Titulares es menor, variando según el indicador. Los asociados publican
+más por JCE (Figura~\ref{fig-publicacion-jerarquia}) y suman mayor
+número de citas. sin embargo, los titulares los superan en canitdad de
+publicaciones en WoS (Figura~\ref{fig-index-carac-3}) y en revistas Q1 o
+Q2 (Figura~\ref{fig-sjr-depto})
+
+\subsection{Impacto Académico}\label{impacto-acaduxe9mico}
+
+El 78\% de los artículos se publica en revistas indexadas en WoS (42\%)
+o Scopus (36\%), lo que probablemente refleja los criterios de
+evaluación de los fondos concursables de ANID (ver
+Figura~\ref{fig-index}). Por otro lado, el 67\% de las publicaciones con
+SJR registrado se ubica en revistas Q1 o Q2. Las publicaciones en
+revistas Q1 por sí solas llegan a un 42\% (Tabla~\ref{tbl-sjr})
+
+Por otro lado, se contabilizaron 4.854 citas en el período, con un
+promedio de 6,7 citas por artículo y un índice h institucional de 30. La
+distribución de citas presenta una alta dispersión, con un rango que va
+de 0 a 307 citas (Figura~\ref{fig-citas-densidad}). El Departamento de
+Psicología registra el mayor número absoluto de citas entre los
+departamentos de la Facultad (Tabla~\ref{tbl-citas-depto})
+
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, leftrule=.75mm, arc=.35mm, breakable, rightrule=.15mm, opacityback=0, colback=white]
+\begin{minipage}[t]{5.5mm}
+\textcolor{quarto-callout-note-color}{\faInfo}
+\end{minipage}%
+\begin{minipage}[t]{\textwidth - 5.5mm}
+
+El índice h agregado no equivale a la suma ni al promedio de los índices
+individuales: indica cuántas publicaciones \(h\) del total analizado
+cuentan con \(h\) o más citas.
+
+\end{minipage}%
+\end{tcolorbox}
+
+\subsection{Aceso abierto e idiomas de
+publicación}\label{aceso-abierto-e-idiomas-de-publicaciuxf3n}
+
+El \textbf{49\% de los artículos analizados} se publicó en revistas de
+acceso abierto (Figura~\ref{fig-oa}). Con todo, es posible que esta
+cifra sea mayor si se agregan el análisis las publicaciones Scielo, o de
+otros repositorios abiertos, que no están registrados en la fuente de
+datos.
+
+Respecto al idioma de publicación, predomina el inglés con un 45\%,
+seguido del español con un 23\%. La proporción de publicaciones en
+inglés es sustancialmente más alta en indexaciones WoS (68\%) que en
+Scielo y en Scopus (Figura~\ref{fig-idioma})
+
+\section{Síntesis de indicadores}\label{suxedntesis-de-indicadores}
+
+\begin{longtable}[]{@{}lc@{}}
+\caption{Indicadores principales de la producción académica FACSO
+(2020-2025)}\label{tbl-sintesis}\tabularnewline
+\toprule\noalign{}
+Indicador & Valor \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Indicador & Valor \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Publicaciones únicas (2020-2025) & 1.162 \\
+Pares publicación-autor & 1.328 \\
+Artículos / capítulos / libros & 946 / 171 / 45 \\
+Proporción de artículos & 81\% \\
+Publicaciones por JCE & 7,8 \\
+Artículos en revistas WoS o Scopus & 78\% \\
+Publicaciones en revistas Q1 o Q2 (SJR) & 67\% \\
+Total de citas / promedio por artículo & 4.854 / 6,7 \\
+Índice h institucional & 30 \\
+Publicaciones en acceso abierto (no incluye Scielo) & 49\% \\
+Idioma predominante (inglés) & 45\% \\
+\end{longtable}
+
+\section{Conclusiones}\label{conclusiones}
+
+\subsection{Fortalezas}\label{fortalezas}
+
+Se destaca un volumen alto de productividad académica, que ha
+permanecido estable en los últimos años. Asimismo, la producción
+académica de FACSO destaca por su nivel de impacto y calidad, con una
+proporción importante de la investigación de la Facultad siendo
+publicadas en revistas destacadas, que se ubican en los primeros
+cuartiles de sus áreas de conocimiento y con alcance internacional.
+
+De tal forma, que la Facultad aloja a un núcleo de investigadores
+altamente productivos, con un alto volúmen de publicación que además se
+refleja en niveles de impacto sólidos, como se ve reflejados en los
+indicadores de citas e índice h.
+
+En la misma línea, se debe relevar la destacada productividad de las
+académicas de la Facultad, apareciendo sobre sus pares masculinos en
+todos los índicadores observados.
+
+\subsection{Desafíos}\label{desafuxedos}
+
+Se observa una alta concentración en la producción y el impacto
+(entendido como cantidad de citas) en una minoría del cuerpo académico.
+Esta dispersión se puede observar en brechas existentes entre distintos
+grupos. Particularmente, los profesores asistentes y los académicos
+mayores de 60 años muestran cifras significativamente más bajas en la
+mayoría de los indicadores. Asimismo, se observa una amplia
+heterogeneidad en el volumen e impacto de cada departamento de la
+Facultad.
+
+\subsection{Oportunidades a futuro}\label{oportunidades-a-futuro}
+
+En términos de políticas de investigación y publicación, los resultados
+de este estudio apuntan a la existencia de un fuerte núcleo altamente
+productivo que convive con una fuerte concentración y dispersión en
+cantidad e impacto de publicaciones. En ese sentido, se abre la
+necesidad de pensar políticas focalizadas en determinados grupos de
+académicos con el ojetivo de aumentar su productividad y disminuir la
+alta dispersión observada.
+
+En tanto, en términos de políticas de gestión de información, la
+consolidación de datos de publicaciones aquí realizada abre las puertas
+para reportes periódicos que sigan la evolución de estos indicadores.
+Asimismo, permite pensar en aplicación de modelos más complejos que
+expliquen las diferencias en productividad o analicen mediante
+procesamiento de lenguaje natural los temas recurrentes en publicaciones
+de la Facultad.
 
 \bookmarksetup{startatroot}
 
-\chapter*{Prefacio}\label{prefacio}
-\addcontentsline{toc}{chapter}{Prefacio}
+\chapter{Introducción}\label{sec-introduction}
 
-\markboth{Prefacio}{Prefacio}
+El presente informe expone los resultados del estudio sobre las
+publicaciones de académicas y académicos de la Facultad de Ciencias
+Sociales (FACSO) de la Universidad de Chile aparecidas entre los años
+2020 y 2025. Este estudio se enmarca en el interés de la Facultad por
+contar con una caracterización sistemática y actualizada de la
+producción académica de sus miembros en un contexto de cierre y balance
+de la Decanatura 2022-2026.
 
-Agradecimientos opcionales, dedicatorias, notas sobre financiamiento,
-etc.
+Este trabajo continúa y actualiza un primer esfuerzo realizado en 2022,
+que caracterizó las publicaciones de la Facultad durante el quinquenio
+2015-2019 (\citeproc{ref-moya_publicaciones_}{Moya, 2022}). Aquel
+estudio precursor sentó las bases metodológicas y conceptuales para el
+diagnóstico de las prácticas de publicación en FACSO, y una de sus
+principales recomendaciones fue, precisamente, extender la mirada en el
+tiempo mediante un monitoreo periódico que permitiera observar la
+evolución de estos indicadores. El presente informe recoge esa
+recomendación: retoma el propósito de aquel primer diagnóstico y lo
+proyecta sobre un nuevo período, dando continuidad a la línea de trabajo
+entonces iniciada.
 
-\mainmatter
+Con este objetivo se ha recolectado y producido información acerca de
+las publicaciones y sus autores. Las publicaciones consideradas en este
+estudio comprenden artículos de investigación, capítulos de libros y
+libros. Estas formas de publicación reflejan la diversidad de la
+productividad académica de las ciencias sociales, así como incluyen
+aquellas omúnmente consideradas en la evaluación de la productividad por
+parte de las instituciones que financian investigación a nivel nacional
+e internacional.
 
-\bookmarksetup{startatroot}
+Respecto de su antecesor, este estudio incorporar innovaciones en su
+enfoque metodológico. Mientras que el informe de 2022 se apoyó
+principalmente en Google Scholar, la presente edición consolida su base
+a partir del mantenedor institucional de publicaciones (SEPA-VID),
+complementado con la API de ORCID y enriquecido con las principales
+fuentes de indexación e impacto ---Web of Science, Scopus, Scielo y
+SCImago Journal Rank---. Ello permite caracterizar con mayor precisión
+aspectos como la indexación de las revistas, el cuartil en que se
+posicionan, el acceso abierto y el número de citas de cada publicación.
+Asimismo, el código de análisis utilizado quedará albergado en un
+\href{https://github.com/facso-investigacion/publicaciones-facso}{repositorio
+en Github de la Dirección de Investigación}, y podrá ser integrado al
+sistema de gestión de información científica desarrollado por la misma
+Dirección,
+\href{https://facso-investigacion.github.io/documentacion-cindai/}{CINDAI}
 
-\chapter{Introducción}\label{introducciuxf3n}
+En este estudio presentamos resultados sobre el volumen y la composición
+de la producción académica, su concentración y evolución en el tiempo,
+así como características de las publicaciones tales como su nivel de
+impacto ---medido a través de las citas y del índice h---, la calidad e
+indexación de las revistas, el acceso abierto y el idioma de
+publicación. Estos resultados se examinan tanto a nivel agregado de la
+Facultad como de forma desagregada según el departamento, el género, la
+edad y la jerarquía de los autores, con el fin de identificar perfiles,
+fortalezas y brechas al interior de la comunidad académica.
 
-Motivación, preguntas de investigación, Objetivo general y específicos,
-contribución esperada, estructura del documento.
-
-\bookmarksetup{startatroot}
-
-\chapter{Antecedentes conceptuales y
-empíricos}\label{antecedentes-conceptuales-y-empuxedricos}
-
-Sintetiza la literatura relevante. Usa referencias como Desmond \&
-Wilmers (\citeproc{ref-desmond2019poverty}{2019}).
-
-\section{Marco conceptual}\label{marco-conceptual}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
-nulla a ligula volutpat dictum. Sed dictum hendrerit augue, vitae
-efficitur nisl hendrerit nec. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Integer at nulla a ligula volutpat dictum. Sed dictum
-hendrerit augue, vitae efficitur nisl hendrerit nec. Lorem ipsum dolor
-sit amet, consectetur adipiscing elit. Integer at nulla a ligula
-volutpat dictum. Sed dictum hendrerit augue, vitae efficitur nisl
-hendrerit nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Integer at nulla a ligula volutpat dictum. Sed dictum hendrerit augue,
-vitae efficitur nisl hendrerit nec.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
-nulla a ligula volutpat dictum. Sed dictum hendrerit augue, vitae
-efficitur nisl hendrerit nec. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Integer at nulla a ligula volutpat dictum. Sed dictum
-hendrerit augue, vitae efficitur nisl hendrerit nec. Lorem ipsum dolor
-sit amet, consectetur adipiscing elit. Integer at nulla a ligula
-volutpat dictum. Sed dictum hendrerit augue, vitae efficitur nisl
-hendrerit nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Integer at nulla a ligula volutpat dictum. Sed dictum hendrerit augue,
-vitae efficitur nisl hendrerit nec.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
-nulla a ligula volutpat dictum. Sed dictum hendrerit augue, vitae
-efficitur nisl hendrerit nec. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Integer at nulla a ligula volutpat dictum. Sed dictum
-hendrerit augue, vitae efficitur nisl hendrerit nec. Lorem ipsum dolor
-sit amet, consectetur adipiscing elit. Integer at nulla a ligula
-volutpat dictum. Sed dictum hendrerit augue, vitae efficitur nisl
-hendrerit nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Integer at nulla a ligula volutpat dictum. Sed dictum hendrerit augue,
-vitae efficitur nisl hendrerit nec.
-
-\subsection{Ejemplos APA 7}\label{ejemplos-apa-7}
-
-Según Desmond \& Wilmers (\citeproc{ref-desmond2019poverty}{2019}), los
-patrones de segregación residencial configuran los límites de
-oportunidad urbana y permiten introducir la sintaxis de cita narrativa
-dentro del flujo del texto.
-
-Los matices culturales del gusto pueden reforzar desigualdades cuando se
-institucionalizan en jerarquías de prestigio académico
-(\citeproc{ref-bourdieu2012}{Bourdieu, 2012, p. 35}), lo que ilustra la
-cita parentética con número de página.
-
-Para contrastar hallazgos se pueden reunir múltiples referencias en un
-mismo paréntesis analítico (\citeproc{ref-desmond2019poverty}{Desmond \&
-Wilmers, 2019}; \citeproc{ref-xie2017bookdown}{Xie, 2017}), destacando
-cómo distintos diseños metodológicos convergen en un mecanismo causal
-compartido.
-
-\begin{quote}
-Las aspiraciones colectivas se negocian constantemente en espacios
-cotidianos que traducen capital cultural en prácticas concretas,
-reescribiendo así el mapa de posibilidades percibidas por cada agente
-social en contextos urbanos desiguales. Este entramado simbólico orienta
-aspiraciones futuras y limita adaptaciones comunitarias.
-(\citeproc{ref-bourdieu2012}{Bourdieu, 2012, p. 87})
-\end{quote}
-
-\section{Resumen del capítulo}\label{resumen-del-capuxedtulo}
-
-\begin{quote}
-Este capítulo ofreció una revisión breve de los conceptos fundamentales
-y estableció proposiciones para guiar el análisis empírico posterior.
-\end{quote}
+A continuación, se describen la \href{02-metodologia.qmd}{metodología}
+empleada en la construcción y el análisis de la base de datos. Luego se
+presentan los \href{03-resultados.qmd}{resultados}, organizados en torno
+a la caracterización general de la producción y al análisis específico
+de los artículos y las revistas en que se publican. Finalmente, se un
+conjunto de \href{04-conclusiones.qmd}{conclusiones} orientadas a
+relevar fortalezas, desafíos y oportunidades para la Facultad, así como
+a nutrir el debate en torno a las políticas de investigación y
+publicación en el cierre de este período y de cara a los desafíos
+futuros.
 
 \bookmarksetup{startatroot}
 
-\chapter{Metodología}\label{metodologuxeda}
+\chapter{Metodología}\label{sec-methods}
 
 \section{Datos}\label{datos}
 
@@ -714,7 +934,8 @@ Completas Equivalente por departamento, género, edad y jerarquía.
 
 \begin{table}
 
-\caption{\label{tbl-acad}}
+\caption{\label{tbl-acad}Jornadas Completas Equivalente Facultad de
+Ciencias Sociales}
 
 \centering{
 
@@ -767,8 +988,6 @@ Grupo & JCE\\
 \hline
 \end{tabular}
 
-Jornadas Completas Equivalente Facultad de Ciencias Sociales
-
 }
 
 \end{table}%
@@ -778,11 +997,22 @@ tales como:
 
 \begin{itemize}
 \item
-  Indexación (WoS, Scopus, Scielo, Otras)
+  Indexación (WoS, Scopus, Scielo, Otras). En caso de las revists
+  multindexadas, se estableció una jerarquía basada en el prestigio,
+  exigencia y ponderación otorgada en los grupos de evaluación Fondecyt:
+  WoS \textgreater{} Scopus \textgreater{} Scielo \textgreater{} Otras.
+  Es decir, si una revista se encuentra indexada tanto en WoS como en
+  Scopus, se consideró exclusivamente como WoS; Si se encuentra en
+  Scopus y en Scielo, pero no en WoS, se contabilizó como Scopus. Lo
+  mismo con Scielo respecto a la categoría ``Otra''. Esta última
+  categoría incluye publicaciones el \emph{Emerging Sources Citacion
+  Index} (ESCI), la \emph{European Reference Index for the Humanities
+  and Social Sciences} (ERIH Plus), \emph{Latindex}, el \emph{Directory
+  of Open Access Journals} (DOAJ), entre otras.
 \item
-  Número de Citas
+  Número de Citas (Scopus)
 \item
-  Cuartil de Revistas
+  Cuartil de Revistas (SJR)
 \item
   Acceso abierto
 \item
@@ -796,7 +1026,7 @@ datos válidos para cada variable antes mencionada.
 
 \begin{table}
 
-\caption{\label{tbl-datos}}
+\caption{\label{tbl-datos}N analítico por variable de análisis}
 
 \centering{
 
@@ -844,9 +1074,15 @@ incluyendo el que produce este documento, se encuentran alojadas en un
 \href{https://github.com/facso-investigacion/publicaciones-facso}{repositorio
 de la Dirección de Investigación en Github}.
 
+En el caso de los artículos, se analizó tanto volúmen como cantidad de
+citas, impacto, indexación, acceso abierto e idioma. En cambio, dada la
+baja calidad de la información relativa a libros y capítulos de libros,
+se optó por limitar su análisis al volúmen de producción y sus cruces
+con características de los autores.
+
 \bookmarksetup{startatroot}
 
-\chapter{Resultados}\label{resultados}
+\chapter{Resultados}\label{sec-results}
 
 \section{Caractertización de las publicaciones de académicos
 FACSO}\label{caractertizaciuxf3n-de-las-publicaciones-de-acaduxe9micos-facso}
@@ -861,7 +1097,7 @@ tipo de publicación}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-tipo-publicaciones-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-tipo-publicaciones-1.pdf}}
 
 }
 
@@ -885,7 +1121,7 @@ por JCE: 6.35 artículos, 1.15 capítulos de libros y 0.3 libros.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-anio-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-publicacion-anio-1.pdf}}
 
 }
 
@@ -915,7 +1151,7 @@ por porcentaje de académicos acumulado (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-lorenz-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-publicacion-lorenz-1.pdf}}
 
 }
 
@@ -944,7 +1180,7 @@ JCE (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-depto-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-publicacion-depto-1.pdf}}
 
 }
 
@@ -968,7 +1204,7 @@ diferencia 2.71 publicaciones por jornada completa.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-genero-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-publicacion-genero-1.pdf}}
 
 }
 
@@ -990,7 +1226,7 @@ Departamento (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-edad-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-publicacion-edad-1.pdf}}
 
 }
 
@@ -1009,7 +1245,7 @@ Departamento (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-jerarquia-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-publicacion-jerarquia-1.pdf}}
 
 }
 
@@ -1032,8 +1268,7 @@ publicaciones en el período analizada. La categoría ``Otra'' agrega
 revistas en indexadas en el \emph{Emerging Sources Citacion Index}
 (ESCI), la \emph{European Reference Index for the Humanities and Social
 Sciences} (ERIH Plus), \emph{Latindex}, el \emph{Directory of Open
-Access Journals} (DOAJ), entre otras. En su conjunto, éstas acumulan el
-11\% de las publicaciones totales.
+Access Journals} (DOAJ), entre otras.
 
 \begin{figure}
 
@@ -1042,7 +1277,7 @@ Access Journals} (DOAJ), entre otras. En su conjunto, éstas acumulan el
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-index-1.pdf}}
 
 }
 
@@ -1055,7 +1290,7 @@ Indexación de la Revista (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-evolucion-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-index-evolucion-1.pdf}}
 
 }
 
@@ -1080,7 +1315,7 @@ Revista por Departamento (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-depto-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-index-depto-1.pdf}}
 
 }
 
@@ -1182,7 +1417,7 @@ Revista por Género del autor(2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-carac-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-index-carac-1.pdf}}
 
 }
 
@@ -1191,7 +1426,7 @@ Revista por Edad del autor(2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-carac-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-index-carac-2.pdf}}
 
 }
 
@@ -1200,7 +1435,7 @@ Revista por Jerarquia del autor(2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-carac-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-index-carac-3.pdf}}
 
 }
 
@@ -1233,7 +1468,7 @@ la derecha que se extiende más allá de las 300 citas.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-citas-densidad-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-citas-densidad-1.pdf}}
 
 }
 
@@ -1354,7 +1589,7 @@ FACSO en revistas Q1 y Q2 (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-sjr-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-sjr-1.pdf}}
 
 }
 
@@ -1376,7 +1611,7 @@ revistas Q1 y Q2 por JCE por Departamento (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-sjr-depto-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-sjr-depto-1.pdf}}
 
 }
 
@@ -1528,7 +1763,7 @@ abierto (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-oa-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-oa-1.pdf}}
 
 }
 
@@ -1607,7 +1842,7 @@ según indexación (2020-2025)}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-idioma-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados_files/figure-pdf/fig-idioma-1.pdf}}
 
 }
 
@@ -1625,33 +1860,96 @@ predominio del inglés (68\%) sobre otros idiomas.
 
 \bookmarksetup{startatroot}
 
-\chapter{Discusión}\label{discusiuxf3n}
+\chapter{Conclusiones}\label{sec-conclusiones}
 
-Interpreta resultados, limitaciones y aportes.
+El presente informe ofreció una caracterización sistemática de la
+producción académica de la Facultad de Ciencias Sociales (FACSO) durante
+el período 2020-2025. A partir de la consolidación de 1.162
+publicaciones únicas y su análisis según distintas variables de
+caracterización, es posible identificar un conjunto de fortalezas que
+consolidan la posición de la Facultad, así como desafíos y oportunidades
+que orientan la reflexión sobre futuras políticas de investigación.
 
-\bookmarksetup{startatroot}
+\section{Fortalezas}\label{fortalezas-1}
 
-\chapter{Conclusiones}\label{conclusiones}
+La Facultad exhibe un volumen alto y sostenido de productividad
+académica. Lejos de responder a un repunte coyuntural, la producción se
+ha mantenido estable en los últimos años tras el incremento registrado
+entre 2020 y 2021, lo que sugiere una capacidad instalada de
+investigación y publicación robusta.
 
-Síntesis y proyecciones futuras.
+A este volumen se suma un nivel destacado de calidad e impacto. Una
+proporción importante de la investigación de FACSO se publica en
+revistas de prestigio ---mayoritariamente indexadas en Web of Science y
+Scopus--- y una fracción relevante se ubica en los primeros cuartiles de
+sus respectivas áreas de conocimiento. Este posicionamiento, junto con
+el predominio de publicaciones con alcance internacional, refleja una
+producción que no solo es alta en volumen, sino también visible y con
+alcance internacional.
 
-\bookmarksetup{startatroot}
+En consecuencia, la Facultad alberga un núcleo de investigadores
+altamente productivos, cuyo elevado volumen de publicación se traduce
+además en niveles de impacto sólidos, evidenciados en los indicadores de
+citas y en el índice h institucional. Se trata de un capital académico
+consolidado que constituye uno de los principales activos de la
+Facultad.
 
-\chapter{Referencias}\label{referencias}
+Finalmente, cabe relevar la destacada productividad de las académicas de
+la Facultad, que superan a sus pares masculinos en todos los indicadores
+observados. Esto es consecuenten con los datos que muestran una mayor
+capacidad para adjudicarse proyectos de investigación, incluso con menos
+postulaciones, tanto a nivel nacional como de Facultad.
+
+\section{Desafíos}\label{desafuxedos-1}
+
+El principal desafío que emerge del análisis es la alta concentración de
+la producción y del impacto en una minoría del cuerpo académico. Tanto
+el volumen de publicaciones como las citas se distribuyen de manera
+marcadamente desigual, lo que implica que una parte significativa del
+cuerpo académico participa de forma más limitada en la producción
+científica formal.
+
+Esta concentración se expresa en brechas entre distintos grupos. En
+particular, los profesores de jerarquía Asistente y los académicos de 60
+años o más presentan cifras significativamente más bajas en la mayoría
+de los indicadores. Estas diferencias pueden reflejar barreras para la
+productividad académica tanto en las etapas iniciales de una trayectoria
+académica como dinámicas propias de las fases más avanzadas de la
+carrera.
+
+A ello se añade una amplia heterogeneidad entre los departamentos de la
+Facultad, tanto en volumen como en impacto. Con todo, esta diversidad
+merece un análisis más profundo, pues es posible que esté reflejando
+culturas disciplinares y lógicas de productividad propias de la
+interdisciplinariedad que caracteriza a la Facultad.
+
+\section{Oportunidades a futuro}\label{oportunidades-a-futuro-1}
+
+En términos de políticas de investigación y publicación, los resultados
+apuntan a la coexistencia de un núcleo altamente productivo con una
+fuerte concentración y dispersión en la cantidad e impacto de las
+publicaciones. Este diagnóstico abre la necesidad de diseñar políticas
+focalizadas en determinados grupos de académicos con el objetivo de
+fortalecer su productividad y reducir la dispersión observada,
+aprovechando además el potencial de mentoría que representa el núcleo
+consolidado.
+
+En términos de gestión de la información, la consolidación de datos de
+publicaciones realizada en este estudio constituye en sí misma un
+resultado valioso. Por una parte, sienta las bases para la elaboración
+de reportes periódicos que permitan monitorear la evolución de estos
+indicadores en el tiempo. Por otra, habilita el desarrollo de análisis
+más complejos, como modelos que expliquen las diferencias en
+productividad entre grupos, o la aplicación de técnicas de procesamiento
+de lenguaje natural para identificar los temas recurrentes en la
+producción de la Facultad. De este modo, el trabajo aquí presentado no
+se agota en un diagnóstico puntual, sino que abre una agenda de
+seguimiento y profundización analítica.
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-bourdieu2012}
-Bourdieu, P. (2012). \emph{La distinci{ó}n: Criterio y bases sociales
-del gusto}. Taurus.
-
-\bibitem[\citeproctext]{ref-desmond2019poverty}
-Desmond, M., \& Wilmers, N. (2019). The Racialized Geography of Housing.
-\emph{American Journal of Sociology}.
-
-\bibitem[\citeproctext]{ref-xie2017bookdown}
-Xie, Y. (2017). \emph{bookdown: Authoring Books and Technical Documents
-with R Markdown}. Chapman; Hall/CRC.
+\bibitem[\citeproctext]{ref-moya_publicaciones_}
+Moya, C. (2022). \emph{{Publicaciones académicas y académicos FACSO}}.
 
 \end{CSLReferences}
 

@@ -1,6 +1,4 @@
----
-title: "Metodología"
----
+# Metodología {#sec-methods}
 
 ## Datos
 
@@ -110,11 +108,11 @@ tabla_jce |>
 
 En el caso de los artículos, se utilizaron variables de caracterización tales como:
 
-- Indexación (WoS, Scopus, Scielo, Otras)
+- Indexación (WoS, Scopus, Scielo, Otras). En caso de las revists multindexadas, se estableció una jerarquía basada en el prestigio, exigencia y ponderación otorgada en los grupos de evaluación Fondecyt: WoS \> Scopus \> Scielo \> Otras. Es decir, si una revista se encuentra indexada tanto en WoS como en Scopus, se consideró exclusivamente como WoS; Si se encuentra en Scopus y en Scielo, pero no en WoS, se contabilizó como Scopus. Lo mismo con Scielo respecto a la categoría "Otra". Esta última categoría incluye publicaciones el *Emerging Sources Citacion Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras.
 
-- Número de Citas
+- Número de Citas (Scopus)
 
-- Cuartil de Revistas
+- Cuartil de Revistas (SJR)
 
 - Acceso abierto
 
@@ -159,3 +157,5 @@ Por útlimo, como medida complementaria para medir el impacto académico de las 
 Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas (n= 1162). En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizaron como unidad de análisis cada par de publicación-autor.
 
 Las bases de datos fueron recolectadas, procesadas y analizadas mediante el lenguaje de programación R. Los datos y el código de análisis, incluyendo el que produce este documento, se encuentran alojadas en un [repositorio de la Dirección de Investigación en Github](https://github.com/facso-investigacion/publicaciones-facso).
+
+En el caso de los artículos, se analizó tanto volúmen como cantidad de citas, impacto, indexación, acceso abierto e idioma. En cambio, dada la baja calidad de la información relativa a libros y capítulos de libros, se optó por limitar su análisis al volúmen de producción y sus cruces con características de los autores.
