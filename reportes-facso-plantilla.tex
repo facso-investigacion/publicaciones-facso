@@ -1,26 +1,30 @@
 % Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
+  spanish,
   a4paper,
   oneside]{scrbook}
-
+\usepackage{xcolor}
+\usepackage[top=25mm,bottom=25mm,left=30mm,right=20mm]{geometry}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else  
-    % xetex/luatex font selection
+\ifPDFTeX\else
+  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -38,10 +42,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\usepackage[top=25mm,bottom=25mm,left=30mm,right=20mm]{geometry}
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
 \makeatletter
 \ifx\paragraph\undefined\else
@@ -67,8 +67,7 @@
 \makeatother
 
 
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -93,6 +92,8 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+
+
 % definitions for citeproc citations
 \NewDocumentCommand\citeproctext{}{}
 \NewDocumentCommand\citeproc{mm}{%
@@ -126,6 +127,26 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
 
 \AtBeginDocument{\hypersetup{linkcolor=black}}
 % ---------- Paquetes tipograficos y microajustes ----------
@@ -165,6 +186,9 @@
 \usepackage{indentfirst}
 \usepackage{setspace}         % Control del interlineado del documento
 \setstretch{1.5}
+\usepackage{etoolbox}
+\AtBeginEnvironment{tabular}{\setstretch{1.0}}
+\AtBeginEnvironment{longtable}{\setstretch{1.0}}
 
 % ---------- Encabezados y pies (scrlayer-scrpage) ----------
 \usepackage[automark,headsepline]{scrlayer-scrpage}
@@ -197,18 +221,6 @@
 \captionsetup{
   skip=8pt
 }
-
-% ---------- Ubicacion de figuras y tablas ----------
-% Por defecto, los flotantes se colocan lo mas cerca posible de su posicion
-% en el texto (!ht = "aqui o arriba, ignorando restricciones esteticas").
-% Para que un flotante concreto vuelva a moverse libremente, usa en su bloque
-% #| fig-pos: "tbp"  (o #| tbl-pos: "tbp"); para anclarlo de forma rigida,
-% usa #| fig-pos: "H".
-\usepackage{float}
-\makeatletter
-\def\fps@figure{!ht}
-\def\fps@table{!ht}
-\makeatother
 
 % ---------- Tabla de contenidos ----------
 \KOMAoptions{toc=graduated}
@@ -327,6 +339,22 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\@ifpackageloaded{fontawesome5}{}{\usepackage{fontawesome5}}
+\definecolor{quarto-callout-color}{HTML}{909090}
+\definecolor{quarto-callout-note-color}{HTML}{0758E5}
+\definecolor{quarto-callout-important-color}{HTML}{CC1914}
+\definecolor{quarto-callout-warning-color}{HTML}{EB9113}
+\definecolor{quarto-callout-tip-color}{HTML}{00A047}
+\definecolor{quarto-callout-caution-color}{HTML}{FC5300}
+\definecolor{quarto-callout-color-frame}{HTML}{acacac}
+\definecolor{quarto-callout-note-color-frame}{HTML}{4582ec}
+\definecolor{quarto-callout-important-color-frame}{HTML}{d9534f}
+\definecolor{quarto-callout-warning-color-frame}{HTML}{f0ad4e}
+\definecolor{quarto-callout-tip-color-frame}{HTML}{02b875}
+\definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
+\makeatother
+\makeatletter
 \@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
 \makeatother
 \makeatletter
@@ -370,23 +398,12 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
-\ifLuaTeX
-\usepackage[bidi=basic]{babel}
-\else
-\usepackage[bidi=default]{babel}
-\fi
-\babelprovide[main,import]{spanish}
-% get rid of language-specific shorthands (see #6817):
-\let\LanguageShortHands\languageshorthands
-\def\languageshorthands#1{}
 \usepackage{bookmark}
-
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
+\urlstyle{same}
 \hypersetup{
-  pdftitle={Publicaciones Académicos y Académicas FACSO},
-  pdfauthor={Gabriel Cortés},
+  pdftitle={Estudio sobre fuentes de financiamiento para la investigación en Ciencias Sociales en Chile},
+  pdfauthor={René Canales Sellés; Juan Carlos Castillo; Gabriel Cortés},
   pdflang={es},
   colorlinks=true,
   linkcolor={Maroon},
@@ -396,17 +413,18 @@
   pdfcreator={LaTeX via pandoc}}
 
 
-\title{Publicaciones Académicos y Académicas FACSO}
+\title{Estudio sobre fuentes de financiamiento para la investigación en
+Ciencias Sociales en Chile}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{2020-2025}
-\author{Gabriel Cortés}
-\date{10 de julio de 2026}
-
+\subtitle{Diagnóstico y análisis de concursos ANID}
+\author{René Canales Sellés \and Juan Carlos Castillo \and Gabriel
+Cortés}
+\date{24 de junio de 2026}
 \begin{document}
 \frontmatter
 \maketitle
@@ -417,7 +435,7 @@
 \providecommand{\@subtitle}{}
 \providecommand{\frontmattercontext}{}
 \providecommand{\advisorname}{}
-\providecommand{\advisorlabel}{Profesor guia:}
+\providecommand{\advisorlabel}{FACSO - Universidad de Chile}
 \providecommand{\frontmatterlocation}{}
 \InputIfFileExists{includes/cover-config.tex}{}{}
 
@@ -435,7 +453,7 @@
   \endgroup
 }
 \newcommand{\PrintAuthor}{%
-  {\Large\bfseries \@author\par}%
+  % Autores ocultos en la portada PDF
 }
 \newcommand{\PrintDate}{%
   {\small \@date\par}%
@@ -448,7 +466,7 @@
 \vspace*{10mm}
 
 % Logo o imagen institucional
-\includegraphics[width=0.35\textwidth]{assets/cover.png}\par
+\includegraphics[width=0.35\textwidth]{assets/cover.jpg}\par
 \vspace{12mm}
 
 % Titulo y subtitulo
@@ -498,6 +516,26 @@
 \frontmatter
 \pagestyle{scrheadings}
 
+\cleardoublepage
+\thispagestyle{empty}
+\begin{center}
+\setlength{\fboxsep}{10pt}
+\fcolorbox{gray!60}{gray!10}{%
+\begin{minipage}{0.92\textwidth}
+\textbf{Esta investigacion fue desarrollada por Rene Canales, Juan Carlos Castillo y Gabriel Cortes, del Departamento de Sociologia y de la Direccion de Investigacion y Publicaciones de la Facultad de Ciencias Sociales, Universidad de Chile.}
+
+El informe se encuentra disponible en version web y en formato PDF en el repositorio del proyecto: https://github.com/renejcanales/fondos-css.
+
+\textbf{Citar de la siguiente manera:}
+
+\begin{itemize}
+\tightlist
+\item \emph{Canales, R., Castillo, J.-C., \& Cortes, G. (2026). Estudio sobre fuentes de financiamiento para la investigacion en Ciencias Sociales en Chile: Diagnostico y analisis de concursos ANID. Informe tecnico. Direccion de Investigacion, Facultad de Ciencias Sociales, Universidad de Chile.}
+\end{itemize}
+\end{minipage}}
+\end{center}
+\cleardoublepage
+
 \setcounter{tocdepth}{2} % (o 1/3 segun prefieras)
 \tableofcontents
 \listoffigures
@@ -507,1005 +545,2669 @@
 \mainmatter
 \bookmarksetup{startatroot}
 
-\chapter*{Abstract}\label{abstract}
-\addcontentsline{toc}{chapter}{Abstract}
+\chapter{Estudio de Fondos ANID para el financiamiento en Ciencias
+Sociales}\label{estudio-de-fondos-anid-para-el-financiamiento-en-ciencias-sociales}
 
-\markboth{Abstract}{Abstract}
-
-\small\textbf{Palabras clave:} Sociologia, educacion, Chile \normalsize
-
-Resumen en español (200-300). Expón propósito, método, resultados clave
-y conclusiones. Puede incluir citas como Xie
-(\citeproc{ref-xie2017bookdown}{2017}) y se actualizarán
-automáticamente.
+\small\textbf{Palabras clave:} Fondos ANID, Facultad de Ciencias
+Sociales \normalsize
 
 \bookmarksetup{startatroot}
 
-\chapter*{Prefacio}\label{prefacio}
-\addcontentsline{toc}{chapter}{Prefacio}
+\chapter*{Resumen ejecutivo}\label{resumen-ejecutivo}
+\addcontentsline{toc}{chapter}{Resumen ejecutivo}
 
-\markboth{Prefacio}{Prefacio}
+\markboth{Resumen ejecutivo}{Resumen ejecutivo}
 
-Agradecimientos opcionales, dedicatorias, notas sobre financiamiento,
-etc.
+Este informe caracteriza la distribución del financiamiento de la
+Agencia Nacional de Investigación y Desarrollo (ANID) en el área de
+Ciencias Sociales durante el período 2016-2025, con el propósito de
+aportar evidencia empírica sistemática al debate sobre la situación del
+campo en Chile. El estudio se propone identificar los patrones
+estructurales de adjudicación, examinar las asimetrías existentes y
+discutir si las recurrentes afirmaciones sobre una ``crisis de
+financiamiento'' cuentan con sustento empírico observable en los datos
+administrativos disponibles.
 
-\mainmatter
+Se trabajó con tres bases de datos: postulaciones y adjudicaciones a
+FONDECYT Iniciación (n=4.027), FONDECYT Regular (n=4.576) y Núcleos e
+Institutos Milenio en Ciencias Sociales (n=24). Las variables de montos
+solicitados y adjudicados, no disponibles en las bases públicas
+estandarizadas, fueron reconstruidas manualmente a partir de los
+reportes oficiales de cada concurso. El análisis es descriptivo y se
+organiza secuencialmente por instrumento, examinando cinco dimensiones
+de desagregación: perspectiva comparada con otras áreas OCDE, género
+del/la investigador/a responsable, grupo de estudio, tipo de institución
+patrocinante (CRUCH/No CRUCH y Pública/Privada) y macrozona territorial
+de ejecución.
+
+Las Ciencias Sociales se han consolidado como una de las áreas de mayor
+volumen del sistema FONDECYT, superando las 600 postulaciones anuales en
+Iniciación y las 400 en Regular hacia 2025. Sin embargo, las tasas de
+adjudicación se han mantenido estructuralmente estables ---en torno al
+30-35\% en Regular y entre 7-12\% en Iniciación---, configurando un
+escenario de competencia intensificada. El análisis de género revela un
+patrón con dos caras: en Iniciación se observa una transición hacia la
+paridad en postulaciones (50/49 en 2023-2024), mientras que en Regular
+la brecha de postulación permanece estancada en torno al 38\% femenino.
+El análisis institucional confirma que las universidades del CRUCH
+concentran el 77\% de las adjudicaciones en Iniciación y el 81\% en
+Regular, sin signos de convergencia durante la década. La dimensión
+territorial constituye el hallazgo más unívoco: la Región Metropolitana
+captura la mayor parte del crecimiento absoluto del sistema, alcanzando
+una concentración extrema en Núcleos e Institutos Milenio (92\% de las
+adjudicaciones del área).
+
+Los hallazgos sugieren que el debate público sobre la existencia de una
+``crisis'' del financiamiento requiere mayor precisión analítica: no
+estamos ante un sistema en colapso, sino ante uno con techos
+estructurales que se hacen más visibles a medida que la demanda crece
+sin que el presupuesto agregado se expanda proporcionalmente. El estudio
+plantea como hipótesis interpretativa para futuras investigaciones que
+la alta productividad del campo se estaría sosteniendo, al menos en
+parte, sobre el traslado de los costos del ajuste hacia las y los
+investigadores ---particularmente quienes no cuentan con afiliación a
+instituciones tradicionales, trayectorias consolidadas o ubicación
+metropolitana---. Se proponen rutas de investigación complementaria que
+combinen análisis cuantitativos con abordajes cualitativos sobre las
+condiciones laborales y las trayectorias académicas del campo.
 
 \bookmarksetup{startatroot}
 
 \chapter{Introducción}\label{introducciuxf3n}
 
-Motivación, preguntas de investigación, Objetivo general y específicos,
-contribución esperada, estructura del documento.
+\section{El campo de las ciencias sociales y su posición en el sistema
+científico}\label{el-campo-de-las-ciencias-sociales-y-su-posiciuxf3n-en-el-sistema-cientuxedfico}
 
-\bookmarksetup{startatroot}
+La distribución del financiamiento científico constituye uno de los
+mecanismos más relevantes mediante los cuales el Estado moldea las
+trayectorias de la investigación académica. En Chile, este proceso ha
+estado históricamente articulado en torno a los concursos de ANID
+---anteriormente CONICYT--- y, en particular, al programa Fondecyt e
+Iniciativa Milenio, que desde su creación en 1982 y 1998
+respectivamente, se han consolidado como las principales fuentes de
+financiamiento para la investigación científica en el país
+(\citeproc{ref-ramos-zincke_wellbehaved_2021}{Ramos-Zincke, 2021}). A lo
+largo de casi cuatro décadas, ambas iniciativas han financiado más de
+20.000 proyectos, operando como dispositivos reguladores que no solo
+distribuyen recursos, sino que también orientan las prácticas
+investigativas hacia determinados estándares de productividad y
+criterios de calidad. Comprender cómo se distribuyen estos fondos, qué
+instituciones los adjudican y qué factores explican esa distribución
+resulta, por tanto, una pregunta de primer orden para entender la
+estructura del campo científico nacional.
 
-\chapter{Antecedentes conceptuales y
-empíricos}\label{antecedentes-conceptuales-y-empuxedricos}
+En las últimas décadas, las políticas de ciencia y tecnología a nivel
+global han transitado hacia modelos de gobernanza basados en el
+desempeño, donde la adjudicación de recursos depende crecientemente de
+métricas de impacto y productividad bibliométrica
+(\citeproc{ref-brunner_investigacion_2021}{Brunner \& Labraña, 2021}).
+En el ámbito internacional, las Ciencias Sociales y Humanidades (CSH)
+enfrentan desafíos particulares bajo estos modelos. A diferencia de las
+disciplinas STEM, las CSH poseen raíces epistemológicas que favorecen
+formatos de publicación diversos ---como libros y capítulos--- y una
+orientación hacia problemáticas nacionales o regionales
+(\citeproc{ref-nederhof_bibliometric_2006}{Nederhof, 2006}). Esta
+naturaleza difusa y acumulativa del conocimiento social las hace menos
+visibles a los instrumentos convencionales de medición de impacto
+(\citeproc{ref-tinkler_maximizing_2008}{Tinkler, 2008}), generando
+tensiones que no son exclusivas de ningún sistema nacional sino
+transversales al campo.
 
-Sintetiza la literatura relevante. Usa referencias como Desmond \&
-Wilmers (\citeproc{ref-desmond2019poverty}{2019}).
+En Chile, sin embargo, estas tensiones estructurales se expresan en un
+contexto singular de expansión y fragilidad simultáneas. En la última
+década, el campo de las ciencias sociales se ha densificado de manera
+acelerada. Entre 2017 y 2023, la oferta de programas de doctorado en el
+área creció un 61\%, pasando de 36 a 58 programas a nivel nacional
+(\citeproc{ref-minciencia_radiografia_2023}{Ministerio, 2023}). Esta
+expansión ha sido impulsada por una política agresiva de formación de
+capital humano avanzado: las Ciencias Sociales concentraron
+históricamente el 18,6\% del total de beneficiarios de Doctorado
+Nacional y el 58\% de las becas de Magíster en el Extranjero financiadas
+por ANID. El resultado es una comunidad académica más numerosa, con
+mayor formación y producción indexada creciente ---5.686 documentos en
+Web of Science solo en 2017, con tasas de crecimiento sostenidas durante
+el quinquenio--- (\citeproc{ref-minciencia_radiografia_2023}{Ministerio,
+2023}).
 
-\section{Marco conceptual}\label{marco-conceptual}
+\section{Chile en perspectiva comparada: una paradoja por
+descifrar}\label{chile-en-perspectiva-comparada-una-paradoja-por-descifrar}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
-nulla a ligula volutpat dictum. Sed dictum hendrerit augue, vitae
-efficitur nisl hendrerit nec. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Integer at nulla a ligula volutpat dictum. Sed dictum
-hendrerit augue, vitae efficitur nisl hendrerit nec. Lorem ipsum dolor
-sit amet, consectetur adipiscing elit. Integer at nulla a ligula
-volutpat dictum. Sed dictum hendrerit augue, vitae efficitur nisl
-hendrerit nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Integer at nulla a ligula volutpat dictum. Sed dictum hendrerit augue,
-vitae efficitur nisl hendrerit nec.
+A pesar de esta expansión interna, Chile presenta una posición
+estructuralmente débil en el contexto internacional. Según datos de la
+OCDE recopilados en la Radiografía HACS
+(\citeproc{ref-minciencia_radiografia_2023}{Ministerio, 2023}), solo el
+13,9\% de los egresados de pregrado en Chile provienen de carreras
+vinculadas a Humanidades, Artes y Ciencias Sociales, situando al país en
+el último lugar entre los miembros OCDE y por debajo del promedio
+latinoamericano (18,2\%). A nivel de postgrado, la participación sube al
+16,5\%, pero Chile sigue ubicándose entre los tres países con menor
+participación de toda la OCDE, superando solo a Australia y Japón.
+Paralelamente, el personal investigador dedicado a I+D en estas áreas
+representa apenas el 9,6\% del total nacional, cifra inferior al
+promedio OCDE (13\%) y muy distante de países líderes como Eslovaquia
+(20,9\%) o Polonia (19,6\%).
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
-nulla a ligula volutpat dictum. Sed dictum hendrerit augue, vitae
-efficitur nisl hendrerit nec. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Integer at nulla a ligula volutpat dictum. Sed dictum
-hendrerit augue, vitae efficitur nisl hendrerit nec. Lorem ipsum dolor
-sit amet, consectetur adipiscing elit. Integer at nulla a ligula
-volutpat dictum. Sed dictum hendrerit augue, vitae efficitur nisl
-hendrerit nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Integer at nulla a ligula volutpat dictum. Sed dictum hendrerit augue,
-vitae efficitur nisl hendrerit nec.
+Y, sin embargo, la productividad científica chilena en estas áreas es
+notablemente alta: entre 2012 y 2022 el país produjo 82.935
+publicaciones indexadas en Web of Science en HACS, sosteniendo una tasa
+de crecimiento estable durante la última década
+(\citeproc{ref-minciencia_radiografia_2023}{Ministerio, 2023}). Esto
+configura una paradoja estructural que vale la pena analizar: ¿cómo se
+sostiene esta productividad cuando el sistema cuenta con relativamente
+poco capital humano avanzado y baja inversión comparada? ¿A qué costo se
+mantiene esa productividad para los investigadores e investigadoras que
+operan dentro del sistema? Y, en un contexto donde la demanda académica
+sigue creciendo, ¿cuál es la capacidad real del sistema para absorber
+esa expansión sin erosionar las condiciones de la investigación?
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
-nulla a ligula volutpat dictum. Sed dictum hendrerit augue, vitae
-efficitur nisl hendrerit nec. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Integer at nulla a ligula volutpat dictum. Sed dictum
-hendrerit augue, vitae efficitur nisl hendrerit nec. Lorem ipsum dolor
-sit amet, consectetur adipiscing elit. Integer at nulla a ligula
-volutpat dictum. Sed dictum hendrerit augue, vitae efficitur nisl
-hendrerit nec. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Integer at nulla a ligula volutpat dictum. Sed dictum hendrerit augue,
-vitae efficitur nisl hendrerit nec.
+\section{¿Existe realmente una crisis? Un diagnóstico
+necesario}\label{existe-realmente-una-crisis-un-diagnuxf3stico-necesario}
 
-\subsection{Ejemplos APA 7}\label{ejemplos-apa-7}
+El debate público sobre el financiamiento de las ciencias sociales en
+Chile ha estado marcado en los últimos años por afirmaciones recurrentes
+sobre una ``crisis'' del sistema: amenazas de desfinanciamiento,
+fragilidad de los centros de excelencia, percepción de desconfianza
+política hacia la utilidad de la disciplina. Sin embargo, gran parte de
+este diagnóstico se apoya en percepciones agregadas más que en evidencia
+empírica sistemática. Falta una caracterización fina que permita
+responder con datos preguntas tan básicas como: ¿el financiamiento ha
+crecido proporcionalmente a la demanda? ¿qué grupos disciplinarios e
+instituciones absorben efectivamente esa demanda? ¿dónde están
+concretamente los cuellos de botella que limitan el crecimiento del
+campo?
 
-Según Desmond \& Wilmers (\citeproc{ref-desmond2019poverty}{2019}), los
-patrones de segregación residencial configuran los límites de
-oportunidad urbana y permiten introducir la sintaxis de cita narrativa
-dentro del flujo del texto.
+Es en esta brecha donde se sitúa el presente estudio. Sabemos que el
+campo cuenta hoy con más investigadores, más programas doctorales y una
+producción indexada en expansión. Sabemos también que la literatura
+previa indica que las universidades tradicionales concentran el 85\% de
+los proyectos Fondecyt
+(\citeproc{ref-ramos-zincke_wellbehaved_2021}{Ramos-Zincke, 2021}). Lo
+que no sabemos ---y que este estudio busca documentar--- es si el
+sistema de financiamiento está absorbiendo esta presión de manera
+proporcional, qué dimensiones específicas explican los patrones de
+adjudicación al interior del campo, y bajo qué condiciones estructurales
+se sostiene la productividad de las Ciencias Sociales en Chile. Solo con
+esa evidencia empírica es posible discutir, con propiedad, si
+efectivamente existe una crisis del sistema, dónde se localiza
+concretamente y qué dimensiones requieren intervención prioritaria.
 
-Los matices culturales del gusto pueden reforzar desigualdades cuando se
-institucionalizan en jerarquías de prestigio académico
-(\citeproc{ref-bourdieu2012}{Bourdieu, 2012, p. 35}), lo que ilustra la
-cita parentética con número de página.
+\section{Mecanismos de financiamiento ANID para las ciencias
+sociales}\label{mecanismos-de-financiamiento-anid-para-las-ciencias-sociales}
 
-Para contrastar hallazgos se pueden reunir múltiples referencias en un
-mismo paréntesis analítico (\citeproc{ref-desmond2019poverty}{Desmond \&
-Wilmers, 2019}; \citeproc{ref-xie2017bookdown}{Xie, 2017}), destacando
-cómo distintos diseños metodológicos convergen en un mecanismo causal
-compartido.
+El sistema de financiamiento científico en Chile se articula
+principalmente a través de dos instrumentos administrados por la Agencia
+Nacional de Investigación y Desarrollo (ANID): el Fondo Nacional de
+Desarrollo Científico y Tecnológico (Fondecyt) y la Iniciativa
+Científica Milenio (ICM).
 
-\begin{quote}
-Las aspiraciones colectivas se negocian constantemente en espacios
-cotidianos que traducen capital cultural en prácticas concretas,
-reescribiendo así el mapa de posibilidades percibidas por cada agente
-social en contextos urbanos desiguales. Este entramado simbólico orienta
-aspiraciones futuras y limita adaptaciones comunitarias.
-(\citeproc{ref-bourdieu2012}{Bourdieu, 2012, p. 87})
-\end{quote}
+Fondecyt es el principal mecanismo de apoyo a la investigación
+individual en Chile. Creado en 1981, fue el primer fondo concursable
+introducido por el Estado chileno para la asignación de recursos en
+investigación científica básica, inaugurando una modalidad que luego se
+replicaría en otras áreas de la política pública. Desde su creación, ha
+financiado más de 16.000 proyectos en todas las áreas del conocimiento,
+consolidándose ---según evaluaciones del BID, DIPRES y el IDRC de
+Canadá--- como un instrumento indispensable para el desarrollo
+científico-tecnológico nacional
+(\citeproc{ref-minciencia_radiografia_2023}{Ministerio, 2023}). El fondo
+opera a través de tres líneas principales: los Proyectos Regulares,
+orientados a investigadores con trayectoria consolidada y con una
+duración de dos a cuatro años; los Proyectos de Iniciación en
+Investigación, dirigidos a investigadores que hayan obtenido el grado de
+doctor en los últimos cinco años, con una duración de dos a tres años; y
+los Proyectos de Postdoctorado, destinados a quienes hayan obtenido
+dicho grado en los últimos tres años. En todos los casos, los proyectos
+se desarrollan en el país y son adjudicados mediante concursos públicos
+y competitivos.
 
-\section{Resumen del capítulo}\label{resumen-del-capuxedtulo}
+La Iniciativa Científica Milenio, por su parte, constituye un
+instrumento complementario orientado a la investigación asociativa y de
+frontera. Surgida en 1998 a partir de una convocatoria del gobierno del
+Presidente Eduardo Frei Ruiz-Tagle, fue diseñada con apoyo del Banco
+Mundial para fortalecer las capacidades científicas nacionales mediante
+la conformación de grupos de investigación de excelencia. Desde 2020 es
+gestionada por ANID, y actualmente financia 54 centros de investigación
+---37 Núcleos y 17 Institutos--- que abarcan un amplio rango de áreas
+disciplinares. A diferencia de Fondecyt, cuyo foco es la trayectoria
+individual del investigador, la ICM financia equipos de entre 3 y 10
+investigadores que abordan preguntas situadas en la frontera del
+conocimiento de sus disciplinas. Su modelo se articula en torno a cuatro
+ejes: investigación científica de frontera, formación de jóvenes
+científicos, trabajo en redes formales de colaboración, y proyección
+hacia el medio externo. El financiamiento por proyecto alcanza
+aproximadamente USD 860.000 en Ciencias Naturales y Exactas y USD
+430.000 en Ciencias Sociales para un período de tres años. Ambos
+instrumentos operan mediante evaluación por pares, con comités de
+expertos que ponderan el mérito científico de las propuestas.
 
-\begin{quote}
-Este capítulo ofreció una revisión breve de los conceptos fundamentales
-y estableció proposiciones para guiar el análisis empírico posterior.
-\end{quote}
+\section{Objetivos y estructura del
+estudio}\label{objetivos-y-estructura-del-estudio}
+
+El presente estudio busca cubrir el vacío diagnóstico identificado en
+las secciones previas. El Estudio de Fondos ANID en Ciencias Sociales es
+un proyecto elaborado desde DataSOC y la Facultad de Ciencias Sociales
+de la Universidad de Chile, que tiene como objetivo caracterizar las
+postulaciones y adjudicaciones a FONDECYT (Iniciación y Regular) en el
+área de Ciencias Sociales entre 2016 y 2025, examinando los patrones de
+distribución del financiamiento a lo largo de cuatro dimensiones: género
+del/la investigador/a responsable, grupo de estudio dentro de la
+disciplina, tipo de institución patrocinante (CRUCH/No CRUCH y
+Pública/Privada) y macrozona territorial de ejecución del proyecto. El
+estudio se organiza alrededor de dos propósitos analíticos: por un lado,
+examinar las dinámicas competitivas del sistema ---volúmenes de
+postulación, tasas de adjudicación, montos solicitados y adjudicados, y
+sus brechas relativas---; y por otro, caracterizar las asimetrías
+estructurales que persisten o emergen al interior del campo,
+distinguiendo entre el tramo de investigadores emergentes (Iniciación) y
+el tramo avanzado (Regular).De este modo, el proyecto no solo aporta un
+diagnóstico descriptivo del estado actual del financiamiento en Ciencias
+Sociales, sino que también ofrece insumos para el diseño de políticas de
+fomento más equitativas y pertinentes a las particularidades
+epistemológicas y metodológicas de estas disciplinas
+(\citeproc{ref-asun_investigan_2019}{Asún et~al., 2019};
+\citeproc{ref-brunner_investigacion_2021}{Brunner \& Labraña, 2021};
+\citeproc{ref-nederhof_bibliometric_2006}{Nederhof, 2006};
+\citeproc{ref-tinkler_maximizing_2008}{Tinkler, 2008}).
+
+Como complemento al análisis FONDECYT, el estudio incorpora una sección
+sobre Núcleos e Institutos Milenio, instrumento de investigación
+asociativa donde las Ciencias Sociales tienen una presencia
+significativa aunque marginal en comparación con otras áreas. Esta
+sección se presenta como un apartado complementario al análisis
+principal, dado que la base de datos pública disponible para Milenio
+presenta limitaciones sustantivas que restringen el alcance del
+análisis: no incluye información sobre institución patrocinante, grupo
+de evaluación ni montos adjudicados, y su cobertura temporal es
+discontinua. Por estas razones, los resultados de Milenio deben
+interpretarse como una mirada exploratoria y complementaria, no como un
+análisis equivalente al de FONDECYT en términos de profundidad o
+sistematicidad.
+
+El informe se estructura en tres secciones. La Metodología presenta en
+detalle las bases de datos utilizadas, los procedimientos de
+reconstrucción de variables, las decisiones de procesamiento y la
+estrategia analítica. Los Resultados contienen la totalidad de los
+análisis descriptivos, organizados secuencialmente por instrumento
+(FONDECYT Iniciación, FONDECYT Regular y, complementariamente, Núcleos e
+Institutos Milenio) y dentro de cada uno por dimensión de desagregación
+(perspectiva comparada, género, grupo de estudio, institución
+patrocinante y macrozona). Finalmente, las Conclusiones sintetizan los
+principales hallazgos de la investigación, proponen lineamientos para el
+debate sobre la política científica nacional y delinean rutas para
+profundizar esta agenda de estudio.
 
 \bookmarksetup{startatroot}
 
 \chapter{Metodología}\label{metodologuxeda}
 
+Este apartado se divide en tres secciones. Primero, se presentan los
+datos con los cuales se realiza el informe, detallando las bases de
+datos disponibles, las decisiones metodológicas adoptadas para su
+procesamiento y la construcción de los indicadores de análisis. En
+segundo lugar, se describen las variables disponibles del estudio, junto
+con su definición operacional y los criterios de procesamiento
+aplicados. Por último, se define la estrategia analítica utilizada para
+elaborar los resultados.
+
+Todos los códigos asociados al procesamiento y análisis de los datos se
+encuentran disponibles en el
+\href{https://github.com/renejcanales/fondos-css}{repositorio GitHub
+asociado al estudio}.\footnote{Se realizaron solicitudes de acceso a la
+  información al amparo de la Ley N° 20.285, dirigidas a ANID a través
+  del Portal de Transparencia del Estado, con el objetivo de obtener
+  mayor granularidad en los datos ---incluyendo puntajes de evaluación,
+  montos solicitados y caracterización de investigadores/as. Sin
+  embargo, la demora del organismo en ordenar y gestionar las bases
+  solicitadas imposibilitó avanzar en su espera, por lo que se procedió
+  a trabajar con los datos públicos disponibles en el repositorio GitHub
+  de ANID, complementados con la información agregada publicada en los
+  documentos oficiales de resultados de los concursos FONDECYT.}
+
 \section{Datos}\label{datos}
 
-\subsection{Publicaciones}\label{publicaciones}
-
-La principal fuente de datos para publicaciones fue el mantenedor de
-publicaciones de SEPA-VID gestionado por la Unidad de Datos e
-Indicadores de la VID. Se filtraron las publicaciones adscritas a la
-Facultad de Ciencias Sociales para el período comprendido entre 2020 y
-2025. Cabe destacar que SEPA-VID contiene únicamente las publicaciones
-de un académicos durante la vigencia de su nombramiento en la
-Universidad, por lo que publicaciones previas al ingreso de un académico
-no se consideran en el análisis. Además, SEPA-VID contiene
-mayoritaríamente artículos indexados en las bases de datos de WoS,
-Scopus y Scielo.
-
-Esta base fue complementada a través de la API de ORCID para los 72
-investigadores incluídos en el
-\href{https://colaboratoriocienciassociales.uchile.cl/}{Colaboratorio de
-Investigación en Ciencias Sociales} de la Facultad. Este procedimiento
-resultó particularmente útil para recoger información de libros,
-capítulos de libros y artículos indexados en bases de datos distintas a
-las mencionadas.
-
-Además, la base fue enriquecida a través de la
-\href{https://www.webofscience.com/wos/mjl/collection-list-downloads}{Web
-of Science Master List}, la
-\href{https://www.elsevier.com/products/scopus/content\#4-titles-on-scopus}{Scopus
-Source title list} y la API de Scielo con el fin de identificar la
-indexación de revistas sin ese registro. Además, se extrajo de estas
-listas información sobre el idioma de la revista o si la publicación
-tiene acceso abierto. Se utilizó la API de Scopus para recoger la
-cantidad de citas para cada publicación identificada. Por último, se
-utilizó el \href{https://www.scimagojr.com/journalrank.php}{SCImago
-Journal Rank} para obtener información sobre impacto y el cuartil en que
-se posicionan las revistas registradas.
-
-\section{Variables}\label{variables}
-
-Detalle de las variables incluidas en el análisis, así como escalas de
-medición.
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.4085}}
-  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0563}}
-  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1268}}
-  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1690}}
-  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1127}}
-  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1268}}@{}}
-\caption{Estadísticas descriptivas por variable
-(ejemplo)}\tabularnewline
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Variable
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-N
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Media
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Desv. Est.
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Min
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Max
-\end{minipage} \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Variable
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-N
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Media
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Desv. Est.
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Min
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Max
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Ingreso per cápita (mensual) & 32 & 20.091 & 6.027 & 10.400 & 33.900 \\
-Capital social barrial & 32 & 3.217 & 0.978 & 1.513 & 5.424 \\
-Precariedad laboral & 32 & 146.688 & 68.563 & 52.000 & 335.000 \\
-Capital institucional & 32 & 3.597 & 0.535 & 2.760 & 4.930 \\
-Participación comunitaria & 32 & 17.849 & 1.787 & 14.500 & 22.900 \\
-\end{longtable}
-
-\section{Métodos}\label{muxe9todos}
-
-Breve descripción de los procedimientos aplicados para procesar y
-analizar la información.
-
-\bookmarksetup{startatroot}
-
-\chapter{Resultados}\label{resultados}
-
-\section{Caractertización de las publicaciones de académicos
-FACSO}\label{caractertizaciuxf3n-de-las-publicaciones-de-acaduxe9micos-facso}
-
-\subsection{Volúmen total de Publicaciones
-(2020-2025)}\label{voluxfamen-total-de-publicaciones-2020-2025}
-
-\begin{figure}
-
-\caption{\label{fig-tipo-publicaciones}Cantidad de publicaciones por
-tipo de publicación}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-tipo-publicaciones-1.pdf}}
-
-}
-
-\end{figure}%
-
-En el período de referencia (2020-2025), se encontraron un total de 1162
-publicaciones diferentes. Entre estas, como se expone en la
-Figura~\ref{fig-tipo-publicaciones}, se observa un claro dominio de la
-publicación de artículos en revistas académicas (n=946), representando
-un 81\% del total de publicaciones identificadas. Los capítulos de
-libros en libros editados, en tanto, representan un 15\% del total,
-mientras que los libros monográficos o editados son solo el 4\% del
-volumen total de publicaciones. Considerando que al 31 de diciembre de
-2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE),
-esto significa que el período estudiado se registraron 7.49
-publicaciones por JCE: 6.1 artículos, 1.11 capítulos de libros y 0.29
-libros.
-
-\begin{figure}
-
-\caption{\label{fig-publicacion-anio}Publicaciones por año}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-anio-1.pdf}}
-
-}
-
-\end{figure}%
-
-Observando la evolución por año en el período de referencia se aprecia
-que entre 2020 y 2021 aumentaron la cantidad de publicaciones de manera
-sustancial para los tres tipos de publicaciones analizadas, posiblemente
-por un efecto de rebote tras el inicio de la Pandemia por COVID19 en
-2020. Desde ahí, se observan fluctuaciones con relativa estabilidad.
-Así, los artículos se mantienen entre 148 y 185, los capítulos de libro
-entre 22 y 39, y entre 3 y 11 libros monográficos o editados.
-
-La mediana de publicaciones por académico es de 3, con el 50\% de la
-Facultad produciendo entre 1 y 9 publicaciones en el período mencionado,
-con máximos que llegan hasta las 45 publicaciones. Esto indica una alta
-dispersión y una concentración de publicaciones entre los académicos más
-productivos, como se observan en la Figura~\ref{fig-publicacion-lorenz}.
-Así, el 20\% de los académicos más productivos concentra dos tercios de
-las publicaciones; el 50\% del total de las publicaciones de la Facultad
-corresponden al 13\% de los académicos con mayor productividad.
-
-\begin{figure}
-
-\caption{\label{fig-publicacion-lorenz}Concentración de publicaciones
-por porcentaje de académicos acumulado (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-lorenz-1.pdf}}
-
-}
-
-\end{figure}%
-
-\subsection{Caracterización de los
-autores}\label{caracterizaciuxf3n-de-los-autores}
-
-Según se observa en el Figura~\ref{fig-publicacion-depto}, el predominio
-de los artículos sobre otras formas de publicaciones es apreciable en
-todos los departamentos, aunque la publicación de capítulos de libros es
-superior en Trabajo Social, Sociología y Psicología. Se destaca que el
-departamento de Trabajo Social es el que más publicaciones por Jornada
-Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le
-sigue el Departamento de Sociología con 9.35 publicaciones por JCE,
-Psicología con 8.08, Antropología con 7.72 y Educación con 4.22.
-
-\begin{figure}
-
-\begin{minipage}{\linewidth}
-
-\begin{figure}[H]
-
-\caption{\label{fig-publicacion-depto}Publicaciones por Departamento por
-JCE (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-depto-1.pdf}}
-
-}
-
-\end{figure}%
-
-\end{minipage}%
-
-\end{figure}%
-
-En la Figura~\ref{fig-publicacion-genero} se observa que las académicas
-de la Facultad son más productivas que los académicos, completando 10.73
-publicaciones por JCE en le período analizado, contra 7.19 publicaciones
-por JCE entre los hombres. Aunque esta diferencia se repite en todos los
-tipos de publicaciones, es más acentuada en los artículos, con una
-diferencia 2.71 publicaciones por jornada completa.
-
-\begin{figure}
-
-\caption{\label{fig-publicacion-genero}Publicaciones por Género
-(2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-genero-1.pdf}}
-
-}
-
-\end{figure}%
-
-El Figura~\ref{fig-publicacion-edad} muestra que el tramo etario con
-mayor productividad en el período analizado se encuentra entre los 50 y
-59 años, con 10.58 publicaciones por JCE, y fuerte concentración en los
-artículos. Le sigue el grupo menor de 50 años, con 10.03 publicaciones
-por JCE, aunque con un menor peso relativo de los artículos en
-comparación a los capítulos de libro. Mientras tanto, la productividad
-de los académicos mayores de de 60 años es de 4.79 publicaciones por
-JCE.
-
-\begin{figure}
-
-\caption{\label{fig-publicacion-edad}Publicaciones por Edad y
-Departamento (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-edad-1.pdf}}
-
-}
-
-\end{figure}%
-
-LA Figura~\ref{fig-publicacion-jerarquia} muestra las diferencias por
-jerarquía. Se observa que hay un salto importante entre la jerarquía de
-asistente y de asociado, pasando de 4.49 publicaciones por JCE a 12.19.
-La diferencia entre profesores asociados y titulares es menor, con los
-segundos registrando 11.49 publicaciones por JCE.
-
-\begin{figure}
-
-\caption{\label{fig-publicacion-jerarquia}Publicaciones por Jerarquía y
-Departamento (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-publicacion-jerarquia-1.pdf}}
-
-}
-
-\end{figure}%
-
-\section{Artículos y Revistas}\label{artuxedculos-y-revistas}
-
-\subsection{Indexaciones}\label{indexaciones}
-
-Los artículos de investigación representan con diferencia la mayor parte
-de la producción académica de la Facultad, con 946 registros diferentes,
-o un 77\% del total de las publicaciones identificadas. La
-Figura~\ref{fig-index} muestra la distribución de las indexaciones de
-las revistas en que publican los académicos de FACSO. De tal modo, se
-observa que el 78\% de las publicaciones se encuentran en revistas
-indexadas en WoS (42\%) o Scopus (36\%), posiblemente en consonancia con
-los modelos de evaluación de ANID en sus fondos concursables. Más abajo
-se encuentran las revistas indexadas en Scielo, con un 11\% de las
-publicaciones en el período analizada. La categoría ``Otra'' agrega
-revistas en indexadas en el \emph{Emerging Sources Citacion Index}
-(ESCI), la \emph{European Reference Index for the Humanities and Social
-Sciences} (ERIH Plus), \emph{Latindex}, el \emph{Directory of Open
-Access Journals} (DOAJ), entre otras. En su conjunto, éstas acumulan el
-11\% de las publicaciones totales.
-
-\begin{figure}
-
-\caption{\label{fig-index}Publicaciones por Indexación de la Revista
-(2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-1.pdf}}
-
-}
-
-\end{figure}%
-
-\begin{figure}
-
-\caption{\label{fig-index-evolucion}Evolución de Publicaciones por
-Indexación de la Revista (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-evolucion-1.pdf}}
-
-}
-
-\end{figure}%
-
-La Figura~\ref{fig-index-evolucion} muestra la evolución de la cantidad
-de publicaciones en cada indexación durante el período analizado. La
-predominancia de WoS y Scopus se mantiene en todo los años,
-particularmente tras la recuperación post-pandemia en 2021. Durante 2021
-y 2022, prácticamente no hay diferencias entre ambas bases de datos. Sin
-embargo, desde 2023 se abre una brecha en favor a Web of Science que ha
-fluctuado entre 7 y 12 publicaciones por año. También es interesante que
-las publicaciones indexadas en Scielo se habían mantenido entrw 14 y 22,
-incluso en 2020 durante la pandemia, para caer bruscamente en 2025. Por
-supuesto, no es posible establecer aún las causas o si esto es una
-tendencia que se mantendrá en el tiempo.
-
-\begin{figure}
-
-\caption{\label{fig-index-depto}Publicaciones por Indexación de la
-Revista por Departamento (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-depto-1.pdf}}
-
-}
-
-\end{figure}%
-
-La Figura~\ref{fig-index-depto} muestra que hay diferencias importantes
-entre los departamentos. Por un lado, en Antropología predominan las
-publicaciones en WoS, principalmente en revistas relaciondas a la
-arqueología y la antropología física. Mientras tanto, el Departamento de
-Trabajo Social muestra una mayor cantidad de publicaciones en Scopus por
-JCE, al igual que el Departamento de Educación. El Departamento de
-Psicología y el Departamento de Sociología, por su lado, muestran un
-mayor nivel de paridad entre entre ambas bases de datos, con un leve
-predominio de WoS. La Tabla~\ref{tbl-index-depto} muestra las revistas
-con mayor frecuencia por departamento, reflejando las tendencias antes
-mencionadas. Asimismo, se observa una fuerte presencia de la revistas de
-la Facultad, tales como Enfoques Educaciones (Departamento de
-Educación), Revista de Psicología (Departamento de Psicología), Última
-Década y Revista de Sociología (Departamento de Sociología), y
-Propuestas Críticas en Trabajo Social y Revista MAD (Departamento de
-Trabajo Social).
+Al comienzo de este estudio se utilizaron cuatro bases de datos
+extraídas del \href{https://github.com/ANID-GITHUB}{repositorio público
+de ANID} y procesadas siguiendo un protocolo de limpieza y
+estandarización documentado en \texttt{processing/01-proc-data.qmd}. Las
+bases disponibles eran \texttt{BDH\_HISTORICA}, que incluye el registro
+histórico de todos los proyectos adjudicados en ANID desde 1982;
+\texttt{POSTULACIONES\_2016\_2025}, que contiene el registro de todas
+las postulaciones a Fondecyt entre 2016 y 2025;
+\texttt{BDH\_PROYECTOS\_MILENIO}, que registra las adjudicaciones del
+programa Milenio entre 2016 y 2025; y \texttt{POSTULACIONES\_MILENIO},
+que incluye el registro histórico de postulaciones Milenio desde su
+creación en 2006.
+
+A partir de estas bases, se construyeron tres bases de análisis para
+este estudio: la base de postulaciones FONDECYT con un merge de la base
+de adjudicaciones (\texttt{base\_fondecyt\_completa}), una base que
+considera exclusivamente las postulaciones y adjudicaciones en Ciencias
+Sociales con información ampliada sobre montos solicitados y adjudicados
+por grupo de estudio (\texttt{base\_fondecyt\_sociales\_merge\_monto}),
+y las adjudicaciones Milenio en Ciencias Sociales
+(\texttt{adjudicacion\_milenio\_limpia\_sociales}).
+
+Las bases \texttt{base\_fondecyt\_completa} y
+\texttt{base\_fondecyt\_sociales\_merge\_monto} son los insumos
+principales del análisis. Fueron construidas a partir de un \emph{left
+join} entre la base de postulaciones FONDECYT (2016--2025) y la base de
+adjudicaciones históricas, utilizando \texttt{CODIGO\_PROYECTO} como
+llave de unión. Esta decisión permitió contar en un solo dataframe tanto
+el universo completo de postulaciones evaluadas ---adjudicadas y no
+adjudicadas--- como la información adicional disponible solo para los
+proyectos que obtuvieron financiamiento, como nombre del proyecto, grupo
+de evaluación, disciplina detallada, duración, monto adjudicado e
+institución principal. Como consecuencia del diseño del merge, las
+variables provenientes de la base de adjudicaciones quedan con valores
+\texttt{NA} para todos los registros cuyo
+\texttt{ESTADO\_RESOLUCION\_CONCURSO} es ``NO ADJUDICADO'', lo que
+constituye un comportamiento esperado y no un problema de calidad de
+datos. Esto implica una restricción metodológica importante: los
+análisis a nivel de institución, monto adjudicado y grupo de estudio
+solo pueden realizarse sobre el universo de proyectos adjudicados, no
+sobre el total de postulaciones.
+
+\subsection{Reconstrucción de los montos por grupo de
+estudio}\label{reconstrucciuxf3n-de-los-montos-por-grupo-de-estudio}
+
+La base original publicada por ANID presenta información incompleta
+sobre los montos promedio adjudicados y solicitados por grupo de
+estudio. Específicamente, los valores disponibles a nivel de grupo-año
+solo cubrían los años 2016-2019 para FONDECYT Iniciación y 2016-2022
+para FONDECYT Regular, con valores imputados o ausentes para los años
+más recientes.
+
+Para subsanar esta limitación, se realizó una reconstrucción manual de
+los montos promedio por grupo de estudio y año a partir de los
+documentos oficiales publicados por ANID al cierre de cada concurso
+(``Proyectos y Recursos Totales por Grupo de Evaluación''), extrayendo
+los totales de recursos solicitados y adjudicados por grupo, así como el
+número de proyectos concursados y aprobados. A partir de estos datos se
+calcularon dos indicadores agregados por grupo-año-instrumento:
+
+\[\text{Monto promedio solicitado} = \frac{\text{Recursos Totales Solicitados (miles CLP)} \times 1000}{N^{\circ} \text{ proyectos concursados}}\]
+
+\[\text{Monto promedio adjudicado} = \frac{\text{Recursos Totales Adjudicados (miles CLP)} \times 1000}{N^{\circ} \text{ proyectos aprobados}}\]
+
+Esta reconstrucción permitió completar la serie 2016-2025 con valores
+reales y comparables entre años, eliminando los valores imputados con
+promedios generales. En los años donde ANID presentaba agrupaciones
+distintas a las actuales ---por ejemplo, en 2016 los grupos
+``Arquitectura, Urbanismo, Geografía y Artes'' aparecían combinados---
+se optó por dejar como \texttt{NA} aquellas celdas que no eran
+separables, evitando imputaciones que distorsionaran las comparaciones
+temporales. La trazabilidad completa de los reemplazos está documentada
+en los archivos de log generados durante el procesamiento.
+
+\subsection{Bases Milenio}\label{bases-milenio}
+
+Las bases Milenio siguen una lógica análoga, aunque corresponden a un
+instrumento de financiamiento estructuralmente distinto: convocatorias
+menos frecuentes, proyectos de mayor envergadura y un perfil de
+postulantes orientado a centros de investigación asociativa (Núcleos e
+Institutos Milenio). La base Milenio disponible presenta limitaciones
+sustantivas que restringen el alcance del análisis: las variables de
+institución patrocinante, grupo de evaluación, disciplina detallada y
+montos adjudicados no están disponibles para este instrumento; además,
+la cobertura temporal es discontinua, con datos disponibles solo para
+los concursos 2016, 2017, 2020, 2021 y 2022. Por estas razones, los
+indicadores calculados para Milenio son comparables solo de manera
+descriptiva con FONDECYT, y las tasas de adjudicación de ambos programas
+no son directamente comparables sin considerar estas diferencias
+estructurales.
+
+\subsection{Universo de análisis}\label{universo-de-anuxe1lisis}
+
+El universo de análisis fue delimitado aplicando dos filtros
+fundamentales: en primer lugar, se seleccionaron únicamente
+postulaciones clasificadas como ``Ciencias Sociales'' según la taxonomía
+OCDE; en segundo lugar, se conservaron exclusivamente aquellas cuyo
+proceso de evaluación finalizó en condición de ``Adjudicado'' o ``No
+Adjudicado'', excluyendo postulaciones inadmisibles o fuera de bases. El
+período temporal abarca los años 2016 a 2025, garantizando la
+consistencia longitudinal entre todas las bases. Para los análisis
+comparativos entre tipos de institución, se excluyeron centros de
+investigación, fundaciones, museos e instituciones extranjeras presentes
+en la base, manteniendo únicamente universidades chilenas. El listado
+completo de instituciones y su clasificación se presenta en la sección
+de resultados (ver Tabla~\ref{tbl-clasificacion-instituciones} y
+Tabla~\ref{tbl-clasificacion-publica-privada}).
 
 \begin{table}
 
-\caption{\label{tbl-index-depto}Revistas con mayor cantidad de
-publicaciones por Departamento (2020-2025)}
+\caption{\label{tbl-bbdd}Bases de datos disponibles}
 
 \centering{
 
-\centering
-\begin{tabular}[t]{>{\raggedright\arraybackslash}p{11cm}lr}
+\centering\begingroup\fontsize{9}{11}\selectfont
+
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2.5cm}}
 \toprule
-Publicación & Indexación & Frecuencia\\
+Base de datos & Origen & Periodo & Unidad de análisis & N° observaciones\\
 \midrule
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Antropología}}\\
-\hspace{1em}CHUNGARA-REVISTA DE ANTROPOLOGIA CHILENA & WoS & 11\\
-\hspace{1em}JOURNAL OF ARCHAEOLOGICAL SCIENCE-REPORTS & WoS & 8\\
-\hspace{1em}ESTUDIOS ATACAMENOS & WoS & 6\\
-\hspace{1em}MAGALLANIA & WoS & 6\\
-\hspace{1em}QUATERNARY INTERNATIONAL & WoS & 5\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Educación}}\\
-\hspace{1em}ESTUDIOS PEDAGOGICOS (VALDIVIA) & Scopus & 6\\
-\hspace{1em}Revista enfoques educacionales & Scielo & 5\\
-\hspace{1em}Revista de estudios y experiencias en educación & Scielo & 4\\
-\hspace{1em}Dialogo andino & Scopus & 2\\
-\hspace{1em}REVISTA COMPLUTENSE DE EDUCACION & Scopus & 2\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Psicología}}\\
-\hspace{1em}Revista de psicología & Scielo & 10\\
-\hspace{1em}Psykhe & Scopus & 8\\
-\hspace{1em}PSICOPERSPECTIVAS & Scopus & 6\\
-\hspace{1em}TERAPIA PSICOLOGICA & WoS & 5\\
-\hspace{1em}SUSTAINABILITY & WoS & 4\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Sociología}}\\
-\hspace{1em}ULTIMA DECADA & Scielo & 7\\
-\hspace{1em}Revista de Sociología & Otra & 7\\
-\hspace{1em}Estudios Sociologicos & Scopus & 5\\
-\hspace{1em}FRONTIERS IN SOCIOLOGY & Scopus & 4\\
-\hspace{1em}Revista Chilena de Derecho y Ciencia Política & Scopus & 4\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Trabajo social}}\\
-\hspace{1em}Propuestas Críticas en Trabajo Social-Critical Proposals in Social Work & Otra & 24\\
-\hspace{1em}REVISTA MAD-REVISTA DEL MAGISTER EN ANALISIS SISTEMICO APLICADO A LA SOCIEDAD & Scopus & 10\\
-\hspace{1em}RUMBOS TS Un Espacio Crítico para la Reflexión en Ciencias Sociales & Scielo & 6\\
-\hspace{1em}FRONTIERS IN PSYCHOLOGY & WoS & 4\\
-\hspace{1em}SOCIAL WORK EDUCATION & Scopus & 4\\
+\cellcolor{gray!10}{base\_fondecyt\_completa} & \cellcolor{gray!10}{Merge postulaciones + adjudicaciones FONDECYT} & \cellcolor{gray!10}{2016–2025} & \cellcolor{gray!10}{Postulación FONDECYT (todas las áreas)} & \cellcolor{gray!10}{Por confirmar con tu base}\\
+base\_fondecyt\_sociales\newline\_merge\_monto & Postulaciones + adjudicaciones FONDECYT Ciencias Sociales + reconstrucción de montos desde PDFs ANID & 2016–2025 & Postulación FONDECYT en Ciencias Sociales & 8.603 postulaciones\\
+\cellcolor{gray!10}{adjudicacion\_milenio\newline\_limpia\_sociales} & \cellcolor{gray!10}{Adjudicaciones Milenio en Ciencias Sociales} & \cellcolor{gray!10}{2016, 2017, 2020, 2021, 2022} & \cellcolor{gray!10}{Adjudicación Núcleo/Instituto Milenio} & \cellcolor{gray!10}{59 adjudicaciones (26 en CS Sociales)}\\
 \bottomrule
-\end{tabular}
-
-}
-
-\end{table}%
-
-Figura~\ref{fig-index-carac} muestra la cantidad de publicaciones por
-JCE según género, edad y jerarquía de los autores. En general, se
-aprecia que las tendencias observadas son las mismas, con WoS y Scopus
-acaparando la mayor parte de la productividad, y la primera estando
-sobre la segunda en la mayoría de los grupos analizados. También se
-mantienen tendencias tales como que las mujeres
-(Figura~\ref{fig-index-carac-1}) y los académicos de entre 50 y 59 años
-(Figura~\ref{fig-index-carac-2}) publican más en todas las indexaciones.
-Respecto a la jerarquía, como se observa en
-Figura~\ref{fig-index-carac-3}, mientras los profesores titulares son
-quienes más publican en WoS por JCE, los profesores asociados los
-superan en Scopus y Scielo.
-
-\begin{figure}[H]
-
-\caption{\label{fig-index-carac}Publicaciones por Indexación y
-características de los autores}
-
-\centering{
-
-\subcaption{\label{fig-index-carac-1}Publicaciones por Indexación de la
-Revista por Género del autor(2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-carac-1.pdf}}
-
-}
-
-\subcaption{\label{fig-index-carac-2}Publicaciones por Indexación de la
-Revista por Edad del autor(2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-carac-2.pdf}}
-
-}
-
-\subcaption{\label{fig-index-carac-3}Publicaciones por Indexación de la
-Revista por Jerarquia del autor(2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-index-carac-3.pdf}}
-
-}
-
-}
-
-\end{figure}%
-
-\subsection{Número de Citas}\label{nuxfamero-de-citas}
-
-A través de la API de Scopus, se encontraron registro de las citas de
-674 artículos durante el período estudiado. La suma de citas entre 2020
-y 2025 asciende a un total de 4854, lo que equivale a un promedio de 6.7
-citas por artículos. Si se ordenan las citas de mayor a menor, es
-posible observar que el índice h agregado de la institución es igual a
-30. En otras palabras, entre 2020 y 2025 los académicos de la Facultad
-publicaron un total de 30 artículos que registran 30 citas o más.
-
-Ahora bien, se observa una gran dispersión en la cantidad de citas por
-artículo. El rango de citas va de 0 a un máximo de 307. El artículo
-mediano cuenta con 3 citaciones, con el 50\% de las publicaciones
-registrando entre 1 y 7 citas. Esta amplia dispersión se observa
-claramente en Figura~\ref{fig-citas-densidad}, donde se observa una
-mayor proporción de artículos con 0 a 2 citas, con una cola larga hacia
-la derecha que se extiende más allá de las 300 citas.
-
-\begin{figure}
-
-\caption{\label{fig-citas-densidad}Distribución de citas por artículos
-(2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-citas-densidad-1.pdf}}
-
-}
-
-\end{figure}%
-
-La Tabla~\ref{tbl-citas-depto} muestra la cantidad de artículo, el total
-de citas y el índice h para cada Departamento de la Facultad. El
-departamento de Psicología tiene la mayor cantidad de citas en el
-período analizado, con 2148 citas y un índice h de 22. Le siguen el
-departamento de Antropología con 1169 citas y un índice h de 16; el
-departamento de Sociología con 951 citas y un índice h de 15; el
-departamento de Trabajo Social y el departamento de Educación con 90
-citas y un índice h de 5.
-
-\begin{longtable}[t]{lccc}
-
-\caption{\label{tbl-citas-depto}Citas e Indíce h por Departamento
-(2020-2025)}
-
-\tabularnewline
-
-\toprule
-Departamento & Artículos & Total de citas & Índice h\\
-\midrule
-Antropología & 178 & 1169 & 16\\
-Educación & 36 & 90 & 5\\
-Psicología & 217 & 2148 & 22\\
-Sociología & 134 & 951 & 15\\
-Trabajo social & 139 & 774 & 12\\
-\bottomrule
-
-\end{longtable}
-
-La Tabla~\ref{tbl-citas} permite aprecias las diferencias en la cantidad
-de citas e índice h según género, edad y jerarquía académica. Se
-observan tendencias similares a las que expusieron respecto al volúmen
-de publicación. Las mujeres exhiben una mayor cantidad de citas y un
-mayor índice h que los hombres, pese a representar una cantidad menor de
-JCE en la Facultad. Los académicos entre 50 y 59 años, y auquellos con
-jerarquía académica de Asociado, presentan la mayor cantidad de citas e
-índice h. Cabe destacar, con todo, que la diferencia en la cantidad de
-citas entre profesores asociados y titulares se explica mayormente por
-la menor cantidad de académicos en la jerarquía titular.
-
-\begin{longtable}[t]{lccc}
-
-\caption{\label{tbl-citas}Citas e Indíce h por características de los
-autores (2020-2025)}
-
-\tabularnewline
-
-\toprule
-Categoría & Artículos & Total de citas & Índice h\\
-\midrule
-\addlinespace[0.3em]
-\multicolumn{4}{l}{\textbf{Género}}\\
-\hspace{1em}Femenino & 464 & 3566 & 26\\
-\hspace{1em}Masculino & 342 & 2121 & 22\\
-\addlinespace[0.3em]
-\multicolumn{4}{l}{\textbf{Tramo de edad}}\\
-\hspace{1em}Menos de 50 años & 271 & 1361 & 16\\
-\hspace{1em}50 a 59 años & 426 & 3449 & 25\\
-\hspace{1em}60 años o más & 109 & 877 & 15\\
-\addlinespace[0.3em]
-\multicolumn{4}{l}{\textbf{Jerarquía académica}}\\
-\hspace{1em}Asistente & 153 & 792 & 12\\
-\hspace{1em}Asociado & 473 & 3553 & 27\\
-\hspace{1em}Titular & 178 & 1341 & 17\\
-\bottomrule
-
-\end{longtable}
-
-\subsection{Cuartil de las revistas}\label{cuartil-de-las-revistas}
-
-Se registraron un total de 741 publicaciones en revistas con un SJR
-(\emph{SCImago Journal Rank}) registrado. La Tabla~\ref{tbl-sjr} muestra
-la distribución por Cuartil de SJR de las publicaciones analizadas. Se
-destaca que la mayoría de las publicación se encuentran en el rango de
-Q1, con un 42\%. En conjunto, el 67\% de las publicaciones en revistas
-con factor de impacto en SCImago durante el período de referencia
-corresponden a revitas Q1 o Q2.
-
-\begin{table}
-
-\caption{\label{tbl-sjr}Cuartil en SJR publicaciones FACSO (2020-2025)}
-
-\centering{
-
-\centering
-\begin{tabular}[t]{lrr}
-\toprule
-\cellcolor[HTML]{f2f2f2}{\textbf{Cuartil}} & \cellcolor[HTML]{f2f2f2}{\textbf{N}} & \cellcolor[HTML]{f2f2f2}{\textbf{Porcentaje}}\\
-\midrule
-Q1 & 310 & 42,2\%\\
-Q2 & 187 & 25,4\%\\
-Q3 & 181 & 24,6\%\\
-Q4 & 57 & 7,8\%\\
-\bottomrule
-\end{tabular}
-
-}
-
-\end{table}%
-
-La Figura~\ref{fig-sjr} muestra la evolución de la cantidad y proporción
-de de publicacione de académicos FACSO en revistas Q1 y Q2 durante el
-período de referencia. Como era de esperar, se repite el patrón de
-recuperación tras el 2020, alcanzando un peak en de 103 publicaciones Q1
-o Q2 que representan un 73\% del total de artículos con SJR. Desde ahí,
-se produce una tendencia a la baja hasta 2023, revirtiendose para 2024.
-En 2025, se vuelve a niveles similares a 2021 on 102 publicaciones Q1 o
-Q2, lo que representa un 70\% de los artículos analizados.
-
-\begin{figure}
-
-\caption{\label{fig-sjr}Evolución Cantidad y Proporción de Publicación
-FACSO en revistas Q1 y Q2 (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-sjr-1.pdf}}
-
-}
-
-\end{figure}%
-
-La Figura~\ref{fig-sjr-depto} permite describir el volúmen y la
-proporción de publicaciones en revistas Q1y Q2 por departamento,
-ajustadas por JCE. Antropología destaca por tener la mayor cantidad de
-publicaciones Q1 y Q2 durante el período analizado, con 4.4 artículos
-por JCE. Asimismo, es el departamento que tiene una mayor proporción de
-artículos en estas categorías. Por su lado, el Departamento de Trabajo
-Social registra la mayor cantidad de publicaciones en revistas Q1, con
-2.8 artículos por JCE.
-
-\begin{figure}
-
-\caption{\label{fig-sjr-depto}Cantidad y proporción de publicaciones en
-revistas Q1 y Q2 por JCE por Departamento (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-sjr-depto-1.pdf}}
-
-}
-
-\end{figure}%
-
-La Tabla~\ref{tbl-sjr-depto} expone las principales revistas Q1 o Q2 en
-que han publicado los académicos de la Facultad durante el período
-analizado. Los resultados son similares a los observados en
-Tabla~\ref{tbl-index-depto}, especialmente en Antropología y Trabajo
-Social. Destacan publicaciones en revistas tales como \emph{Earth
-Future} (Q1 en Ciencias del Medioambiente), \emph{Journal of
-Archaeological Science} (Q1 en Arqueología), \emph{BMC Psychiatry} (Q1
-en Psiquiatría y Salud Mental), \emph{Frontiers in Sociology} (Q1 en
-Ciencias Sociales) y \emph{Frontiers in Psychology} (Q1 en Psicología).
-Por otro lado, vuelve a aparecen una revista de la Facultad:
-\emph{Cintia de Moebio}, que se encuentra calificada como Q2 en el área
-de Filosofía.
-
-\begin{table}
-
-\caption{\label{tbl-sjr-depto}Revistas con mayor cantidad de
-publicaciones por Departamento (2020-2025)}
-
-\centering{
-
-\centering
-\begin{tabular}[t]{>{\raggedright\arraybackslash}p{11cm}lr}
-\toprule
-Publicación & Cuartil & Frecuencia\\
-\midrule
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Antropología}}\\
-\hspace{1em}CHUNGARA-REVISTA DE ANTROPOLOGIA CHILENA & Q2 & 11\\
-\hspace{1em}JOURNAL OF ARCHAEOLOGICAL SCIENCE-REPORTS & Q1 & 8\\
-\hspace{1em}ESTUDIOS ATACAMENOS & Q2 & 6\\
-\hspace{1em}MAGALLANIA & Q2 & 6\\
-\hspace{1em}QUATERNARY INTERNATIONAL & Q2 & 5\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Educación}}\\
-\hspace{1em}Dialogo andino & Q1 & 2\\
-\hspace{1em}EARLY YEARS & Q2 & 2\\
-\hspace{1em}FRONTIERS IN PSYCHOLOGY & Q1 & 1\\
-\hspace{1em}EDUCATION POLICY ANALYSIS ARCHIVES & Q2 & 1\\
-\hspace{1em}PSICOPERSPECTIVAS & Q2 & 1\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Psicología}}\\
-\hspace{1em}PSICOPERSPECTIVAS & Q2 & 6\\
-\hspace{1em}SUSTAINABILITY & Q1 & 4\\
-\hspace{1em}BMC PSYCHIATRY & Q1 & 4\\
-\hspace{1em}INTERNATIONAL JOURNAL OF ENVIRONMENTAL RESEARCH AND PUBLIC HEALTH & Q1 & 3\\
-\hspace{1em}JOURNAL OF COMMUNITY PSYCHOLOGY & Q1 & 3\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Sociología}}\\
-\hspace{1em}FRONTIERS IN SOCIOLOGY & Q1 & 4\\
-\hspace{1em}LATIN AMERICAN RESEARCH REVIEW & Q1 & 3\\
-\hspace{1em}CINTA DE MOEBIO & Q2 & 3\\
-\hspace{1em}CUHSO-CULTURA-HOMBRE-SOCIEDAD & Q2 & 3\\
-\hspace{1em}Historia (Santiago) & Q1 & 2\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Trabajo social}}\\
-\hspace{1em}FRONTIERS IN PSYCHOLOGY & Q1 & 4\\
-\hspace{1em}SOCIAL WORK EDUCATION & Q1 & 4\\
-\hspace{1em}BRITISH JOURNAL OF SOCIAL WORK & Q1 & 4\\
-\hspace{1em}AFFILIA-FEMINIST INQUIRY IN SOCIAL WORK & Q1 & 4\\
-\hspace{1em}EARTHS FUTURE & Q1 & 3\\
-\bottomrule
-\end{tabular}
-
-}
-
-\end{table}%
-
-En Tabla~\ref{tbl-sjr-carac} se muestran las diferencias por
-características del autor en la cantidad y proporción de publicaciones
-en Q1 y Q2. En líneas generales, todos los grupos muestran proporciones
-de publicación en estas categorías sobre el 60\%, con porcentajes
-especialmente altos entre las mujeres (71\%) y los profesores titulares
-(72\%). Nuevamente, las académicas mujeres muestran una mayor
-productividad que sus pares masculinos, publicando 1.8 artículos más por
-JCE. La diferencia entre académicos menores de 50 años y aquellos entre
-50 y 59 es menor, pero la cantidad de publicaciones cae bruscamente en
-el grupo mayor de 60. Por último, se observa una gran brecha entre los
-profesores asistentes y los asociados o titulares, con estos últimos
-mostrando una productividad levemente superior (0.5 artículos más por
-JCE, en relación a la jerarquía de Asociado).
-
-\begin{table}
-
-\caption{\label{tbl-sjr-carac}Cantidad por JCE y proporción de
-publicaciones en revistas Q1 y Q2 por características del autor
-(2020-2025)}
-
-\centering{
-
-\centering
-\begin{tabular}[t]{ccc}
-\toprule
-\cellcolor[HTML]{f2f2f2}{\textbf{Categoría}} & \cellcolor[HTML]{f2f2f2}{\textbf{Publicaciones por JCE}} & \cellcolor[HTML]{f2f2f2}{\textbf{\% Q1+Q2}}\\
-\midrule
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Género}}\\
-\hspace{1em}Femenino & 4.9 & 71\%\\
-\hspace{1em}Masculino & 3.1 & 62\%\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Edad}}\\
-\hspace{1em}Menos de 50 años & 4.1 & 66\%\\
-\hspace{1em}50 a 59 años & 5.0 & 68\%\\
-\hspace{1em}60 años o más & 2.1 & 65\%\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Jerarquía}}\\
-\hspace{1em}Asistente & 2.1 & 68\%\\
-\hspace{1em}Asociado & 5.2 & 65\%\\
-\hspace{1em}Titular & 5.7 & 72\%\\
-\bottomrule
-\end{tabular}
-
-}
-
-\end{table}%
-
-\subsection{Revistas de Acceso
-Abierto}\label{revistas-de-acceso-abierto}
-
-A partir de las base de revistas de Scopus, es posible analizar los
-artículos de académicos de la Facultad publicadas en revistas de acceso
-abierto\footnote{Acceso abierto implica que el usuario puede acceder de
-  manera gratuita a los artículos publicados. Con los datos disponibles,
-  no es posible distinguir si esto implica o no el pago de un APC por
-  parte del autor.}. Se encontró información para 746 artículos. Cabe
-destacar, que aunque muchas revistas que están indexadas en Scielo se
-encuentran en Scopus, no siempre es el caso. Por ello, dado que Scielo
-requiere que las revistas que integran su base de datos sean de acceso
-abierto, es muy posible que la cantidad de artículos de libre acceso
-publicados en la Facultad sea mayor que la aquí reportada.
-
-Hecha esa consideración metodológica, se observa que 362 publicaciones,
-o un 49\% de los artículos analizados, fueron publicados en revistas de
-acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza
-el 70\%; Para Web of Science, en cambio, es del solo el 30\%. En
-Figura~\ref{fig-oa}, se grafica la evolución de este indicador en el
-período estudiado. Se observa un peak durante la pandemia en 2020, con
-un 56\%, para luego bajar y mantenerse estable en los años subsiguiente,
-oscilando entre un 44\% y un 50\%.
-
-\begin{figure}
-
-\caption{\label{fig-oa}Porcentaje de publicaciones en revistas de acceso
-abierto (2020-2025)}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-oa-1.pdf}}
-
-}
-
-\end{figure}%
-
-Como se puede apreciar en a Tabla~\ref{tbl-oa}, las tendencias se
-mantienen bastante constante en distintos grupos. La proporción de
-publicaciones en acceso abieto es algo superior en los Departamento de
-Sociología (52\%) y Trabajo Social (55\%), académicos de 50 a 59 años
-(53\%) y profesores asociados (53\%). En cambio, es algo menor en los
-académicos menores de 50 años (42\%) y los profesores con jerarquía
-académicas de Asistente (41\%)
-
-\begin{table}
-
-\caption{\label{tbl-oa}Cantidad y porcentaje de publicaciones en acceso
-abierto por características del autor (2020-2025)}
-
-\centering{
-
-\centering\begingroup\fontsize{13}{15}\selectfont
-
-\begin{tabular}[t]{lrr}
-\toprule
-\cellcolor[HTML]{f2f2f2}{\textbf{Categoría}} & \cellcolor[HTML]{f2f2f2}{\textbf{N publicaciones OA}} & \cellcolor[HTML]{f2f2f2}{\textbf{\% en acceso abierto}}\\
-\midrule
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Departamento}}\\
-\hspace{1em}\cellcolor{gray!10}{Antropología} & \cellcolor{gray!10}{86} & \cellcolor{gray!10}{46\%}\\
-\hspace{1em}Educación & 18 & 47\%\\
-\hspace{1em}\cellcolor{gray!10}{Psicología} & \cellcolor{gray!10}{109} & \cellcolor{gray!10}{48\%}\\
-\hspace{1em}Sociología & 78 & 52\%\\
-\hspace{1em}\cellcolor{gray!10}{Trabajo social} & \cellcolor{gray!10}{81} & \cellcolor{gray!10}{56\%}\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Sexo}}\\
-\hspace{1em}Femenino & 242 & 48\%\\
-\hspace{1em}\cellcolor{gray!10}{Masculino} & \cellcolor{gray!10}{180} & \cellcolor{gray!10}{48\%}\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Edad}}\\
-\hspace{1em}Menos de 50 años & 124 & 41\%\\
-\hspace{1em}\cellcolor{gray!10}{50 a 59 años} & \cellcolor{gray!10}{241} & \cellcolor{gray!10}{53\%}\\
-\hspace{1em}60 años o más & 57 & 47\%\\
-\addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Jerarquía}}\\
-\hspace{1em}\cellcolor{gray!10}{Asistente} & \cellcolor{gray!10}{68} & \cellcolor{gray!10}{40\%}\\
-\hspace{1em}Asociado & 270 & 53\%\\
-\hspace{1em}\cellcolor{gray!10}{Titular} & \cellcolor{gray!10}{84} & \cellcolor{gray!10}{43\%}\\
-\bottomrule
-\end{tabular}
+\end{tabular}}
 \endgroup{}
 
 }
 
 \end{table}%
 
-\subsection{Idioma de la publicación}\label{idioma-de-la-publicaciuxf3n}
+\section{Variables}\label{variables}
 
-Se utiliza el idioma principal de la revista reportado por WoS, Scopus o
-Scielo como \emph{proxy} para el idioma de la publicación. Dado que
-algunas revistas permiten publicaciones en múltiples idiomas, éstas
-fueron recodificadas como multidiomas. De tal forma se encontró
-información para 927 publicaciones. Los datos apuntan a que el principal
-idioma de publicación es el inglés, con 374 artículos, o el 45\% del
-total. Le sigue el español, con 189 publicaciones que representan el
-23\% del total. Fuera de estos dos idiomas, solo es relevante el
-portugués, con un 4\% del total de artículos. Asimismo, existe una
-amplía proporción (28\%) de publicaciones en revistas que permiten
-escribir en más de un idioma, muy posiblemente incluyendo alguno de los
-idiomas antes menconados. Finalmente, existe una cantidad cerca al 1\%
-de escritos en otros idiomas, como el alemán, el francés y el italiano.
+\begin{table}
 
-\begin{figure}
-
-\caption{\label{fig-idioma}Distribución de publicaciones por idioma
-según indexación (2020-2025)}
+\caption{\label{tbl-var}Variables disponibles}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{04-resultados_files/figure-pdf/fig-idioma-1.pdf}}
+\centering\begingroup\fontsize{9}{11}\selectfont
+
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{5.5cm}}
+\toprule
+Variable & Naturaleza & Disponibilidad & Descripción\\
+\midrule
+\cellcolor{gray!10}{ESTADO\_RESOLUCION\newline\_CONCURSO} & \cellcolor{gray!10}{Categórica} & \cellcolor{gray!10}{Todas las postulaciones} & \cellcolor{gray!10}{Resultado del concurso: ADJUDICADO / NO ADJUDICADO}\\
+SEXO & Categórica & Todas las postulaciones & Sexo del/la investigador/a principal: HOMBRE / MUJER / SIN INFORMACIÓN\\
+\cellcolor{gray!10}{REGION\_EJECUCION} & \cellcolor{gray!10}{Categórica} & \cellcolor{gray!10}{Solo adjudicadas} & \cellcolor{gray!10}{Región de ejecución del proyecto}\\
+MACROZONA\newline\_MINCIENCIA & Categórica & Solo adjudicadas & Macrozona Minciencia de ejecución (Norte / Centro / RM / Centro Sur / Sur / Austral)\\
+\cellcolor{gray!10}{INSTRUMENTO} & \cellcolor{gray!10}{Categórica} & \cellcolor{gray!10}{Todas las postulaciones} & \cellcolor{gray!10}{Instrumento FONDECYT: REGULAR / INICIACION}\\
+\addlinespace
+DISCIPLINA\_OECD & Categórica & Todas las postulaciones & Área disciplinar según clasificación OCDE (Ciencias Sociales, Humanidades, Ciencias Naturales, etc.)\\
+\cellcolor{gray!10}{GRUPO\_ESTUDIO} & \cellcolor{gray!10}{Categórica} & \cellcolor{gray!10}{Solo adjudicadas} & \cellcolor{gray!10}{Grupo de evaluación al que postuló el proyecto (clasificación ANID)}\\
+INSTITUCION\newline\_PRINCIPAL & Categórica & Solo adjudicadas & Universidad o entidad patrocinante del proyecto\\
+\cellcolor{gray!10}{MONTO\_ADJUDICADO} & \cellcolor{gray!10}{Numérica continua} & \cellcolor{gray!10}{Solo adjudicadas} & \cellcolor{gray!10}{Monto en pesos chilenos efectivamente adjudicado al proyecto}\\
+MONTO\_PROM\_GRUPO\_ANIO\newline (reconstruida) & Numérica continua & Por grupo-año-instrumento & Monto promedio adjudicado por grupo-año-instrumento, reconstruido desde PDFs ANID\\
+\addlinespace
+\cellcolor{gray!10}{MONTO\_SOLIC\_PROM\newline\_GRUPO\_ANIO (creada)} & \cellcolor{gray!10}{Numérica continua} & \cellcolor{gray!10}{Por grupo-año-instrumento} & \cellcolor{gray!10}{Monto promedio solicitado por grupo-año-instrumento, calculado desde PDFs ANID}\\
+AGNO\_FALLO & Numérica discreta & Todas las postulaciones & Año de resolución del concurso\\
+\bottomrule
+\end{tabular}}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\subsection{Indicadores derivados}\label{indicadores-derivados}
+
+A partir de las variables originales y reconstruidas, el análisis
+utiliza los siguientes indicadores:
+
+\textbf{Tasa de adjudicación}: proporción de postulaciones que
+resultaron adjudicadas sobre el total de postulaciones evaluadas en un
+grupo determinado. Formalmente:
+
+\[\text{Tasa de adjudicación} = \frac{N_{\text{adjudicado}}}{N_{\text{adjudicado}} + N_{\text{no adjudicado}}}\]
+
+Esta definición excluye por construcción las postulaciones inadmisibles
+o fuera de bases, que fueron eliminadas durante el procesamiento
+inicial. El denominador corresponde, por tanto, al universo de
+postulaciones que efectivamente entraron al proceso de evaluación.
+
+\textbf{Composición porcentual por género dentro de grupos de estudio}:
+proporción de adjudicaciones de hombres y mujeres en cada combinación de
+grupo de estudio y año, calculada como:
+
+\[\text{Composición}_{ij} = \frac{N_{\text{adjudicadas}_{ij}}}{N_{\text{adjudicadas total grupo}_{i}}} \times 100\]
+
+donde \(i\) corresponde al grupo-año y \(j\) al género.
+
+Monto promedio solicitado y adjudicado por grupo: los promedios por
+grupo-año-instrumento se calculan a partir de los totales agregados
+publicados por ANID, dividiendo recursos totales (en miles de pesos) por
+el número de proyectos concursados (para solicitado) o aprobados (para
+adjudicado).
+
+\subsection{Decisión metodológica sobre la unidad de
+análisis}\label{decisiuxf3n-metodoluxf3gica-sobre-la-unidad-de-anuxe1lisis}
+
+Una decisión metodológica central fue calcular la tasa de adjudicación a
+nivel de postulación y no a nivel de proyecto único. Dado que el interés
+es caracterizar el proceso competitivo tal como lo experimentan los/as
+postulantes ---incluyendo las repostulaciones---, se optó por esta
+unidad de análisis. Esto implica que un mismo investigador/a puede
+contribuir con múltiples observaciones al denominador si postuló en
+distintos años o instrumentos.
+
+\subsection{Procesamiento de
+variables}\label{procesamiento-de-variables}
+
+Respecto al procesamiento de variables, se aplicaron las siguientes
+decisiones: los nombres de las regiones fueron abreviados para mejorar
+la legibilidad (e.g., ``REGION METROPOLITANA DE SANTIAGO'' → ``RM''); se
+corrigió un error tipográfico de origen en la variable
+\texttt{DISCIPLINA\_DETALLE} de la base oficial (``CIENICAS'' →
+``CIENCIAS''); y se unificó un error en el nombre ``PONTIFICA
+UNIVERSIDAD CATOLICA DE VALPARAISO'' (sin la ``I'') con su nombre
+oficial. Todas las variables categóricas fueron transformadas a tipo
+\texttt{factor} para optimizar el uso de memoria y facilitar los
+análisis estadísticos posteriores. Los registros con categorías
+problemáticas en variables clave ---como ``SIN INFORMACION'' en
+\texttt{SEXO} o \texttt{MACROZONA\_MINCIENCIA}--- fueron excluidos de
+los análisis comparativos respectivos, explicitando el criterio en cada
+caso.
+
+Para los análisis comparativos por tipo de institución, se definieron
+dos clasificaciones complementarias construidas al vuelo desde la
+variable \texttt{INSTITUCION\_PRINCIPAL}:
+
+\begin{itemize}
+\item
+  \textbf{CRUCH vs No CRUCH}: las 30 universidades pertenecientes al
+  Consejo de Rectores de las Universidades Chilenas vs.~universidades
+  privadas no tradicionales. Las universidades incorporadas tardíamente
+  al CRUCH (Alberto Hurtado, Diego Portales y de los Andes, que
+  ingresaron en 2018-2019) se clasifican como CRUCH para toda la serie
+  2016-2025 por criterio sustantivo de trayectoria investigativa,
+  decisión explicitada en las notas al pie de los gráficos
+  correspondientes.
+\item
+  \textbf{Pública vs Privada}: las 18 universidades estatales chilenas
+  vs.~el resto de universidades privadas (incluyendo G9, UAH, UDP, U. de
+  los Andes y privadas no tradicionales). En ambas clasificaciones se
+  excluyeron centros de investigación, fundaciones, museos e
+  instituciones extranjeras.
+\end{itemize}
+
+\section{Métodos}\label{muxe9todos}
+
+El análisis se desarrolla en tres secciones temáticas, organizadas por
+instrumento FONDECYT (Iniciación y Regular) y complementadas con un
+apartado sobre el programa Milenio. En cada sección se sigue una
+estructura analítica común que va de lo más general a lo más específico.
+
+En primer lugar, se presenta una \textbf{perspectiva comparada} que
+sitúa a las Ciencias Sociales frente a las demás áreas OCDE, calculando
+volúmenes absolutos de postulación, adjudicación y tasas relativas de
+éxito. Esta línea base permite contextualizar la posición relativa de la
+disciplina en el sistema FONDECYT y establecer un punto de referencia
+para las desagregaciones posteriores.
+
+En segundo lugar, se analiza el \textbf{interior de la disciplina}
+mediante tres dimensiones de desagregación: género (variable
+\texttt{SEXO}), grupo de estudio (\texttt{GRUPO\_ESTUDIO}) e institución
+patrocinante (\texttt{INSTITUCION\_PRINCIPAL}, junto con las
+clasificaciones derivadas CRUCH/No CRUCH y Pública/Privada). Para cada
+dimensión se examinan tanto los volúmenes absolutos como las tasas
+relativas y la evolución temporal de las brechas. En el caso de los
+grupos de estudio se incorpora adicionalmente el análisis de montos
+---solicitado y adjudicado--- por grupo y año, aprovechando la
+información reconstruida desde los PDFs ANID.
+
+En tercer lugar, se presenta la \textbf{distribución territorial} del
+financiamiento a nivel de macrozonas, permitiendo identificar la
+concentración o descentralización de los recursos a lo largo del
+territorio nacional. Esta dimensión se analiza tanto a través de mapas
+coropléticos como mediante la evolución temporal de las adjudicaciones
+por macrozona.
+
+Para el caso del programa Milenio, dadas las limitaciones de la base
+disponible, el análisis se restringe a tres dimensiones factibles
+---comparación con otras áreas OCDE, distribución por género y
+distribución territorial---, complementadas con un listado descriptivo
+del universo completo de proyectos en Ciencias Sociales.
+
+Todos los gráficos del análisis siguen un tema visual homogéneo
+(\texttt{tema\_anid}) y utilizan paletas de color diferenciadas y
+consistentes por variable de desagregación (género en azul/rojo,
+instrumentos en granate, naturaleza jurídica en azul/rojo), incluyendo
+etiquetas con los valores para facilitar la lectura directa. Para los
+gráficos interactivos se utiliza la librería \texttt{plotly} con
+tooltips informativos que muestran el nombre completo de la categoría,
+año y valor exacto al pasar el cursor.
+
+La comparación entre programas (FONDECYT vs.~Milenio) se realiza solo de
+manera descriptiva y con las cautelas necesarias, dado que sus
+estructuras competitivas son estructuralmente distintas en términos de
+escala, frecuencia de convocatoria y perfiles institucionales de los
+postulantes.
+
+\bookmarksetup{startatroot}
+
+\chapter{Resultados: Fondecyt}\label{resultados-fondecyt}
+
+\section{Proyectos FONDECYT: Un panorama
+general}\label{proyectos-fondecyt-un-panorama-general}
+
+En la siguiente sección se presentan los análisis descriptivos del
+análisis de la participación de las Ciencias Sociales en concursos
+FONDECYT entre 2016 y 2025. Estos resultados examinan las tendencias
+generales para cada instrumento -Iniciación y Regular- en términos de
+volumen de postulaciones y adjudicaciones, así como las diferencias por
+género, grupo de estudio e institución patrocinante. Este análisis busca
+ofrecer una visión integral sobre la dinámica de financiamiento en esta
+disciplina, identificando patrones relevantes y posibles áreas de mejora
+para futuras convocatorias.
+
+Para abordar estos objetivos, el análisis se organiza de manera
+secuencial para cada uno de los instrumentos evaluados (Iniciación y
+Regular). En primer lugar, se ofrece una perspectiva comparada que sitúa
+a las Ciencias Sociales frente a otras disciplinas en términos de
+volumen de postulaciones y adjudicaciones. Posteriormente, el foco se
+desplaza hacia el interior de la disciplina para examinar las brechas de
+género en ambas etapas del concurso. Luego, se profundiza en las
+dinámicas internas mediante un doble nivel de desagregación: primero,
+según los diferentes grupos de estudio que componen el área y sus
+respectivas diferencias por montos promedio que se asignan en total,
+diferencias por género; y segundo, a partir de las instituciones
+patrocinantes participantes. Finalmente, el apartado concluye con un
+análisis de la distribución territorial del financiamiento a nivel de
+macrozonas, permitiendo así identificar la concentración o
+descentralización de los recursos.
+
+\section{FONDECYT Iniciación}\label{fondecyt-iniciaciuxf3n}
+
+\subsection{Ciencias Sociales en perspectiva
+comparada}\label{ciencias-sociales-en-perspectiva-comparada}
+
+\begin{figure}
+
+\caption{\label{fig-postulaciones-global}Tasa de postulaciones y
+adjudicaciones Fondecyt Iniciación (2016--2025). Las áreas
+disciplinarias siguen la clasificación OECD}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-postulaciones-global-1.pdf}}
 
 }
 
 \end{figure}%
 
-En Figura~\ref{fig-idioma} se pueden apreciar las diferencias para cada
-tipo de indexación. En Scielo, predominan ampliamente las publicaciones
-en más de un idioma. Dado el carácter latinoamericano de esta base de
-datos, es posible asumir que la mayoría de estos artículos fueron
-escritos en español o, en menor medida, en portugués. El caso de Scopus
-muestra mayor diversidad, coon el Español (32\%), las revistas
-multidiomas (32\%) y el inglés (28\%) corresponden a tercios
-prácticamente iguales. Finalmente, en WoS se observa un marcado
-predominio del inglés (68\%) sobre otros idiomas.
+Al analizar la Figura~\ref{fig-postulaciones-global}, se puede observar
+que en comparación con las demás disciplinas reconocidas por la
+{[}{]}{[}OECD{]}(https://www.conicyt.cl/becas-conicyt/files/2012/08/articles-36351\_areas\_ocde.pdf),
+las Ciencias Sociales se posicionan como el área de mayor volumen y
+dinamismo dentro del sistema de financiamiento FONDECYT de Iniciación,
+superando consistentemente en cantidad de postulaciones al resto.
+Mientras que otras áreas muestran tendencias más planas o estancadas
+hasta el 2022, las Ciencias Sociales presentan un crecimiento sostenido
+que alcanza un volumen superior a las 600 postulaciones, una cifra que
+duplica casos como el de Ingeniería e incluso cuadruplica otros como el
+de las Ciencias Médicas en el mismo periodo. Esta demanda entrega
+sugeriría que existe una competencia bastante más estrecha por la
+adjudicación que en el resto de las disciplinas, juzgando por el número
+de proyectos no seleccionados (rojo claro en el gráfico), el cual es, en
+términos absolutos, el más elevado de todas las categorías comparadas.
+
+En relación con el comportamiento sistémico, las Ciencias Sociales
+actúan como el principal exponente de la recuperación post-2023, que de
+manera transversal entre disciplinas fue el punto más bajo en términos
+de postulaciones al instrumento Fondecyt de Iniciación. Aunque todas las
+disciplinas experimentaron una contracción drástica en ese año, la
+capacidad de recuperación en las Ciencias Sociales fue la más
+pronunciada, logrando en 2025 su máximo histórico. A diferencia de
+Humanidades o Ciencias Agrícolas, que mantuvieron escalas de
+participación reducidas, o de Ingeniería, que muestra una tendencia más
+volátil, las Ciencias Sociales demuestran una trayectoria de expansión
+que consolida su rol protagónico en la última década, cerrando el
+periodo como el motor principal de la competitividad científica
+reflejada en el gráfico.
+
+\begin{figure}
+
+\caption{\label{fig-adjudicaciones-global}Tasa de adjudicación Fondecyt
+de Iniciación en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-adjudicaciones-global-1.pdf}}
+
+}
+
+\end{figure}%
+
+Por su parte, la Figura~\ref{fig-adjudicaciones-global} se concentra en
+la evolución del porcentaje de proyectos adjudicados (\%) por disciplina
+OECD para el instrumento FONDECYT de Iniciación en el mismo periodo
+(2016-2025). Se observa que las Ciencias Sociales mantienen niveles de
+adjudicación relativamente estables durante la mayor parte del periodo
+(entre el 20 y el 30\% de las postulaciones resultan adjudicadas), salvo
+por un pico marcado en 2023 alcanzando casi un 50\%, pero hay que
+mencionar que, tal como se mencionó anteriormente, fue el año con menos
+postulaciones en todo el periodo para todas las disciplinas, volviendo a
+niveles similares a los años anteriores en 2024 y 2025\%.
+Comparativamente, Ciencias Sociales supera sistemáticamente a la mayoría
+de las otras disciplinas, siendo el aumento de 2023 el evento más
+destacado del periodo. Mientras que otras disciplinas como Humanidades o
+Ciencias Agrícolas muestran tasas más bajas y estables, las Ciencias
+Sociales evidencian una mayor volatilidad, especialmente en el contexto
+de la recuperación post-2023.
+
+\subsection{Diferencias por género}\label{diferencias-por-guxe9nero}
+
+\begin{figure}
+
+\caption{\label{fig-genero-iniciación-1}Postulaciones a proyectos
+Fondecyt Iniciación por género en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-genero-iniciación-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-genero-iniciación-1} muestra las postulaciones a
+Fondecyt Iniciaicón por año en Ciencias Sociales según género. Lo
+primero que se puede observar es que el número total de solicitudes
+creció hacia los años finales del periodo (pasando de \textasciitilde335
+en 2016 a \textasciitilde580--645 en 2023--2025). En términos
+comparativos por género, los hombres representan la mayoría de las
+postulaciones durante la mayor parte del periodo (generalmente entre
+53\% y 58\%). Sin embargo, a partir de 2022 las proporciones se acercan:
+2022 registra aproximadamente 49.4\% mujeres y 50.6\% hombres, y
+2023--2024 mantienen una distribución cercana a 51/49 a favor de
+hombres. En consecuencia, aunque el total de postulaciones aumenta
+marcadamente en los últimos años, la participación relativa de mujeres
+también se incrementa respecto a los niveles más bajos observados en
+2018--2019.
+
+\begin{figure}
+
+\caption{\label{fig-genero-iniciación-2}Adjudicaciones Fondecyt de
+Iniciación por género en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-genero-iniciación-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+Por su parte, la Figura~\ref{fig-genero-iniciación-2} se enfoca en la
+tasa de adjudicación (\%) por género en Fondecyt Iniciación para
+Ciencias Sociales entre 2016 y 2025. Se observa que, aunque los hombres
+representan la mayoría de las postulaciones, las tasas de adjudicación
+entre géneros son relativamente similares a lo largo del periodo. En
+general, ambos géneros presentan tasas fluctuantes entre aproximadamente
+7\% y 12\%, con algunos picos atípicos como el aumento en 2023 (hombres:
+15.8\%, mujeres: 23.1\%), aunque este año también se caracterizó por una
+disminución inusual en el número total de postulaciones. En años
+anteriores, las diferencias entre géneros son mínimas, sugiriendo que, a
+pesar de la mayor cantidad de postulaciones masculinas, la probabilidad
+de adjudicación es comparable entre hombres y mujeres en esta
+disciplina.
+
+\subsection{Diferencias por grupo de
+estudio}\label{diferencias-por-grupo-de-estudio}
+
+\begin{figure}
+
+\caption{\label{fig-grupo-estudio-iniciacion}Número de adjudicaciones
+Fondecyt de Iniciación (2016--2025) por grupo de estudio. Los grupos
+siguen la clasificación ANID}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-grupo-estudio-iniciacion-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-grupo-estudio-iniciacion} presenta la evolución de
+las adjudicaciones Fondecyt Iniciación por grupo de estudio dentro de la
+disciplina de Ciencias Sociales entre 2016 y 2025. Se observa que el
+grupo de ``Educación'' es el más destacado, con un crecimiento
+sostenido, aunque esto posiblemente se deba a que a partir del año 2023
+el grupo de estudio contemplaba tres áreas diferentes. A este le siguen,
+``Ciencias Jurídicas y Políticas'' y ``Sociología, Trabajo Social y Cs.
+de la Comunicación'', que también muestran incrementos significativos a
+lo largo del periodo. Otros grupos como ``Ciencias Económicas y
+Administrativas'' y ``Psicología'' presentan una tendencia más estable
+pero con un aumento gradual hacia los años finales. En contraste, grupos
+como ``Geografía y Urbanismo'' y ``Antropología y Arqueología''
+mantienen niveles más bajos de adjudicación, aunque con cierta
+variabilidad a lo largo del tiempo. Este comportamiento sugiere una
+concentración de adjudicaciones en ciertos grupos de estudio dentro de
+las Ciencias Sociales, reflejando posiblemente áreas de mayor interés o
+demanda dentro del sistema de financiamiento FONDECYT Iniciación.
+
+\begin{figure}
+
+\caption{\label{fig-composicion-grupo-genero}Composición de grupos de
+estudio por género en adjudicaciones Fondecyt de Iniciación
+(2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-composicion-grupo-genero-1.pdf}}
+
+}
+
+\end{figure}%
+
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-tip-color!10!white, opacityback=0, opacitybacktitle=0.6, rightrule=.15mm, breakable, toprule=.15mm, coltitle=black, colframe=quarto-callout-tip-color-frame, toptitle=1mm, bottomtitle=1mm, titlerule=0mm, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Cómo leer el gráfico heatmap}, arc=.35mm, bottomrule=.15mm, colback=white, leftrule=.75mm, left=2mm]
+
+Cada celda muestra el \textbf{porcentaje de adjudicaciones de un grupo
+de estudio que correspondió a hombres o mujeres en un año específico}.
+La lectura se hace por fila (grupo de estudio) y por panel (sexo): los
+valores de cada año-grupo suman 100\% sumando ambos paneles.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Eje X}: año del concurso.
+\item
+  \textbf{Eje Y}: grupo de estudio (clasificación ANID).
+\item
+  \textbf{Paneles}: hombres (izquierda) y mujeres (derecha).
+\item
+  \textbf{Intensidad del color}: mientras más oscuro el rojo, mayor el
+  porcentaje de adjudicaciones que ese género representó dentro del
+  grupo ese año. El blanco/gris claro indica baja o nula participación.
+\item
+  \textbf{Celdas en blanco}: el grupo no tuvo adjudicaciones de ese sexo
+  ese año (por ejemplo, Investigación Interdisciplinaria sin
+  adjudicaciones masculinas en algunos años).
+\end{itemize}
+
+\textbf{Ejemplo:} si en 2024 ``Educación'' muestra 35\% en el panel de
+hombres y 65\% en el de mujeres, significa que de todos los proyectos
+adjudicados en Educación ese año, el 35\% lo obtuvieron investigadores y
+el 65\% investigadoras.
+
+\end{tcolorbox}
+
+La Figura~\ref{fig-composicion-grupo-genero} muestra la composición
+porcentual por género de adjudicaciones Fondecyt Iniciación para cada
+grupo de estudio entre 2016 y 2025. Se observa que, aunque la mayoría de
+los grupos de estudio presentan una distribución relativamente
+equilibrada entre hombres y mujeres, algunos grupos como ``Educación'' y
+``Ciencias Jurídicas y Políticas'' tienden a tener una mayor proporción
+de adjudicaciones para mujeres, especialmente en los años más recientes.
+En contraste, grupos como ``Psicología'' y ``Sociología, Trabajo Social
+y Cs. de la Comunicación'' muestran una distribución más homogénea entre
+géneros a lo largo del periodo. Sin embargo, es importante destacar que
+la variabilidad en la composición por género no sigue un patrón
+uniforme, sugiriendo que factores específicos de cada grupo de estudio
+podrían influir en las diferencias observadas en la participación y
+adjudicación por género dentro de las Ciencias Sociales, como por
+ejemplo la cantidad de hombres y mujeres que postulan a cada grupo. Este
+último dato, altamente relevante, no se encuentra disponible en la base
+de datos para proyectos no adjudicados, lo que limita la interpretación
+de estas diferencias.
+
+\begin{figure}
+
+\caption{\label{fig-grupo-monto}Monto total promedio solicitado por
+grupo de estudio en Fondecyt de Iniciación (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-grupo-monto-1.pdf}}
+
+}
+
+\end{figure}%
+
+\begin{figure}
+
+\caption{\label{fig-grupo-monto-2}Monto total promedio adjudicado por
+grupo de estudio en Fondecyt de Iniciación (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-grupo-monto-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-grupo-monto} presenta la evolución del monto promedio
+solicitado proyecto en FONDECYT Iniciación entre 2016 y 2025,
+desagregado por grupo de estudio. Este indicador permite observar cuánto
+se solicitó en promedio por cada grupo de estudio al momento de
+postular, lo que constituye una señal directa de la estructura de costos
+esperada por los investigadores en cada área y de cómo estas
+expectativas evolucionaron a lo largo del período.
+
+Se observa una tendencia ascendente generalizada a lo largo del período,
+consistente con el reajuste inflacionario, esto a pesar de que el
+financiamiento tope establecidos por ANID en sus bases concursales no ha
+tenido ajustes en los últimos 10 años. El grupo de Geografía y Urbanismo
+se posiciona consistentemente como el de mayor monto solicitado
+promedio, seguido por Antropología y Arqueología y Psicología, todos
+ellos campos cuya investigación suele requerir trabajo de terreno,
+instrumentos especializados o procesamiento de muestras, lo que encarece
+el presupuesto típico de un proyecto. En contraste, Ciencias Jurídicas y
+Políticas y Ciencias Económicas y Administrativas mantienen los montos
+solicitados más bajos a lo largo de todo el período ---en algunos años
+por debajo de los \$60 millones promedio---, lo que refleja una
+estructura de costos menor asociada a investigación predominantemente
+teórica, documental o basada en datos secundarios.
+
+Un patrón interesante es que las brechas entre grupos se mantienen
+relativamente estables en el tiempo: los grupos que pedían más en 2016
+siguen pidiendo más en 2025, sugiriendo que las diferencias responden a
+factores estructurales de cada disciplina (tipo de metodología,
+necesidad de equipamiento, costos de campo) y no a cambios coyunturales
+en las estrategias de postulación. Esta estabilidad es relevante porque
+sirve como referencia para interpretar las brechas observadas en los
+montos adjudicados.
+
+La Figura~\ref{fig-grupo-monto-2} presenta la evolución del monto
+promedio efectivamente adjudicado por proyecto en FONDECYT Iniciación
+entre 2016 y 2025 para cada grupo de estudio. A diferencia del monto
+solicitado, esta variable captura lo que ANID terminó entregando a cada
+disciplina por proyecto en cada año, una vez aplicados los recortes y
+ajustes presupuestarios del proceso de evaluación.
+
+Se observa una convergencia gradual de los montos adjudicados hacia el
+final del período, fenómeno que contrasta con la estabilidad de las
+brechas en los montos solicitados. Mientras que en 2016 la dispersión
+entre grupos era amplia (con diferencias de hasta \$45 millones entre el
+grupo de mayor adjudicación promedio ---Geografía y Urbanismo, \$91M---
+y el de menor ---Ciencias Jurídicas y Políticas, \$46M---), hacia
+2024-2025 los grupos se agrupan en una franja más estrecha que va desde
+los \$57M (Ciencias Jurídicas) hasta los \$98M (Geografía y Urbanismo).
+En este sentido, el grueso de las Ciencias Sociales tiende a recibir
+montos similares al final del período (entre \$80M y \$95M), salvo
+Ciencias Jurídicas y Políticas que se mantiene como un caso aparte por
+su baja estructura de costos.
+
+Resalta el comportamiento de Ciencias Económicas y Administrativas, que
+parte siendo uno de los grupos con menor monto adjudicado promedio
+(\textasciitilde\$66M en 2016) pero experimenta un crecimiento abrupto a
+partir de 2022, alcanzando \$82M en 2023 y estabilizándose en torno a
+esa cifra. Antropología y Arqueología presenta el patrón opuesto: tras
+un peak en 2018 (\textasciitilde\$96M), su trayectoria se mantiene
+oscilante hasta cerrar el período en niveles similares al promedio de la
+disciplina. Por su parte, Ciencias Jurídicas y Políticas muestra una
+persistencia notable en sus bajos montos adjudicados, con un único punto
+de inflexión en 2023 cuando alcanza \$64M, pero rápidamente retorna a su
+nivel histórico cercano a los \$57M en 2025.
+
+La comparación entre la Figura~\ref{fig-grupo-monto} y la
+Figura~\ref{fig-grupo-monto-2} permite calcular la brecha entre lo
+solicitado y lo adjudicado, indicador útil para entender cuánto recortó
+ANID en cada disciplina. Si bien la tendencia general muestra que los
+grupos reciben en promedio entre un 65\% y un 80\% de lo solicitado, la
+consistencia interna del sistema parece operar de forma similar entre
+todas las áreas de Ciencias Sociales: ningún grupo aparece
+sistemáticamente ``castigado'' o ``favorecido'' en el ajuste
+presupuestario. Esto sugiere que las brechas observadas en los montos
+adjudicados reflejan principalmente las brechas preexistentes en los
+montos solicitados.
+
+\subsection{Diferencias por institución
+patrocinante}\label{diferencias-por-instituciuxf3n-patrocinante}
+
+\begin{figure}
+
+\caption{\label{fig-institucion-iniciación-1}Número de adjudicaciones
+Fondecyt Iniciación por Institución Patroncinante (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-institucion-iniciación-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-institucion-iniciación-1} presenta el ranking de las
+instituciones con mayor número de adjudicaciones exclusivamente en el
+área de Ciencias Sociales para el periodo 2016-2025. La distribución
+revela una alta concentración de proyectos en un grupo reducido de
+universidades, donde la Pontificia Universidad Católica de Chile lidera
+ampliamente con 148 adjudicaciones, seguida por la Universidad de Chile
+con 99 y la Universidad Alberto Hurtado con 68. Estas tres instituciones
+encabezan la lista, marcando una brecha significativa respecto al resto
+de las entidades nacionales en cuanto a volumen de investigación
+financiada en esta disciplina.
+
+Hacia la mitad y base de la tabla, se observa una mayor homogeneidad en
+el número de proyectos, con instituciones como la Universidad Austral de
+Chile (53), la Pontificia Universidad Católica de Valparaíso (51) y la
+Universidad Adolfo Ibáñez (43) manteniendo cifras competitivas. El tramo
+final del ranking muestra una participación muy equilibrada entre
+diversas casas de estudio regionales y privadas, como la Universidad
+Católica de Temuco, la Universidad de Los Andes y la Universidad de
+Santiago de Chile, todas situándose en un rango de entre 25 y 38
+adjudicaciones. En conjunto, el gráfico evidencia que, si bien la
+producción en Ciencias Sociales está presente en diversas zonas del
+país, el núcleo principal de adjudicaciones se concentra de manera
+predominante en instituciones con base en la Región Metropolitana.
+
+\begin{figure}
+
+\caption{\label{fig-cruch-adjudicaciones-iniciacion}Adjudicaciones
+Fondecyt de Iniciación en Ciencias Sociales según tipo de institución
+CRUCH vs No Tradicional (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-cruch-adjudicaciones-iniciacion-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-cruch-adjudicaciones-iniciacion} permite comparar el
+comportamiento agregado de las universidades pertenecientes al Consejo
+de Rectores (CRUCH) frente a las universidades privadas no tradicionales
+en la adjudicación de proyectos FONDECYT de Iniciación en Ciencias
+Sociales durante el período 2016-2025. El patrón más evidente es la
+brecha estructural sostenida entre ambos grupos: las instituciones CRUCH
+concentran la gran mayoría de las adjudicaciones cada año, con un
+crecimiento que pasa de 48 proyectos en 2016 a 125 en 2025 ---un aumento
+del 160\%. Las universidades no tradicionales, en cambio, parten de una
+base considerablemente menor (15 proyectos en 2016) y, aunque también
+muestran una tendencia al alza alcanzando 38 adjudicaciones en 2025, su
+volumen se mantiene en una escala notoriamente inferior a lo largo de
+todo el período.
+
+Un punto de inflexión importante se observa a partir de 2022, año en que
+las universidades no tradicionales experimentan un salto significativo
+en su participación, pasando de 20 adjudicaciones promedio anuales en
+2016-2020 a un rango de 35-38 en 2022-2025. Aun así, la brecha relativa
+se mantiene estable: en el último año del período, las CRUCH representan
+aproximadamente el 77\% del total de adjudicaciones, mientras que las no
+tradicionales el 23\% restante. Esto sugiere que, si bien existe una
+expansión absoluta de ambos sectores, no se observa un proceso de
+convergencia entre los dos grupos institucionales en términos de su
+capacidad de captura de financiamiento concursable.
+
+\begin{table}
+
+\caption{\label{tbl-clasificacion-instituciones}Clasificación de
+instituciones según pertenencia al Consejo de Rectores (CRUCH)}
+
+\centering{
+
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{7cm}>{\raggedright\arraybackslash}p{7cm}}
+\toprule
+\textbf{CRUCH (n = 30)} & \textbf{No CRUCH (n = 15)}\\
+\midrule
+\cellcolor{gray!10}{P. U. Católica de Chile} & \cellcolor{gray!10}{U. Academia de Humanismo Cristiano}\\
+P. U. Católica de Valparaiso & U. Adolfo Ibáñez\\
+\cellcolor{gray!10}{U. Alberto Hurtado} & \cellcolor{gray!10}{U. Autonoma de Chile}\\
+U. Arturo Prat & U. Bernardo O'higgins\\
+\cellcolor{gray!10}{U. Austral de Chile} & \cellcolor{gray!10}{U. Católica Cardenal Silva Henríquez}\\
+\addlinespace
+U. Católica de la Santisima Concepción & U. Central de Chile\\
+\cellcolor{gray!10}{U. Católica de Temuco} & \cellcolor{gray!10}{U. de las Americas}\\
+U. Católica del Maule & U. del Desarrollo\\
+\cellcolor{gray!10}{U. Católica del Norte} & \cellcolor{gray!10}{U. Finis Terrae}\\
+U. de Antofagasta & U. Gabriela Mistral\\
+\addlinespace
+\cellcolor{gray!10}{U. de Atacama} & \cellcolor{gray!10}{U. Mayor}\\
+U. de Aysén & U. Nacional Andrés Bello\\
+\cellcolor{gray!10}{U. de Chile} & \cellcolor{gray!10}{U. San Sebastián}\\
+U. de Concepción & U. Santo Tomás\\
+\cellcolor{gray!10}{U. de la Frontera} & \cellcolor{gray!10}{U. Viña del Mar}\\
+\addlinespace
+U. de la Serena & \\
+\cellcolor{gray!10}{U. de los Andes} & \cellcolor{gray!10}{}\\
+U. de los Lagos & \\
+\cellcolor{gray!10}{U. de Magallanes} & \cellcolor{gray!10}{}\\
+U. de O'higgins & \\
+\addlinespace
+\cellcolor{gray!10}{U. de Playa Ancha de Ciencias de la Educación} & \cellcolor{gray!10}{}\\
+U. de Santiago de Chile & \\
+\cellcolor{gray!10}{U. de Talca} & \cellcolor{gray!10}{}\\
+U. de Tarapacá & \\
+\cellcolor{gray!10}{U. de Valparaiso} & \cellcolor{gray!10}{}\\
+\addlinespace
+U. del Bío-Bío & \\
+\cellcolor{gray!10}{U. Diego Portales} & \cellcolor{gray!10}{}\\
+U. Metropolitana de Ciencias de la Educación & \\
+\cellcolor{gray!10}{U. Técnica Federico Santa Maria} & \cellcolor{gray!10}{}\\
+U. Tecnológica Metropolitana & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Notas:} 
+\item U. Alberto Hurtado, U. Diego Portales y U. de los Andes ingresaron al CRUCH en 2018-2019; se clasifican como CRUCH para toda la serie 2016-2025.
+\item Listado de instituciones presentes en la base FONDECYT 2016-2025 para Ciencias Sociales. Excluye centros de investigación, fundaciones y museos.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+Esta brecha debe interpretarse considerando varios factores
+estructurales que diferencian a ambos tipos de instituciones. Primero,
+las universidades CRUCH son 30 instituciones -señaladas en la
+Tabla~\ref{tbl-clasificacion-instituciones}- con una trayectoria
+investigativa consolidada y, en muchos casos, con varias décadas de
+existencia, mientras que un número importante de universidades privadas
+no tradicionales son de creación más reciente y han tenido
+históricamente un foco más docente que investigativo. Segundo, las
+universidades CRUCH ---especialmente las 18 estatales y las nueve del
+G9--- reciben aportes basales del Estado (Aporte Fiscal Directo,
+Convenios Marco) que les permiten sostener infraestructura, contratar
+investigadores con dedicación exclusiva y financiar costos asociados a
+la postulación a fondos concursables, capacidad que no es comparable en
+la mayoría de instituciones privadas no tradicionales. Tercero, la
+presencia de cuerpos académicos con doctorado, productividad científica
+acreditada y redes de colaboración previa ---factores que pesan en la
+evaluación FONDECYT--- está históricamente concentrada en el sistema
+CRUCH. Por tanto, más que un indicador de ``calidad relativa'', la
+brecha observada refleja una asimetría estructural del sistema de
+educación superior chileno en cuanto a las condiciones materiales para
+hacer investigación.
+
+\begin{figure}
+
+\caption{\label{fig-publica-adjudicaciones-iniciacion}Adjudicaciones
+Fondecyt de Iniciación en Ciencias Sociales según tipo de institución
+Pública vs Privada (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-publica-adjudicaciones-iniciacion-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-publica-adjudicaciones-iniciacion} compara las
+adjudicaciones de FONDECYT de Iniciación según la naturaleza jurídica de
+las instituciones beneficiarias, distinguiendo entre las 18
+universidades estatales que componen el sector público y el conjunto de
+universidades privadas ---incluyendo tanto las privadas tradicionales
+del CRUCH (G9, UAH, UDP, U. de los Andes) como las privadas no
+tradicionales---. El gráfico revela una inversión interesante de la
+jerarquía observada al analizar el corte CRUCH/No CRUCH: cuando se
+desagrega por naturaleza jurídica, las universidades privadas captan la
+mayoría de las adjudicaciones a lo largo de todo el período, pasando de
+57 proyectos en 2016 a 118 en 2025 (un crecimiento del 107\%). Las
+universidades estatales, por su parte, parten desde 30 adjudicaciones en
+2016 y alcanzan 45 en 2025, mostrando un crecimiento más modesto del
+50\%.
+
+La brecha entre ambos sectores se mantiene relativamente estable en
+términos absolutos durante los primeros años (2016-2020), con las
+privadas superando a las estatales en aproximadamente 27 a 37 proyectos
+anuales. Sin embargo, a partir de 2022 esta diferencia se amplía
+notoriamente, alcanzando un peak en 2023 cuando las privadas adjudicaron
+111 proyectos frente a 43 de las estatales ---una brecha de 68
+proyectos. En el año más reciente del período (2025), las privadas
+representan aproximadamente el 72\% del total adjudicado en este
+universo, mientras que las estatales el 28\% restante.
+
+\begin{table}
+
+\caption{\label{tbl-clasificacion-publica-privada}Clasificación de
+instituciones según naturaleza jurídica: estatales vs privadas}
+
+\centering{
+
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{7cm}>{\raggedright\arraybackslash}p{7cm}}
+\toprule
+\textbf{Públicas (n = 18)} & \textbf{Privadas (n = 27)}\\
+\midrule
+\cellcolor{gray!10}{U. Arturo Prat} & \cellcolor{gray!10}{P. U. Católica de Chile}\\
+U. de Antofagasta & P. U. Católica de Valparaiso\\
+\cellcolor{gray!10}{U. de Atacama} & \cellcolor{gray!10}{U. Academia de Humanismo Cristiano}\\
+U. de Aysén & U. Adolfo Ibáñez\\
+\cellcolor{gray!10}{U. de Chile} & \cellcolor{gray!10}{U. Alberto Hurtado}\\
+\addlinespace
+U. de la Frontera & U. Austral de Chile\\
+\cellcolor{gray!10}{U. de la Serena} & \cellcolor{gray!10}{U. Autonoma de Chile}\\
+U. de los Lagos & U. Bernardo O'higgins\\
+\cellcolor{gray!10}{U. de Magallanes} & \cellcolor{gray!10}{U. Católica Cardenal Silva Henríquez}\\
+U. de O'higgins & U. Católica de la Santisima Concepción\\
+\addlinespace
+\cellcolor{gray!10}{U. de Playa Ancha de Ciencias de la Educación} & \cellcolor{gray!10}{U. Católica de Temuco}\\
+U. de Santiago de Chile & U. Católica del Maule\\
+\cellcolor{gray!10}{U. de Talca} & \cellcolor{gray!10}{U. Católica del Norte}\\
+U. de Tarapacá & U. Central de Chile\\
+\cellcolor{gray!10}{U. de Valparaiso} & \cellcolor{gray!10}{U. de Concepción}\\
+\addlinespace
+U. del Bío-Bío & U. de las Americas\\
+\cellcolor{gray!10}{U. Metropolitana de Ciencias de la Educación} & \cellcolor{gray!10}{U. de los Andes}\\
+U. Tecnológica Metropolitana & U. del Desarrollo\\
+\cellcolor{gray!10}{} & \cellcolor{gray!10}{U. Diego Portales}\\
+ & U. Finis Terrae\\
+\addlinespace
+\cellcolor{gray!10}{} & \cellcolor{gray!10}{U. Gabriela Mistral}\\
+ & U. Mayor\\
+\cellcolor{gray!10}{} & \cellcolor{gray!10}{U. Nacional Andrés Bello}\\
+ & U. San Sebastián\\
+\cellcolor{gray!10}{} & \cellcolor{gray!10}{U. Santo Tomás}\\
+\addlinespace
+ & U. Técnica Federico Santa Maria\\
+\cellcolor{gray!10}{} & \cellcolor{gray!10}{U. Viña del Mar}\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Notas:} 
+\item Las 18 universidades estatales chilenas se clasifican como 'Públicas'. El resto (27 instituciones, incluyendo G9, privadas tradicionales recientemente incorporadas al CRUCH como UAH, UDP, U. de los Andes, y privadas no tradicionales) se clasifican como 'Privadas'.
+\item Listado de instituciones presentes en la base FONDECYT 2016-2025 para Ciencias Sociales. Excluye centros de investigación, fundaciones y museos.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+Esta diferencia debe interpretarse considerando varios factores
+estructurales. Primero, como muestra la
+Tabla~\ref{tbl-clasificacion-publica-privada},el universo de
+universidades privadas es numéricamente mayor: solo 18 instituciones son
+estatales, mientras que el resto del sistema universitario nacional
+(incluyendo G9 y privadas no tradicionales) suma más de 30 instituciones
+consideradas en este análisis. Por tanto, parte de la brecha se explica
+simplemente por el mayor número de instituciones privadas que pueden
+postular. Segundo, dentro del sector privado se encuentran instituciones
+con altísima productividad investigativa (PUC, U. Austral, U. de
+Concepción, U. Diego Portales, UAH), varias de las cuales lideran el
+ranking nacional de adjudicaciones FONDECYT en Ciencias Sociales, lo que
+infla el agregado del grupo. Tercero, las universidades estatales han
+enfrentado desafíos sostenidos de financiamiento basal en la última
+década que pueden haber limitado su capacidad de expansión en
+investigación concursable, a pesar de su rol histórico como pilares del
+sistema universitario chileno.
+
+Es importante destacar que esta lectura complementa pero no reemplaza el
+análisis previo del corte CRUCH/No CRUCH: ambos cortes permiten observar
+distintas dimensiones del sistema. Mientras el primero captura la
+asimetría entre el sistema tradicional consolidado y las instituciones
+de creación más reciente, este segundo corte evidencia que la naturaleza
+pública o privada de las instituciones también constituye una dimensión
+relevante para entender la distribución del financiamiento concursable,
+aunque su lectura debe hacerse con cuidado por la heterogeneidad interna
+del sector privado, que agrupa en una sola categoría a instituciones muy
+distintas entre sí en términos de trayectoria, recursos y orientación.
+
+\begin{figure}
+
+\caption{\label{fig-institucion-iniciación-3}Evolución de adjudicaciones
+Fondecyt de Iniciación del top 6 Instituciones Patroncinantes
+(2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-institucion-iniciación-3-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-institucion-iniciación-3} permite observar la
+evolución temporal de las adjudicaciones en Ciencias Sociales para las
+instituciones líderes vistas en el gráfico anterior, revelando patrones
+de estabilidad y volatilidad diferenciados entre 2016 y 2025. La
+Pontificia Universidad Católica de Chile se mantiene consistentemente en
+la parte superior de la distribución, logrando un crecimiento que
+culmina en su punto más alto hacia 2025, a pesar de experimentar una
+caída excepcional y profunda en 2021. Por su parte, la Universidad de
+Chile muestra una trayectoria de mayor fluctuación; tras un descenso
+marcado en los primeros años y el impacto de 2021, presenta una
+recuperación robusta hacia el final del periodo, consolidándose como la
+segunda institución con mayor volumen de proyectos.
+
+En el grupo de instituciones con menores volúmenes relativos, se observa
+un comportamiento mucho más errático y entrecruzado. La Universidad
+Alberto Hurtado y la Pontificia Universidad Católica de Valparaíso
+muestran ciclos de adjudicación altamente variables, con picos de éxito
+seguidos de descensos inmediatos, lo que sugiere una mayor sensibilidad
+a las variaciones anuales de los concursos. Al igual que en los análisis
+por disciplina, el año 2021 aparece como un punto de inflexión crítico
+donde casi todas las universidades ---especialmente las dos
+principales--- sufrieron una contracción drástica, para luego iniciar un
+ciclo de expansión que lleva a la mayoría de las instituciones a cerrar
+2025 con niveles de adjudicación superiores o similares a sus promedios
+históricos.
+
+\begin{figure}
+
+\caption{\label{fig-adjudicaciones-institucion-genero}Adjudicaciones
+Fondecyt de Iniciación por género en el top 6 Instituciones
+Patroncinantes (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-adjudicaciones-institucion-genero-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-adjudicaciones-institucion-genero} muestra la
+distribución de adjudicaciones por género para las seis instituciones
+con mayor número de proyectos adjudicados en Ciencias Sociales entre
+2016 y 2025. Se observa que, aunque la mayoría de las instituciones
+presentan una mayor cantidad de adjudicaciones para hombres, la
+proporción de mujeres adjudicadas es significativa y en algunos casos se
+acerca o supera a la de los hombres, especialmente en años recientes.
+Por ejemplo, la Universidad de Chile muestra una tendencia hacia una
+mayor equidad de género en sus adjudicaciones, mientras que la
+Pontificia Universidad Católica de Chile mantiene una brecha más
+pronunciada a favor de los hombres. En general, el gráfico revela que,
+aunque persisten diferencias por género en las adjudicaciones dentro de
+las principales instituciones, existe una tendencia hacia una mayor
+participación femenina en los proyectos financiados en Ciencias
+Sociales, lo que podría reflejar cambios en las dinámicas de postulación
+y adjudicación a lo largo del tiempo.
+
+\subsection{Diferencias por macrozona}\label{diferencias-por-macrozona}
+
+\begin{figure}
+
+\caption{\label{fig-region-iniciación-1}Tasa de adjudicación Fondecyt de
+Inicación en Ciencias Sociales por macrozona (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-region-iniciación-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-region-iniciación-1} presenta un análisis geográfico
+de las adjudicaciones Fondecyt Iniciación en Ciencias Sociales por
+macrozona entre 2016 y 2025, utilizando dos mapas para ilustrar tanto el
+número total de postulaciones como la tasa de adjudicación (\%) por
+macrozona.
+
+La distribución de postulaciones y adjudicaciones en Ciencias Sociales a
+FONDECYT de Iniciación muestra una fuerte concentración en la macrozona
+Metropolitana, que supera ampliamente al resto del país en volumen de
+postulaciones. Le siguen en importancia las macrozonas Centro y Centro
+Sur, que agrupan regiones con universidades tradicionales de mayor
+trayectoria investigativa. En materia de postulaciones, el patrón es
+relativamente más equilibrado entre macrozonas, aunque la Región
+Metropolitana sigue concentrando las tasas más altas, lo que sugiere que
+el volumen de postulaciones no opera como ventaja competitiva en
+términos de éxito relativo. Las macrozonas Norte, Sur y Austral, en
+cambio, registran niveles de adjudicación considerablemente menores.
+
+\begin{figure}
+
+\caption{\label{fig-region-iniciación-2}Evolución temporal de
+adjudicaciones Fondecyt deIniciación en Ciencias Sociales por macrozona
+(2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-region-iniciación-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-region-iniciación-2} muestra la evolución temporal de
+las adjudicaciones FONDECYT de Iniciación en Ciencias Sociales entre
+2016 y 2025 confirma el predominio sostenido de la macrozona
+Metropolitana, que creció de 48 proyectos adjudicados en 2016 a 97 en
+2025, consolidándose como la única macrozona con una tendencia clara al
+alza durante el período. El resto de las macrozonas se mantiene en
+niveles notoriamente más bajos y relativamente estables: Centro Sur y
+Sur oscilan entre 10 y 26 adjudicaciones, mientras que Centro se mueve
+en un rango similar. Norte y Austral presentan los valores más bajos del
+período, con Austral bordeando consistentemente el cero a lo largo de
+toda la serie. Destaca la ausencia de datos para 2021, probablemente
+asociada a las disrupciones del concurso durante la pandemia. En
+conjunto, la brecha entre la Región Metropolitana y el resto del país no
+solo persiste sino que se amplía en el tiempo, lo que plantea
+interrogantes sobre la distribución territorial de las capacidades de
+investigación en ciencias sociales.
+
+\section{FONDECYT Regular}\label{fondecyt-regular}
+
+\subsection{Ciencias Sociales en perspectiva
+comparada}\label{ciencias-sociales-en-perspectiva-comparada-1}
+
+\begin{figure}
+
+\caption{\label{fig-postulaciones-global-regular}Tasa de postulaciones y
+adjudicaciones Fondecyt Regular (2016--2025). Las áreas disciplinarias
+siguen la clasificación OECD}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-postulaciones-global-regular-1.pdf}}
+
+}
+
+\end{figure}%
+
+Al analizar la Figura~\ref{fig-postulaciones-global-regular}, que
+muestra la distribución de postulaciones por disciplina OECD, se puede
+observar que las Ciencias Sociales se consolidan como una de las áreas
+con mayor volumen de postulaciones en FONDECYT Regular, situándose en un
+nivel comparable al de Ciencias Naturales. Mientras que otras áreas como
+Ciencias Médicas, Ingeniería, Humanidades y Ciencias Agrícolas mantienen
+escalas acotadas a lo largo del periodo, las Ciencias Sociales presentan
+un crecimiento sostenido que supera las 400 postulaciones anuales en los
+años finales, alcanzando un máximo histórico en 2025.
+
+En relación con el comportamiento sistémico, las Ciencias Sociales
+exhiben una trayectoria de expansión similar a la observada en
+Iniciación, aunque con escalas absolutas distintas: si Iniciación llega
+a superar las 600 postulaciones anuales en 2025, Regular se mueve en un
+rango menor pero igualmente robusto. Esta consistencia sugiere que la
+expansión de la disciplina opera de manera transversal entre ambos
+instrumentos, reflejando un aumento generalizado del interés por
+postular a fondos concursables FONDECYT en Ciencias Sociales, tanto en
+el tramo inicial de la carrera investigativa como en el tramo senior.
+
+A diferencia de Iniciación, donde se observaba una contracción marcada
+en 2023 seguida de una fuerte recuperación, en Regular la trayectoria es
+más estable, sin caídas abruptas durante el periodo. El número de
+proyectos no seleccionados (rojo claro) es proporcionalmente elevado en
+Ciencias Sociales, lo que evidencia una presión competitiva sostenida
+sobre el instrumento: una alta demanda por adjudicación que, como
+veremos en el gráfico siguiente, encuentra un techo relativamente
+estable en las tasas de aprobación.
+
+\begin{figure}
+
+\caption{\label{fig-adjudicaciones-global-regular-2}Tasa de adjudicación
+Fondecyt Regular en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-adjudicaciones-global-regular-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+Por su parte, la Figura~\ref{fig-adjudicaciones-global-regular-2} se
+concentra en la evolución de la tasa de adjudicación (\%) por disciplina
+OECD para FONDECYT Regular entre 2016 y 2025.
+
+Se observa que las Ciencias Sociales exhiben una trayectoria
+notablemente estable, situándose mayoritariamente en un rango entre el
+25\% y el 35\% de adjudicación durante toda la serie, sin presentar
+picos atípicos ni caídas abruptas. Esta consistencia contrasta con otras
+áreas que experimentaron oscilaciones significativas en el periodo:
+Humanidades alcanzó un pico anómalo del 42\% en 2023, mientras que
+Ciencias Médicas registró una caída drástica al 20\% en 2025. Las
+Ciencias Sociales convergen hacia el final del periodo en un 31.1\%,
+cifra alineada con el promedio histórico del área en este instrumento.
+
+Esta estabilidad debe leerse en conjunto con el patrón de postulaciones
+descrito previamente. Mientras que en Iniciación las tasas de
+adjudicación en Ciencias Sociales presentaban mayor volatilidad ---con
+picos como el 19.6\% de 2023 directamente vinculados a la fuerte caída
+de postulaciones de ese año---, en Regular la combinación de demanda
+creciente y tasas estables sugiere que el sistema opera con un techo
+presupuestario más rígido: a medida que aumentan las postulaciones, el
+número absoluto de proyectos aprobados crece de manera proporcional, sin
+que la tasa relativa de adjudicación se altere significativamente.
+Comparativamente, las Ciencias Sociales se ubican entre las disciplinas
+con mejores tasas de adjudicación en Regular, superando consistentemente
+a Humanidades (que tiende a oscilar entre el 25\% y el 30\%, con la
+excepción de su pico de 2023) y manteniéndose en niveles similares a
+Ciencias Naturales.
+
+\subsection{Diferencias por género}\label{diferencias-por-guxe9nero-1}
+
+\begin{figure}
+
+\caption{\label{fig-genero-regular-1}Postulación a proyectos Fondecyt
+Regular por género en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-genero-regular-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-genero-regular-1} muestra las postulaciones a
+FONDECYT Regular por año en Ciencias Sociales según género. Lo primero
+que se puede notar es que el número total de solicitudes creció de
+manera sostenida durante el periodo (pasando de aproximadamente 393
+postulaciones en 2016 a 578 en 2025), siguiendo la misma tendencia
+expansiva observada en Iniciación aunque a una escala absoluta menor.
+
+En términos comparativos por género, los hombres han representado
+consistentemente la mayoría de las postulaciones a lo largo de todo el
+período, oscilando entre el 60\% y el 65\%. La participación femenina,
+por su parte, ha experimentado un crecimiento sostenido en términos
+absolutos, pasando de 147 postulaciones en 2016 a 224 en 2025. Sin
+embargo, en términos relativos, el peso de las investigadoras se ha
+mantenido estancado en torno al 38\%** durante todo el periodo,
+evidencia de que el aumento de la demanda agregada fue traccionado
+principalmente por postulantes masculinos ---particularmente notorio en
+2025, cuando loshombres concentraron 354 postulaciones frente a 224
+mujeres.
+
+A diferencia de Iniciación, donde se observó una tendencia clara hacia
+la paridad en los años recientes (con proporciones cercanas al 50/50
+desde 2022), en Regular la brecha de género se mantiene estructuralmente
+estable a lo largo de toda la serie. Esta diferencia entre instrumentos
+sugiere que, si bien las nuevas generaciones de investigadoras están
+ingresando al sistema FONDECYT a través del tramo de Iniciación con
+tasas de participación cada vez más equitativas, el acceso a la
+categoría de investigador responsable en el tramo senior del
+financiamiento concursable sigue presentando una marcada concentración
+demográfica masculina. Esta persistencia podría reflejar tanto efectos
+cohorte ---los académicos en condiciones de postular a Regular hoy
+iniciaron sus trayectorias en periodos con menor representación
+femenina--- como barreras estructurales asociadas a las trayectorias
+académicas en el tramo intermedio y senior del sistema universitario
+chileno.
+
+\begin{figure}
+
+\caption{\label{fig-genero-regular-2}Adjudicaciones Fondecyt Regular por
+género en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-genero-regular-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-genero-regular-2} se enfoca en la tasa de
+adjudicación (\%) por género en FONDECYT Regular para Ciencias Sociales
+entre 2016 y 2025. A diferencia del análisis de postulaciones ---donde
+se observaba una brecha estructural persistente a favor de los
+hombres---, las tasas de adjudicación presentan un patrón mucho más
+equilibrado e incluso favorable a las mujeres en varios años del
+periodo.
+
+Las mujeres en Ciencias Sociales han demostrado periodos de mayor
+eficiencia que sus pares hombres, especialmente en 2017 y el bienio
+2023-2024, donde sus tasas de adjudicación superaron o igualaron la
+masculina en torno al 36\%. Esto sugiere que, una vez que las
+investigadoras logran ingresar al universo de postulantes Regular, su
+capacidad competitiva en términos de éxito relativo no se ve mermada
+respecto a sus pares masculinos ---e incluso supera a la de ellos en
+años específicos.
+
+Sin embargo, esta paridad es frágil: en 2025 se observa una caída
+pronunciada en la tasa femenina al 26.8\%, frente al 33.9\% de los
+hombres, una brecha de 7 puntos porcentuales que rompe el patrón de los
+años previos. Este dato sugiere que la ventaja competitiva de las
+investigadoras en Ciencias Sociales fluctúa año tras año sin lograr
+establecer una tendencia de cierre de brecha permanente en el éxito de
+las adjudicaciones.
+
+La lectura conjunta con el gráfico anterior es relevante: si bien las
+mujeres representan solo el 38\% de las postulaciones a Regular,
+\textbf{sus tasas de adjudicación tienden a ser comparables o superiores
+a las masculinas en la mayoría de los años}. Esto refuerza la hipótesis
+de que la brecha de género observada en Regular opera principalmente en
+la etapa de postulación ---vinculada a las condiciones estructurales
+para acceder a la categoría de investigador responsable senior--- y no
+en la evaluación misma de los proyectos por parte del sistema FONDECYT.
+
+\subsection{Diferencias por grupo de
+estudio}\label{diferencias-por-grupo-de-estudio-1}
+
+\begin{figure}
+
+\caption{\label{fig-adjudicaciones-sociales-2}Tasa de adjudicaciones
+Fondecyt Regular (2016--2025) por grupo de estudio. Los grupos siguen la
+clasificación ANID}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-adjudicaciones-sociales-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-adjudicaciones-sociales-2} presenta la evolución de
+las adjudicaciones FONDECYT Regular por grupo de estudio en Ciencias
+Sociales entre 2016 y 2025. Se observa que el grueso de las
+adjudicaciones en el área está sostenido mayoritariamente por dos
+grupos: Educación y Ciencias Jurídicas y Políticas, que juntos
+representan el núcleo de mayor volumen de proyectos financiados durante
+todo el periodo. Particularmente Educación muestra un crecimiento
+sostenido y consolidado, posicionándose como el grupo con mayor número
+de adjudicaciones acumuladas hacia 2025.
+
+En un segundo nivel, Sociología, Trabajo Social y Cs. de la Comunicación
+junto con Psicología mantienen una presencia estable durante todo el
+periodo, mostrando una expansión gradual pero menos pronunciada que la
+observada en los dos grupos líderes. Ciencias Económicas y
+administrativas sigue una trayectoria similar, mientras que disciplinas
+como Antropología y Arqueología y Geografía y Urbanismo ocupan un
+espacio menor pero constante a lo largo de la serie, con niveles de
+adjudicación reducidos pero sin grandes oscilaciones.
+
+Hacia el final del periodo, el crecimiento de la disciplina es
+transversal: prácticamente todos los grupos muestran un aumento visible
+en el volumen de proyectos financiados en 2024-2025. Esta expansión
+generalizada sugiere que el incremento de la demanda observado en años
+recientes no se concentra en un solo subcampo, sino que refleja una
+dinámica de crecimiento del sistema en su conjunto, aunque la jerarquía
+relativa entre grupos se mantiene estable. La consolidación de Educación
+como grupo de mayor volumen acumulado, en particular, es coherente con
+el patrón ya identificado en Iniciación, donde este grupo también lidera
+el ranking de adjudicaciones, lo que indica una demanda investigativa
+sostenida en torno a problemáticas educativas que se proyecta tanto en
+el tramo inicial como en el tramo senior del financiamiento concursable.
+
+\begin{figure}
+
+\caption{\label{fig-genero-grupo-regular}Tasa de adjudicación Fondecyt
+Regular por género según grupo de estudio en Ciencias Sociales
+(2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-genero-grupo-regular-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-genero-grupo-regular} muestra la composición
+porcentual de adjudicaciones FONDECYT Regular por grupo de estudio y
+género entre 2016 y 2025. A diferencia de lo observado en Iniciación
+---donde la distribución por género dentro de cada grupo tendía a ser
+relativamente equilibrada---, en Regular se observan patrones de
+concentración masculina mucho más marcados en varios grupos de estudio,
+evidenciando que las brechas de género operan con mayor intensidad en el
+tramo senior del financiamiento.
+
+Los hombres dominan con particular fuerza las adjudicaciones en Ciencias
+Económicas y Administrativas y Ciencias Jurídicas y Políticas, con
+proporciones que superan frecuentemente el 80\% e incluso alcanzan el
+100\% en algunos años. Este patrón es consistente con la composición de
+estos campos disciplinares en el sistema universitario chileno, donde
+históricamente la presencia femenina en posiciones académicas senior ha
+sido proporcionalmente menor. En el extremo opuesto, las mujeres
+presentan liderazgos específicos en Educación y Sociología, Trabajo
+Social y Cs. de la Comunicación, donde sus proporciones de adjudicación
+se acercan o superan el 50\% en buena parte de la serie, con peaks por
+sobre el 60\% en años específicos.
+
+Un patrón emergente interesante se observa en Investigación Inter y
+Transdisciplinaria hacia 2024-2025, donde las mujeres alcanzan una
+proporción de adjudicación significativa. Aunque la lectura de este
+grupo requiere cautela por su baja N en los primeros años de la serie,
+su crecimiento reciente sugiere que las investigadoras están encontrando
+espacios de adjudicación en campos emergentes que no responden a las
+estructuras disciplinarias tradicionales, donde las jerarquías de género
+están más sedimentadas.
+
+Estas trayectorias diferenciadas confirman que las Ciencias Sociales no
+constituyen un bloque homogéneo en términos de equidad de género, sino
+un campo donde la pertenencia a determinados subgrupos sigue mediando
+fuertemente las oportunidades de adjudicación. Mientras que en grupos
+como Educación y Sociología las mujeres han logrado consolidar
+liderazgos estables, en campos como Ciencias Jurídicas o Ciencias
+Económicas y Administrativas persisten patrones de concentración
+masculina extrema, configurando una geografía interna de la disciplina
+que refleja tanto la composición histórica.
+
+\begin{figure}
+
+\caption{\label{fig-grupo-monto-regular-1}Monto total promedio
+solicitado por grupo de estudio en Fondecyt Regular (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-grupo-monto-regular-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+\begin{figure}
+
+\caption{\label{fig-grupo-monto-regular-2}Monto promedio adjudicado por
+grupo de estudio para Fondecyt Regular (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-grupo-monto-regular-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-grupo-monto-regular-1} presenta la evolución del
+monto promedio solicitado por proyecto en FONDECYT Iniciación entre 2016
+y 2025, desagregado por grupo de estudio. Este indicador permite
+observar cuánto pidió cada disciplina en promedio al momento de
+postular, lo que constituye una señal directa de la estructura de costos
+esperada por los investigadores en cada área y de cómo estas
+expectativas evolucionaron a lo largo del período.
+
+Se observa una tendencia ascendente generalizada a lo largo del período,
+consistente con el reajuste inflacionario y los aumentos en los topes de
+financiamiento establecidos por ANID en sus bases concursales. El grupo
+de Geografía y Urbanismo se posiciona consistentemente como el de mayor
+monto solicitado promedio, seguido por Antropología y Arqueología y
+Psicología, todos ellos campos cuya investigación suele requerir trabajo
+de terreno, instrumentos especializados o procesamiento de muestras, lo
+que encarece el presupuesto típico de un proyecto. En contraste,
+Ciencias Jurídicas y Políticas y Ciencias Económicas y Administrativas
+mantienen los montos solicitados más bajos a lo largo de todo el período
+---en algunos años por debajo de los \$60 millones promedio---, lo que
+refleja una estructura de costos menor asociada a investigación
+predominantemente teórica, documental o basada en datos secundarios.
+
+Un patrón interesante es que las brechas entre grupos se mantienen
+relativamente estables en el tiempo: los grupos que pedían más en 2016
+siguen pidiendo más en 2025, sugiriendo que las diferencias responden a
+factores estructurales de cada disciplina (tipo de metodología,
+necesidad de equipamiento, costos de campo) y no a cambios coyunturales
+en las estrategias de postulación. Esta estabilidad es relevante porque
+sirve como referencia para interpretar las brechas observadas en los
+montos adjudicados.
+
+La Figura~\ref{fig-grupo-monto-regular-2} presenta la evolución del
+monto promedio efectivamente adjudicado por proyecto en FONDECYT
+Iniciación entre 2016 y 2025, desagregado por grupo de estudio. A
+diferencia del monto solicitado, esta variable captura lo que ANID
+terminó entregando a cada disciplina por proyecto en cada año, una vez
+aplicados los recortes y ajustes presupuestarios del proceso de
+evaluación.
+
+Se observa una convergencia gradual de los montos adjudicados hacia el
+final del período, fenómeno que contrasta con la estabilidad de las
+brechas en los montos solicitados. Mientras que en 2016 la dispersión
+entre grupos era amplia (con diferencias de hasta \$45 millones entre el
+grupo de mayor adjudicación promedio ---Geografía y Urbanismo, \$91M---
+y el de menor ---Ciencias Jurídicas y Políticas, \$46M---), hacia
+2024-2025 los grupos se agrupan en una franja más estrecha que va desde
+los \$57M (Ciencias Jurídicas) hasta los \$98M (Geografía y Urbanismo).
+En este sentido, el grueso de las Ciencias Sociales tiende a recibir
+montos similares al final del período (entre \$80M y \$95M), salvo
+Ciencias Jurídicas y Políticas que se mantiene como un caso aparte por
+su baja estructura de costos.
+
+Resalta el comportamiento de Ciencias Económicas y Administrativas, que
+parte siendo uno de los grupos con menor monto adjudicado promedio
+(\textasciitilde\$66M en 2016) pero experimenta un crecimiento abrupto a
+partir de 2022, alcanzando \$82M en 2023 y estabilizándose en torno a
+esa cifra. Antropología y Arqueología presenta el patrón opuesto: tras
+un peak en 2018 (\textasciitilde\$96M), su trayectoria se mantiene
+oscilante hasta cerrar el período en niveles similares al promedio de la
+disciplina. Por su parte, Ciencias Jurídicas y Políticas muestra una
+persistencia notable en sus bajos montos adjudicados, con un único punto
+de inflexión en 2023 cuando alcanza \$64M, pero rápidamente retorna a su
+nivel histórico cercano a los \$57M en 2025.
+
+La comparación entre la Figura~\ref{fig-grupo-monto-regular-1} y la
+Figura~\ref{fig-grupo-monto-regular-2} permite calcular la brecha entre
+lo solicitado y lo adjudicado, indicador útil para entender cuánto
+recortó ANID en cada disciplina. Si bien la tendencia general muestra
+que los grupos reciben en promedio entre un 65\% y un 80\% de lo
+solicitado, la consistencia interna del sistema parece operar de forma
+similar entre todas las áreas de Ciencias Sociales: ningún grupo aparece
+sistemáticamente ``castigado'' o ``favorecido'' en el ajuste
+presupuestario. Esto sugiere que las brechas observadas en los montos
+adjudicados reflejan principalmente las brechas preexistentes en los
+montos solicitados.
+
+\subsection{Diferencias por institución
+patrocinante}\label{diferencias-por-instituciuxf3n-patrocinante-1}
+
+\begin{figure}
+
+\caption{\label{fig-institucion-regular-1}Número de adjudicaciones
+Fondecyt Regular por Institución Patroncinante (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-institucion-regular-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-institucion-regular-1} presenta el ranking de las
+instituciones con mayor número de adjudicaciones FONDECYT Regular en el
+área de Ciencias Sociales para el periodo 2016-2025. La distribución
+revela una jerarquía institucional fuertemente marcada, encabezada por
+la Pontificia Universidad Católica de Chile con 275 proyectos
+adjudicados, seguida por la Universidad de Chile con 208. Estas dos
+casas de estudio concentran un volumen de investigación que
+prácticamente triplica al de sus competidores más cercanos, marcando una
+brecha estructural respecto al resto del sistema universitario nacional.
+
+En un segundo nivel destacan la Pontificia Universidad Católica de
+Valparaíso y la Universidad Diego Portales, que se consolidan como las
+principales instituciones del tramo intermedio, seguidas por la
+Universidad Austral de Chile y la Universidad Alberto Hurtado. El resto
+de las instituciones del top 15 ---que incluye a la USACH, U. de
+Concepción, PUC del Norte, UAH, UTalca, UCT, entre otras--- se sitúan en
+un rango relativamente homogéneo de entre 30 y 60 proyectos adjudicados
+durante todo el periodo, mostrando una competencia más equilibrada en la
+zona media de la distribución.
+
+La fuerte presencia de universidades con sede en la Región Metropolitana
+en los primeros lugares ---PUC, U. de Chile, UDP, UAH y USACH--- subraya
+que el financiamiento senior en Ciencias Sociales tiende a acumularse en
+los centros tradicionales de producción científica con base en Santiago.
+A diferencia de Iniciación, donde algunas instituciones regionales como
+la PUCV o la U. Austral logran ubicarse en posiciones competitivas, en
+Regular esta presencia regional es más limitada, evidenciando que el
+tramo senior del financiamiento concursable presenta una concentración
+territorial aún más pronunciada que la observada en el tramo de
+investigadores emergentes. Este patrón es coherente con los hallazgos
+previos sobre la asimetría estructural CRUCH/No CRUCH y refuerza la idea
+de que las dinámicas de capital académico acumulado operan con mayor
+fuerza en este instrumento.
+
+\begin{figure}
+
+\caption{\label{fig-cruch-adjudicaciones-regular}Adjudicaciones Fondecyt
+Regular en Ciencias Sociales según tipo de institución CRUCH vs No
+Tradicional (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-cruch-adjudicaciones-regular-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-cruch-adjudicaciones-regular} permite comparar el
+comportamiento agregado de las universidades pertenecientes al Consejo
+de Rectores (CRUCH) frente a las universidades privadas no tradicionales
+en la adjudicación de proyectos FONDECYT Regular en Ciencias Sociales
+durante el período 2016-2025. El patrón más evidente es una brecha
+estructural más pronunciada que en Iniciación: las instituciones CRUCH
+concentran prácticamente la totalidad de las adjudicaciones cada año,
+pasando de 111 proyectos en 2016 a 147 en 2025 ---un crecimiento del
+32\%, considerablemente menor al observado en el mismo grupo para
+Iniciación (160\%). Las universidades no tradicionales, en cambio,
+parten desde una base muy baja (7 proyectos en 2016) y alcanzan apenas
+35 adjudicaciones en 2025, manteniéndose en una escala marginal a lo
+largo de todo el período.
+
+A diferencia de Iniciación, donde se observaba un crecimiento sostenido
+de ambos grupos, en Regular la brecha relativa se mantiene prácticamente
+invariable durante toda la serie. En 2016 las CRUCH representaban
+aproximadamente el 94\% del total de adjudicaciones, mientras que las no
+tradicionales el 6\% restante. Hacia 2025, esta proporción es 81\% para
+CRUCH y 19\% para no tradicionales, un cierre leve pero insuficiente
+para hablar de un proceso de convergencia. La excepción notable es el
+bienio 2023-2025, donde las universidades no tradicionales experimentan
+un salto relativo significativo, pasando de 13-17 adjudicaciones
+promedio anuales entre 2016-2022 a 28-35 en los tres últimos años del
+período.
+
+Esta brecha más acentuada en Regular debe interpretarse a la luz de los
+mismos factores estructurales que diferencian a ambos tipos de
+instituciones ---trayectoria investigativa consolidada, aportes basales
+del Estado, capital académico acumulado--- pero con un agravante
+específico del instrumento. FONDECYT Regular exige que el investigador
+responsable cuente con una trayectoria robusta como Principal
+Investigator (PI), productividad científica acreditada y capacidad para
+liderar proyectos de mayor envergadura, requisitos que históricamente se
+concentran en académicos adscritos al sistema CRUCH. Mientras que
+Iniciación está pensado para investigadores emergentes ---donde la
+brecha entre instituciones tiende a ser menor porque importa más el
+perfil individual del postulante---, Regular refuerza la ventaja
+acumulativa del sistema tradicional al privilegiar trayectorias
+consolidadas. Esto explica por qué la asimetría observada en este
+instrumento es más profunda que en Iniciación, y por qué los esfuerzos
+de las universidades no tradicionales por incrementar su participación
+encuentran un techo más rígido en el tramo senior del financiamiento
+concursable.
+
+\begin{figure}
+
+\caption{\label{fig-publica-adjudicaciones-regular}Adjudicaciones
+Fondecyt Regular en Ciencias Sociales según tipo de institución Pública
+vs Privada (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-publica-adjudicaciones-regular-1.pdf}}
+
+}
+
+\end{figure}%
+
+\begin{figure}
+
+\caption{\label{fig-institucion-regular-2}Evolución de adjudicaciones
+Fondecyt Regular del top 6 Instituciones Patroncinantes (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-institucion-regular-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+Al observar la serie de tiempo de la
+Figura~\ref{fig-institucion-regular-2}, la UC y la U. de Chile mantienen
+una disputa constante por el primer lugar, con ambas instituciones
+cerrando 2025 en niveles de adjudicación cercanos a sus picos
+históricos. En contraste, universidades como la Alberto Hurtado o la
+Austral muestran líneas de tiempo mucho más erráticas, con ciclos de
+éxito que no siempre logran proyectarse. Esta volatilidad en las
+instituciones de menor escala sugiere que la capacidad de retener y
+financiar proyectos Fondecyt Regular en Ciencias Sociales es un atributo
+que se consolida con mayor fuerza en las dos instituciones líderes del
+sistema.
+
+\begin{figure}
+
+\caption{\label{fig-adjudicaciones-institucion-genero-2}Tasa de
+adjudicación Fondecyt Regular por género en las 6 instituciones con más
+adjudicaciones en Ciencias Sociales (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-adjudicaciones-institucion-genero-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-adjudicaciones-institucion-genero-2} muestra que,
+aunque la Pontificia Universidad Católica de Chile y la Universidad de
+Chile lideran en adjudicaciones tanto para hombres como para mujeres, la
+proporción de adjudicaciones femeninas es consistentemente más baja en
+ambas instituciones. En la UC, las mujeres representan entre el 20\% y
+el 30\% de las adjudicaciones anuales, mientras que en la U. de Chile
+esta proporción oscila entre el 25\% y el 35\%. En contraste,
+universidades como la Alberto Hurtado muestran una mayor paridad de
+género, con mujeres representando cerca del 40\% de las adjudicaciones
+en algunos años. Esta disparidad sugiere que, incluso dentro de las
+instituciones líderes, persisten brechas de género significativas en el
+acceso a proyectos Fondecyt Regular en Ciencias Sociales.
+
+\subsection{Diferencias por
+macrozona}\label{diferencias-por-macrozona-1}
+
+\begin{figure}
+
+\caption{\label{fig-region-regular-1}Tasa de adjudicación Fondecyt
+Regular en Ciencias Sociales por macrozona (2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-region-regular-1-1.pdf}}
+
+}
+
+\end{figure}%
+
+Por su parte, el mapa de la Figura~\ref{fig-region-regular-1} muestra la
+Región Metropolitana concentra la inmensa mayoría de las postulaciones,
+dejando al resto del país en una posición marginal en términos de
+volumen. No obstante, al mirar la tasa de adjudicación, el panorama
+cambia: zonas del extremo norte y sur logran niveles de eficiencia
+superiores al 34\%, superando a la RM en efectividad relativa. Esto
+indica que, si bien hay menos investigadores en regiones, los proyectos
+presentados desde la periferia son altamente competitivos y logran tasas
+de éxito que desafían la centralización del sistema de financiamiento.
+
+\begin{figure}
+
+\caption{\label{fig-region-regular-2}Evolución temporal de
+adjudicaciones Fondecyt Regular en Ciencias Sociales por macrozona
+(2016--2025)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-fondecyt_files/figure-pdf/fig-region-regular-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+Finalmente, la evolución por macrozonas de la
+Figura~\ref{fig-region-regular-2} reafirma que el crecimiento de las
+Ciencias Sociales continua siendo un fenómeno predominantemente
+metropolitano. Mientras la RM muestra una tendencia ascendente que rompe
+la barrera de las 100 adjudicaciones en 2025, las macrozonas Centro, Sur
+y Norte se mantienen en un rango estancado de entre 10 y 25 proyectos
+anuales. La brecha entre Santiago y el resto de las regiones no se ha
+reducido en la última década; por el contrario, la capital ha capturado
+la mayor parte del incremento en el presupuesto de adjudicación del
+área.
 
 \bookmarksetup{startatroot}
 
-\chapter{Discusión}\label{discusiuxf3n}
+\chapter{Resultados: Nucleos Milenio}\label{resultados-nucleos-milenio}
 
-Interpreta resultados, limitaciones y aportes.
+\section{Núcleos e Institutos
+Milenio}\label{nuxfacleos-e-institutos-milenio}
+
+Esta sección presenta un análisis complementario sobre el instrumento de
+investigación asociativa Milenio en Ciencias Sociales. A diferencia del
+tratamiento dado a FONDECYT ---que constituye el foco principal del
+estudio---, el análisis de Milenio se aborda aquí con un alcance más
+limitado, tanto por las características del instrumento (concursos menos
+frecuentes y proyectos de mayor envergadura), como por las importantes
+restricciones de la base de datos disponible. En particular, las
+variables de institución patrocinante, grupo de evaluación, disciplina
+detallada y montos adjudicados no están disponibles para este
+instrumento. Además, la cobertura temporal es discontinua: solo se
+cuenta con información de los concursos 2016, 2017, 2020, 2021 y 2022,
+sin datos para 2018, 2019 ni el período 2023-2025.
+
+Por estas razones, esta sección debe leerse como una mirada exploratoria
+que aporta contexto al análisis principal, más que como un diagnóstico
+sistemático equivalente. El análisis se limita a tres dimensiones
+factibles ---comparación con otras áreas OCDE, distribución por género y
+distribución territorial---, complementadas con un listado descriptivo
+del universo completo de proyectos en Ciencias Sociales. Todas las
+observaciones que se desprenden deben interpretarse con la debida
+cautela dada la baja N del subuniverso analizado: solo 24 proyectos en
+Ciencias Sociales durante el período cubierto.
+
+\subsection{Milenio en perspectiva
+comparada}\label{milenio-en-perspectiva-comparada}
+
+\begin{figure}
+
+\caption{\label{fig-milenio-area}Adjudicaciones Núcleos e Institutos
+Milenio por área OCDE (2016--2022)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-nucleo_files/figure-pdf/fig-milenio-area-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-milenio-area} presenta la distribución de
+adjudicaciones de Núcleos e Institutos Milenio por área OCDE durante el
+período 2016-2022. En el agregado, Ciencias Naturales lidera con 26
+proyectos adjudicados, seguido muy de cerca por Ciencias Sociales con 24
+proyectos. El resto de las áreas mantiene una presencia marginal:
+Ingeniería y Tecnología y Medicina y Ciencias de la Salud con 3
+proyectos cada una, Multidisciplinario con 2 y Humanidades con apenas 1
+proyecto en todo el período.
+
+Esta posición relativa de las Ciencias Sociales contrasta con lo
+observado en FONDECYT, donde el área se ubica como uno de los
+principales volúmenes del sistema. En Milenio, la disciplina mantiene
+una posición competitiva pero a una escala notoriamente más acotada:
+hablamos de decenas de proyectos en casi una década, no de cientos por
+año como ocurre en FONDECYT. Esta diferencia de escala es coherente con
+el diseño del instrumento, orientado a la conformación de centros de
+excelencia con financiamiento de mayor envergadura y duración, lo que
+naturalmente restringe el número de proyectos adjudicables por concurso.
+
+\section{Detalle de proyectos adjudicados en Ciencias
+Sociales}\label{detalle-de-proyectos-adjudicados-en-ciencias-sociales}
+
+\begingroup\fontsize{9}{11}\selectfont
+
+\begin{longtable}[t]{>{\centering\arraybackslash}p{1cm}>{\centering\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{5cm}>{\raggedright\arraybackslash}p{3.5cm}>{\centering\arraybackslash}p{1cm}>{\centering\arraybackslash}p{2cm}}
+
+\caption{\label{tbl-milenio-detalle}Listado completo de Núcleos e
+Institutos Milenio adjudicados en Ciencias Sociales (2016--2022)}
+
+\tabularnewline
+
+\toprule
+Año & Tipo & Nombre del proyecto & Responsable & Sexo & Macrozona\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+Año & Tipo & Nombre del proyecto & Responsable & Sexo & Macrozona\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\multicolumn{6}{l}{\rule{0pt}{1em}Fuente: ANID 2016-2022, elaboración propia.}\\
+\endlastfoot
+\cellcolor{gray!10}{2017} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Nucleo Milenio El Ejercicio De La Autoridad En La Sociedad Chilena. Rearticulaciones De La Gestion De Las Asimetrias De Poder En Las Relaciones Sociales.} & \cellcolor{gray!10}{Kathya Araujo Kakiuchi} & \cellcolor{gray!10}{Mujer} & \cellcolor{gray!10}{RM}\\
+2017 & Núcleo & Nucleo Milenio En Desarrollo Social & Fabian Rolando Duarte Vasquez & Hombre & RM\\
+\cellcolor{gray!10}{2017} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Nucleo Milenio Movilidades Y Territorios} & \cellcolor{gray!10}{Paola Andrea Jiron Martinez} & \cellcolor{gray!10}{Mujer} & \cellcolor{gray!10}{RM}\\
+2017 & Núcleo & Nucleo Milenio Para El Estudio Del Curso De Vida Y La Vulnerabilidad (Mliv) & Viviana Monzerratt Salinas Ulloa & Mujer & RM\\
+\cellcolor{gray!10}{2017} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Nucleo Milenio Para Mejorar La Salud Mental De Adolescentes Y Jovenes} & \cellcolor{gray!10}{Vania Angelica Martinez Nahuel} & \cellcolor{gray!10}{Mujer} & \cellcolor{gray!10}{RM}\\
+\addlinespace
+2017 & Núcleo & Nucleo Milenio, Experiencias De Los Estudiantes De La Educacion Superior En Chile: ?Por Que Y Para Que? & Carlos Gonzalez Ugalde & Hombre & RM\\
+\cellcolor{gray!10}{2020} & \cellcolor{gray!10}{Instituto} & \cellcolor{gray!10}{Millenimum Institute On Violence And Democracy Research} & \cellcolor{gray!10}{Helene Risor Risor} & \cellcolor{gray!10}{Mujer} & \cellcolor{gray!10}{RM}\\
+2020 & Instituto & Millennium Institute For Caregiving Research & Claudia Miranda Castillo & Mujer & RM\\
+\cellcolor{gray!10}{2021} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Center For The Study Of Politics, Public Opinion And Media In Chile} & \cellcolor{gray!10}{Patricio Daniel Navia Lucero} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+2021 & Núcleo & Millenium Nucleus Ocean, Heritage And Culture & Maria Isabel Cartajena Fasting & Mujer & RM\\
+\addlinespace
+\cellcolor{gray!10}{2021} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Millennium Nucleus For The Evaluation And Analysis Of Drug Policies} & \cellcolor{gray!10}{Alvaro Ernesto Castillo Carniglia} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+2021 & Núcleo & Millennium Nucleus For The Study Of The Development Of Early Math Skills & Maria Ines Susperreguy Jorquera & Mujer & RM\\
+\cellcolor{gray!10}{2021} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Millennium Nucleus On Intergenerational Mobility: From Modelling To Policy} & \cellcolor{gray!10}{Ernesto Javier San Martin Gutierrez} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+2021 & Núcleo & Millennium Nucleus On The Evolution Of Work & Jeanne Lafortune . & Mujer & RM\\
+\cellcolor{gray!10}{2021} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Nucleo Milenio De Sociomedicina} & \cellcolor{gray!10}{Esteban Calvo Bralic} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+\addlinespace
+2022 & Núcleo & Millenium Nucleus For Labor Market Mismatch: Causes And Consequences & Felipe Balmaceda Mahns & Hombre & RM\\
+\cellcolor{gray!10}{2022} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Millenium Nucleus For The Study Of The Consequences Of Immigration, The Drivers Of Public Perceptions, And Potential Mismatches Between Reality And Perceptions About Migration In Chile} & \cellcolor{gray!10}{Raimundo Undurraga Riesco} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+2022 & Núcleo & Millenium Nucleus In Andean Peatlands & Manuel Jose Prieto Montt & Hombre & NORTE\\
+\cellcolor{gray!10}{2022} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Millenium Nucleus On The Impacts Of China In Lac} & \cellcolor{gray!10}{Francisco Urdinez Gaviot} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+2022 & Núcleo & Millennium Nucleus For The Integrated Development Of Territories & William Ellis Foster Bonnette & Hombre & RM\\
+\addlinespace
+\cellcolor{gray!10}{2022} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Millennium Nucleus For The Science Of Learning} & \cellcolor{gray!10}{Roberto Andres Ferreira Campos} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{CENTRO SUR}\\
+2022 & Núcleo & Millennium Nucleus In Digital Inequalities And Opportunities & Ingrid Andrea Bachmann Caceres & Mujer & RM\\
+\cellcolor{gray!10}{2022} & \cellcolor{gray!10}{Núcleo} & \cellcolor{gray!10}{Millennium Nucleus In Musical And Sound Cultures} & \cellcolor{gray!10}{Christian Spencer Espinosa} & \cellcolor{gray!10}{Hombre} & \cellcolor{gray!10}{RM}\\
+2022 & Núcleo & Millennium Nucleus Studies On Disability And Citizenship & Maria Florencia Herrera Oesterheld & Mujer & RM\\*
+
+\end{longtable}
+
+\endgroup{}
+
+La Tabla~\ref{tbl-milenio-detalle} presenta el listado completo del
+universo analizado: los 24 Núcleos e Institutos Milenio adjudicados en
+Ciencias Sociales entre 2016 y 2022. La tabla incluye el año de
+adjudicación, el tipo de centro (Núcleo o Instituto), nombre del
+proyecto, responsable principal, sexo del responsable y macrozona de
+ubicación. Dado el tamaño acotado del universo, resulta posible y
+pertinente mostrar el listado exhaustivo, lo que permite al lector
+acceder directamente a la diversidad temática de los proyectos y
+observar de manera transparente la composición que sustenta los análisis
+agregados de las secciones siguientes.
+
+\subsection{Diferencias por género}\label{diferencias-por-guxe9nero-2}
+
+\begin{figure}
+
+\caption{\label{fig-milenio-genero}Adjudicaciones Núcleos e Institutos
+Milenio en Ciencias Sociales por género (2016--2022)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-nucleo_files/figure-pdf/fig-milenio-genero-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-milenio-genero} presenta la distribución por género
+de los Núcleos e Institutos Milenio adjudicados en Ciencias Sociales. En
+el agregado del período se observa una distribución relativamente
+balanceada: del total de 24 adjudicaciones, 13 corresponden a
+investigadores hombres (54\%) y 11 a investigadoras mujeres (46\%),
+mostrando una composición más equitativa que la observada en FONDECYT
+Regular ---donde las mujeres concentran aproximadamente el 38\% de las
+postulaciones---. Si bien esta lectura es sugerente, debe tomarse con
+extrema cautela dada la baja N del universo analizado.
+
+La interpretación año a año ilustra precisamente los límites de este
+ejercicio. En 2020, por ejemplo, se adjudicaron solo 2 proyectos
+---ambos dirigidos por mujeres---, lo que arroja un 100\% de
+participación femenina que evidentemente no constituye una tendencia
+sino un artefacto del tamaño reducido del concurso. La cifra más
+informativa corresponde al concurso 2022, con 11 adjudicaciones: 6
+hombres (55\%) y 5 mujeres (45\%), distribución que se aproxima al
+promedio del período. Cualquier inferencia sobre tendencias temporales
+en este indicador resulta metodológicamente improcedente con la
+información disponible.
+
+\subsection{Distribución territorial}\label{distribuciuxf3n-territorial}
+
+\begin{figure}
+
+\caption{\label{fig-milenio-macrozona}Adjudicaciones Núcleos e
+Institutos Milenio en Ciencias Sociales por macrozona (2016--2022)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-nucleo_files/figure-pdf/fig-milenio-macrozona-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-milenio-macrozona} presenta el hallazgo más
+contundente de toda la sección sobre Milenio, y posiblemente el dato que
+mejor resiste las limitaciones metodológicas señaladas previamente. La
+Región Metropolitana captura 22 de las 24 adjudicaciones Milenio en
+Ciencias Sociales (92\%). Las restantes 2 adjudicaciones se reparten
+entre las macrozonas Centro Sur y Norte (1 cada una), mientras que las
+macrozonas Centro, Sur y Austral no registran ningún Núcleo ni Instituto
+Milenio en Ciencias Sociales durante todo el período observado.
+
+Esta concentración es considerablemente más extrema que la observada en
+FONDECYT, donde si bien la Región Metropolitana domina el sistema, otras
+macrozonas mantienen al menos una presencia relevante. El resultado
+sugiere que Milenio en Ciencias Sociales opera prácticamente como un
+fenómeno santiaguino, reforzando la asimetría territorial documentada en
+el análisis principal. Esta lectura debe entenderse en el contexto del
+diseño del instrumento, que privilegia la conformación de centros con
+masa crítica de investigadores con dedicación exclusiva y trayectoria
+consolidada, perfil que se concentra desproporcionadamente en las
+universidades con sede en la capital. Sin embargo, también plantea una
+interrogante de política pública relevante**: si Milenio busca
+consolidar centros de excelencia capaces de liderar agendas de
+investigación de frontera, ¿es deseable que en Ciencias Sociales este
+objetivo se cumpla de manera tan exclusivamente metropolitana?
+
+\subsection{Evolución temporal por
+macrozona}\label{evoluciuxf3n-temporal-por-macrozona}
+
+\begin{figure}
+
+\caption{\label{fig-region-milenio-2}Evolución temporal de
+adjudicaciones Núcleos e Institutos Milenio en Ciencias Sociales por
+macrozona (2016--2022)}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{03-resultados-nucleo_files/figure-pdf/fig-region-milenio-2-1.pdf}}
+
+}
+
+\end{figure}%
+
+La Figura~\ref{fig-region-milenio-2} complementa el análisis territorial
+mostrando la evolución concurso a concurso de las adjudicaciones por
+macrozona. Se confirma el predominio constante de la Región
+Metropolitana, con picos visibles en los concursos de 2016, 2020 y 2022.
+Las demás macrozonas muestran una presencia esporádica y de bajo
+volumen, sin construir trayectorias sostenidas de adjudicación a lo
+largo del tiempo. Este patrón refuerza la conclusión previa: el
+instrumento Milenio en Ciencias Sociales no muestra signos de
+descentralización territorial durante el período observado, aunque la
+naturaleza fragmentaria de los datos disponibles impide afirmar de
+manera concluyente si esta tendencia se ha mantenido en los concursos
+posteriores a 2022.
+
+\subsection{Síntesis: una mirada complementaria al análisis
+principal}\label{suxedntesis-una-mirada-complementaria-al-anuxe1lisis-principal}
+
+Los hallazgos de esta sección permiten ofrecer una mirada panorámica
+sobre el instrumento Milenio en Ciencias Sociales que, pese a sus
+limitaciones metodológicas, dialoga con los principales patrones
+identificados en el análisis FONDECYT. En particular, la concentración
+territorial extrema en la Región Metropolitana confirma ---y
+radicaliza--- la asimetría documentada en el instrumento principal,
+mientras que la mayor equidad de género observada en el agregado sugiere
+que los instrumentos asociativos podrían operar bajo dinámicas algo
+distintas a las de los concursos individuales senior. Sin embargo, las
+restricciones de la base de datos impiden profundizar estas hipótesis
+con la rigurosidad que el tema merecería.
+
+Esta limitación sugiere una agenda clara: un análisis sistemático del
+financiamiento Milenio en Ciencias Sociales requiere primero resolver
+los problemas de disponibilidad y granularidad de los datos. La
+información sobre montos, instituciones patrocinantes, grupos de
+evaluación y cobertura temporal completa es indispensable para producir
+un diagnóstico equivalente al que aquí se ha presentado para FONDECYT.
+Mientras esa información no esté disponible, los análisis sobre Milenio
+seguirán operando con un nivel de profundidad limitado en comparación
+con otros instrumentos del sistema.
 
 \bookmarksetup{startatroot}
 
 \chapter{Conclusiones}\label{conclusiones}
 
-Síntesis y proyecciones futuras.
+\section{Conclusiones}\label{conclusiones-1}
+
+El presente informe ha caracterizado la distribución del financiamiento
+ANID en Ciencias Sociales durante el período 2016-2025 a partir del
+análisis sistemático de tres bases de datos ---postulaciones y
+adjudicaciones FONDECYT Iniciación, FONDECYT Regular y Núcleos e
+Institutos Milenio---, complementadas con la reconstrucción manual de
+las series de montos solicitados y adjudicados por grupo de estudio
+desde los reportes oficiales de cada concurso. A continuación se
+sintetizan los principales hallazgos del estudio, se discuten sus
+implicancias para el debate sobre la política científica nacional y se
+proponen rutas para futuras investigaciones.
+
+\subsection{Más allá del discurso de crisis: hacia un diagnóstico
+empírico}\label{muxe1s-alluxe1-del-discurso-de-crisis-hacia-un-diagnuxf3stico-empuxedrico}
+
+Antes de avanzar en los hallazgos específicos, conviene situar este
+informe respecto a una de las preguntas que motivaron su realización:
+¿existe efectivamente una crisis de financiamiento en las Ciencias
+Sociales chilenas? La respuesta que emerge del análisis es
+deliberadamente matizada. Por un lado, los datos muestran que el sistema
+no ha colapsado ni ha experimentado contracciones abruptas: las
+adjudicaciones absolutas crecieron de manera sostenida en ambos
+instrumentos FONDECYT durante la última década, y las tasas de
+adjudicación se mantienen estructuralmente estables. Por otro lado, el
+sistema tampoco ha crecido al ritmo de la demanda generada por la
+densificación del campo: la presión competitiva se ha intensificado de
+manera transversal, sin que las probabilidades relativas de éxito
+mejoren para las nuevas generaciones de investigadores e investigadoras.
+
+En este sentido, hablar de ``crisis'' requiere mayor precisión
+analítica. No estamos ante un sistema en colapso, sino ante un sistema
+con techos estructurales que opera bajo restricciones que se vuelven más
+visibles a medida que la demanda crece. La discusión política y pública,
+que tiende a operar en términos binarios ---``hay crisis'' o ``no hay
+crisis''---, gana profundidad cuando se desagrega en preguntas más
+específicas: ¿crisis para quién?, ¿crisis en qué dimensión?, ¿crisis
+respecto a qué punto de referencia? El presente informe contribuye a
+abrir estas distinciones a partir de evidencia empírica sistemática.
+
+\subsection{Una disciplina en expansión sostenida pero con techos
+competitivos}\label{una-disciplina-en-expansiuxf3n-sostenida-pero-con-techos-competitivos}
+
+El primer hallazgo transversal del informe es que las Ciencias Sociales
+se han consolidado como una de las áreas de mayor volumen y dinamismo
+del sistema FONDECYT. En Iniciación, el área superó las 600
+postulaciones anuales en 2025, duplicando a Ingeniería y cuadruplicando
+a Ciencias Médicas; en Regular, supera consistentemente las 400
+postulaciones anuales situándose junto a Ciencias Naturales en el
+liderazgo del instrumento. Esta expansión es coherente con la
+densificación del campo documentada por el informe HACS de ANID: más
+programas doctorales, más investigadores con formación avanzada y mayor
+producción indexada se traducen en una demanda creciente por
+financiamiento concursable.
+
+Sin embargo, las tasas de adjudicación no han crecido al mismo ritmo. En
+Regular las tasas se mantienen estructuralmente estables en torno al
+30-35\%, mientras que en Iniciación oscilan entre el 7\% y el 12\% con
+un peak atípico en 2023 explicado por una contracción de postulaciones.
+Esta combinación de demanda creciente con tasas estables o decrecientes
+sugiere que el sistema opera con un techo presupuestario relativamente
+rígido: el número de proyectos aprobados crece proporcionalmente al
+incremento de postulaciones, sin que la probabilidad relativa de éxito
+mejore. En términos sustantivos, esto significa que la expansión de las
+capacidades instaladas del campo no se ve acompañada por una expansión
+equivalente de los recursos disponibles, configurando un escenario de
+competencia intensificada que afecta de manera transversal a todos los
+grupos disciplinarios.
+
+Esta lectura tiene implicancias relevantes para el debate sobre la
+sostenibilidad del campo. Una política agresiva de formación de capital
+humano avanzado ---como la que ha caracterizado a Chile en la última
+década--- solo cumple sus propósitos si está acompañada por una
+expansión proporcional de los espacios donde ese capital humano puede
+ejercer su labor investigativa. De lo contrario, el resultado es una
+sobreoferta estructural de doctores compitiendo por un volumen
+relativamente fijo de plazas, con consecuencias previsibles sobre la
+precarización laboral, la retención de talento y la sostenibilidad de
+agendas de investigación de largo aliento.
+
+\subsection{Brechas de género: asimetrías diferenciadas por tramo de
+carrera}\label{brechas-de-guxe9nero-asimetruxedas-diferenciadas-por-tramo-de-carrera}
+
+El análisis por género revela un patrón con dos caras. En Iniciación,
+las postulaciones han transitado hacia una composición cercana a la
+paridad en los años recientes (50/49 a favor de hombres en 2023-2024), y
+las tasas de adjudicación entre géneros son comparables a lo largo del
+periodo. En Regular, en cambio, la brecha de postulación se mantiene
+estructuralmente estancada en torno al 38\% femenino, sin signos de
+convergencia a lo largo de la década estudiada.
+
+Un hallazgo significativo es que esta brecha opera principalmente en la
+etapa de postulación, no en la evaluación. Las tasas de adjudicación
+femeninas en Regular son comparables o incluso superiores a las
+masculinas en varios años del periodo (2017, 2023-2024), aunque con una
+caída pronunciada en 2025. Si bien establecer la naturaleza causal de
+estas asimetrías requeriría estudios complementarios, el patrón
+observado es compatible con la hipótesis del \emph{``leaky pipeline''}
+(\citeproc{ref-osterloh_exploring_2025}{Osterloh \& Rost, 2025}): las
+nuevas generaciones de investigadoras están ingresando al sistema a
+través del tramo emergente con tasas de participación cada vez más
+equitativas, pero el acceso a la categoría de investigadora responsable
+en el tramo senior continúa presentando barreras estructurales asociadas
+a las trayectorias académicas intermedias.
+
+La heterogeneidad interna de la disciplina refuerza esta lectura:
+mientras grupos como Educación y Sociología muestran liderazgos
+femeninos estables o crecientes, otros como Ciencias Económicas y
+Administrativas o Ciencias Jurídicas y Políticas exhiben patrones de
+concentración masculina extrema (proporciones de adjudicación que
+superan el 80\% en varios años). Esto sugiere que las Ciencias Sociales
+no constituyen un bloque homogéneo en términos de equidad de género,
+sino un campo con una geografía interna donde las dinámicas de género se
+reproducen de manera diferenciada según el subcampo disciplinario.
+
+Este hallazgo tiene implicancias importantes para el diseño de políticas
+de equidad. Las intervenciones genéricas que asumen una brecha homogénea
+pueden resultar insuficientes o incluso contraproducentes en campos
+donde los mecanismos de exclusión operan con lógicas distintas. Una
+política sensible al género debería diferenciar entre tramos de carrera
+y entre subcampos, identificando los puntos específicos del recorrido
+académico donde se producen las mayores filtraciones y los espacios
+donde las dinámicas de cooptación histórica son más persistentes.
+
+\subsection{Asimetrías institucionales: el peso del capital académico
+acumulado}\label{asimetruxedas-institucionales-el-peso-del-capital-acaduxe9mico-acumulado}
+
+El análisis por institución patrocinante confirma una observación que ya
+había sido planteada en la literatura nacional
+(\citeproc{ref-ramos-zincke_wellbehaved_2021}{Ramos-Zincke, 2021}): las
+universidades del sistema CRUCH concentran abrumadoramente las
+adjudicaciones tanto en Iniciación como en Regular. En Iniciación, la
+brecha entre CRUCH (77\%) y no tradicionales (23\%) se mantiene
+relativamente estable a lo largo del periodo, con un salto modesto de
+participación de las privadas no tradicionales a partir de 2022. En
+Regular, la asimetría es considerablemente más profunda: las CRUCH
+concentran el 81\% de las adjudicaciones en 2025, frente al 19\% de las
+no tradicionales, sin signos de convergencia en la última década.
+
+Esta diferencia entre instrumentos es sustantiva. Mientras Iniciación
+opera con menor exigencia de trayectoria ---donde el perfil individual
+del postulante pesa más que su afiliación institucional---, Regular
+privilegia trayectorias consolidadas como Principal Investigator,
+reforzando la ventaja acumulativa del sistema tradicional. La asimetría
+observada no debe interpretarse como un indicador de calidad relativa de
+las instituciones, sino como expresión de una asimetría estructural del
+sistema de educación superior chileno: las universidades del CRUCH
+---particularmente las 18 estatales y las nueve del G9--- cuentan con
+aportes basales que financian infraestructura, cuerpos académicos con
+dedicación exclusiva y redes de colaboración previas, capacidades que
+operan como precondiciones materiales para la postulación exitosa a
+fondos concursables.
+
+El análisis por naturaleza jurídica ---público vs privado--- matiza esta
+lectura. Cuando se desagrega así, las universidades privadas captan la
+mayoría de las adjudicaciones (72\% en 2025), un dato que se explica
+principalmente por el mayor número de instituciones privadas en el
+sistema y por la presencia de universidades privadas tradicionales
+altamente productivas (PUC, UAH, UDP, U. de los Andes). Esto ilustra que
+el sistema universitario chileno presenta una doble estratificación: una
+vertical (CRUCH vs no CRUCH, asociada a trayectoria) y una horizontal
+(pública vs privada, asociada a naturaleza jurídica), que no se reducen
+mutuamente y requieren ser analizadas en conjunto.
+
+La implicancia más importante de esta sección es que el debate sobre
+``calidad'' institucional en el sistema científico chileno está mal
+planteado cuando se ignora la dimensión material. La capacidad de una
+universidad para adjudicar proyectos FONDECYT depende menos del talento
+individual de sus académicos ---que está distribuido de manera más
+amplia--- y más de la infraestructura institucional acumulada durante
+décadas. Cualquier política de fomento que pretenda alterar esta
+distribución debe operar no sobre el resultado (las adjudicaciones),
+sino sobre las condiciones materiales que las hacen posibles.
+
+\subsection{Concentración territorial: el sistema como fenómeno
+metropolitano}\label{concentraciuxf3n-territorial-el-sistema-como-fenuxf3meno-metropolitano}
+
+El análisis territorial constituye el hallazgo más unívoco del informe:
+el financiamiento ANID en Ciencias Sociales es predominantemente un
+fenómeno metropolitano. En Iniciación, la Región Metropolitana concentra
+la inmensa mayoría de las adjudicaciones, creciendo de 48 proyectos en
+2016 a 97 en 2025, mientras que el resto de las macrozonas se mantienen
+estancadas en rangos bajos. En Regular, el patrón se repite con una RM
+que rompe la barrera de las 100 adjudicaciones en 2025. En Núcleos e
+Institutos Milenio el patrón es aún más extremo: 22 de 24 adjudicaciones
+en Ciencias Sociales (92\%) se concentran en la RM, sin presencia alguna
+en las macrozonas Centro, Sur y Austral.
+
+La brecha entre Santiago y el resto del país no se ha reducido en la
+última década; al contrario, la capital ha capturado la mayor parte del
+incremento absoluto de adjudicaciones del área. Si bien las macrozonas
+regionales presentan tasas de adjudicación competitivas ---en algunos
+casos superiores a la RM en eficiencia relativa---, su escala absoluta
+es tan reducida que cualquier ganancia en eficiencia se diluye en el
+agregado nacional. Esta concentración plantea interrogantes relevantes
+para la política científica regional: ¿es viable sostener masa crítica
+de investigación en Ciencias Sociales fuera del eje metropolitano bajo
+las reglas actuales de financiamiento? ¿Qué tipo de instrumentos
+complementarios serían necesarios para descentralizar las capacidades de
+investigación más allá de los nichos individuales que hoy logran
+sobrevivir en regiones?
+
+La paradoja territorial se vuelve más aguda al observar las decisiones
+de política pública de la última década: mientras el sistema
+universitario estatal se ha expandido hacia regiones ---con la creación
+de las universidades de O'Higgins y de Aysén, y con el fortalecimiento
+de las universidades estatales regionales---, el sistema de
+financiamiento concursable sigue operando con reglas que premian la
+concentración metropolitana. Existe una tensión no resuelta entre la
+política universitaria post-2017 y la política de fomento a la
+investigación, que el presente informe contribuye a hacer visible pero
+cuya resolución excede el alcance de un análisis descriptivo.
+
+\subsection{Limitaciones y rutas para investigaciones
+futuras}\label{limitaciones-y-rutas-para-investigaciones-futuras}
+
+Este informe es deliberadamente descriptivo. Por construcción, no
+permite establecer relaciones causales entre las dimensiones analizadas,
+sino identificar patrones que ameritan investigación posterior. Cuatro
+líneas de profundización emergen como prioritarias:
+
+\textbf{Primero}, los datos disponibles públicamente no incluyen
+puntajes de evaluación, lo que impide distinguir si las brechas
+observadas operan en la calidad de las postulaciones o en los criterios
+de evaluación. La solicitud de información detallada al amparo de la Ley
+N° 20.285 fue presentada al inicio de este estudio pero no pudo ser
+procesada por ANID en los plazos del proyecto. Una agenda futura debiera
+insistir en el acceso a estos datos finos para poder examinar si la
+evaluación por pares introduce sesgos sistemáticos, como sugiere parte
+de la literatura internacional
+(\citeproc{ref-nederhof_bibliometric_2006}{Nederhof, 2006};
+\citeproc{ref-tinkler_maximizing_2008}{Tinkler, 2008}).
+
+\textbf{Segundo}, las brechas de género en el tramo senior requieren
+investigación cualitativa complementaria. El presente estudio sugiere
+que la brecha opera en la postulación más que en la evaluación, pero
+identificar los mecanismos específicos ---cargas de cuidado,
+configuración de las trayectorias académicas intermedias, redes de
+colaboración preexistentes, sesgos en los procesos de promoción
+interna--- excede el alcance de un análisis cuantitativo basado en datos
+administrativos.
+
+\textbf{Tercero}, la dimensión territorial merece un análisis específico
+que distinga entre las dinámicas de las universidades regionales del
+CRUCH y las trayectorias de instituciones emergentes en regiones,
+examinando si existen estrategias institucionales exitosas que podrían
+escalarse mediante política pública. Particular interés merece el caso
+de las universidades estatales de creación reciente, cuyo desarrollo de
+capacidades de investigación aún está en proceso de configuración.
+
+\textbf{Cuarto}, la integración con otros instrumentos ANID ---FONDAP,
+Basales, becas de doctorado, fondos de inserción--- permitiría construir
+una visión más completa del ciclo de carrera académica en Ciencias
+Sociales, identificando en qué punto del recorrido se producen las
+mayores filtraciones y dónde se concentran las oportunidades de
+intervención. Una mirada longitudinal a las trayectorias individuales
+---desde la beca de doctorado hasta la consolidación como investigador
+senior--- sería un complemento natural al análisis transversal por
+instrumento que aquí se ha presentado.
+
+\subsection{Hacia una política de financiamiento sensible a las
+particularidades
+disciplinares}\label{hacia-una-poluxedtica-de-financiamiento-sensible-a-las-particularidades-disciplinares}
+
+Más allá de las rutas de investigación, los hallazgos de este informe
+sugieren algunos lineamientos para el debate sobre la política
+científica nacional. La situación de las Ciencias Sociales ---campo en
+expansión demográfica sostenida pero con techos competitivos rígidos,
+brechas de género que persisten en el tramo senior, asimetrías
+institucionales estructurales y una concentración territorial extrema---
+requiere una política de financiamiento que reconozca las
+particularidades epistemológicas y metodológicas del campo
+(\citeproc{ref-asun_investigan_2019}{Asún et~al., 2019};
+\citeproc{ref-brunner_investigacion_2021}{Brunner \& Labraña, 2021}),
+pero también las particularidades estructurales del sistema
+universitario chileno** que condicionan el acceso a estos fondos.
+
+Tres tensiones quedan abiertas. La primera es entre expansión y
+sostenibilidad: si el sistema continúa formando capital humano avanzado
+al ritmo actual sin expandir proporcionalmente la oferta de
+financiamiento, las tasas de adjudicación seguirán erosionándose, con
+consecuencias sobre la retención de talento y la sostenibilidad de
+agendas de investigación de largo aliento. La segunda es entre mérito
+individual y ventajas acumulativas: los instrumentos actuales premian
+trayectorias consolidadas que dependen en buena medida de las
+condiciones materiales de las instituciones de origen, perpetuando
+asimetrías que no responden únicamente a diferencias de calidad. La
+tercera es entre centralización y descentralización territorial: el
+predominio santiaguino del financiamiento plantea preguntas sobre el rol
+del sistema ANID en el desarrollo científico regional, especialmente en
+un país donde la política universitaria post-2017 ha apostado por crear
+nuevas universidades estatales en regiones que recién comienzan a
+configurar sus capacidades de investigación.
+
+Cerrar estas brechas no requiere únicamente más recursos, sino también
+instrumentos diferenciados que reconozcan la heterogeneidad interna del
+campo. La discusión sobre cómo diseñar tales instrumentos ---y sobre
+quién tiene autoridad epistémica para definir qué cuenta como
+``investigación de excelencia'' en Ciencias Sociales--- es una
+conversación pendiente, en la que este informe pretende ser un primer
+insumo empírico para abrir y orientar el debate.
+
+\subsection{Cierre: una paradoja que requiere ser
+pensada}\label{cierre-una-paradoja-que-requiere-ser-pensada}
+
+El informe abrió planteando una paradoja estructural del sistema
+científico chileno: pese a contar con relativamente poco capital humano
+avanzado en HACS y baja inversión comparada con países OCDE, Chile
+exhibe una productividad científica notable en estas áreas ---con más de
+80.000 publicaciones HACS indexadas en Web of Science durante la última
+década---. Los hallazgos del presente estudio permiten avanzar una
+hipótesis interpretativa sobre esta paradoja: la alta productividad
+observada se sostiene, al menos en parte, sobre condiciones de
+competencia intensificada, concentración institucional extrema y
+precarización del tramo intermedio de carrera.
+
+Un dato que merece ser destacado en este sentido es que el techo
+presupuestario del sistema FONDECYT en Ciencias Sociales se ha mantenido
+prácticamente constante durante los últimos diez años, mientras el
+número de postulaciones ha crecido de manera sostenida. Frente a esta
+brecha creciente, el sistema ha optado por mantener estable el número
+absoluto de adjudicaciones, lo que ha permitido sostener una apariencia
+de continuidad en la oferta de financiamiento. Sin embargo, esta
+estrategia plantea una pregunta crítica que el estudio deja abierta: ¿en
+qué medida la estabilidad del número de proyectos adjudicados constituye
+una respuesta deliberada del sistema para compensar el estancamiento
+presupuestario? Y, si es así, ¿a costa de qué se sostiene esa apariencia
+de normalidad? Una hipótesis plausible ---compatible con los patrones
+observados en este informe--- es que el ajuste se ha absorbido vía
+reducción de los montos promedio por proyecto en términos reales, vía
+erosión silenciosa de las tasas de adjudicación y vía traslado de los
+costos del sistema hacia los investigadores e investigadoras,
+especialmente aquellos sin afiliación a las instituciones tradicionales
+del sistema, sin trayectorias consolidadas o ubicados fuera del eje
+metropolitano.
+
+En otras palabras, el sistema produce mucho con poco no porque sea
+particularmente eficiente, sino porque opera bajo presiones
+estructurales que trasladan los costos del ajuste hacia las comunidades
+académicas. La estabilidad del número de adjudicaciones, que en una
+lectura superficial podría interpretarse como signo de salud del
+sistema, podría estar enmascarando una crisis silenciosa que solo se
+hace visible cuando se desagrega el análisis por dimensiones específicas
+como las que aborda este informe.
+
+Esta hipótesis no se prueba ni se refuta con los datos aquí presentados,
+pero sí queda planteada como pregunta para futuras investigaciones. Una
+agenda investigativa que tome en serio esta hipótesis debiera combinar
+análisis cuantitativos como el presente con estudios cualitativos sobre
+las trayectorias académicas, las condiciones laborales y las estrategias
+de supervivencia de las comunidades de investigación en Ciencias
+Sociales. Solo a partir de ese diálogo entre evidencias podrá
+construirse un diagnóstico verdaderamente integral del estado del campo
+en Chile, y orientarse el debate público sobre la política científica
+más allá de los discursos binarios de crisis o normalidad.
 
 \bookmarksetup{startatroot}
 
@@ -1513,17 +3215,44 @@ Síntesis y proyecciones futuras.
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-bourdieu2012}
-Bourdieu, P. (2012). \emph{La distinci{ó}n: Criterio y bases sociales
-del gusto}. Taurus.
+\bibitem[\citeproctext]{ref-asun_investigan_2019}
+Asún, R., Yáñez-Lagos, L., Villalobos, C., \& Zúñiga-Rivas, C. (2019).
+Cómo Investigan Las Ciencias Sociales Temas de Alta Contingencia
+Política. {El} Caso Del Movimiento Estudiantil Chileno. \emph{Cinta de
+Moebio}.
+https://doi.org/\url{http://dx.doi.org/10.4067/s0717-554x2019000200235}
 
-\bibitem[\citeproctext]{ref-desmond2019poverty}
-Desmond, M., \& Wilmers, N. (2019). The Racialized Geography of Housing.
-\emph{American Journal of Sociology}.
+\bibitem[\citeproctext]{ref-brunner_investigacion_2021}
+Brunner, J. J., \& Labraña, J. (2021). La {Investigación} En {Ciencias
+Sociales} y {Humanidades}: {Sus} Debates e Impactos. \emph{Puntos de
+Referencia}.
 
-\bibitem[\citeproctext]{ref-xie2017bookdown}
-Xie, Y. (2017). \emph{bookdown: Authoring Books and Technical Documents
-with R Markdown}. Chapman; Hall/CRC.
+\bibitem[\citeproctext]{ref-minciencia_radiografia_2023}
+Ministerio, D. C. (2023). \emph{Primera {Radiografía} de Las Capacidades
+En Investigación En {Humanidades}, {Artes} y {Ciencias Sociales}}.
+Ministerio de Ciencia y Tecnología.
+
+\bibitem[\citeproctext]{ref-nederhof_bibliometric_2006}
+Nederhof, A. J. (2006). Bibliometric Monitoring of Research Performance
+in the {Social Sciences} and the {Humanities}: {A Review}.
+\emph{Scientometrics}, \emph{66}(1), 81-100.
+\url{https://doi.org/10.1007/s11192-006-0007-2}
+
+\bibitem[\citeproctext]{ref-osterloh_exploring_2025}
+Osterloh, M., \& Rost, K. (2025). Exploring the Leaky Pipeline:
+{Tokenism}, Status Group Effects, or Self-selection? \emph{European
+Management Review}, emre.70021. \url{https://doi.org/10.1111/emre.70021}
+
+\bibitem[\citeproctext]{ref-ramos-zincke_wellbehaved_2021}
+Ramos-Zincke, C. (2021). A {Well-Behaved Population}: {The Chilean
+Scientific Researchers} of the {XXI Century} and the {International
+Regulation}. \emph{Sociologica}, 153-178 Pages.
+\url{https://doi.org/10.6092/ISSN.1971-8853/10824}
+
+\bibitem[\citeproctext]{ref-tinkler_maximizing_2008}
+Tinkler, J. (2008). \emph{Maximizing the Social, Policy and Economic
+Impacts of Research in the Humanities and Social Sciences}. LSE Public
+Policy Group.
 
 \end{CSLReferences}
 

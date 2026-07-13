@@ -4,7 +4,7 @@
 \providecommand{\@subtitle}{}
 \providecommand{\frontmattercontext}{}
 \providecommand{\advisorname}{}
-\providecommand{\advisorlabel}{Profesor guia:}
+\providecommand{\advisorlabel}{Dirección de Investigación y Publicaciones - FACSO - Universidad de Chile}
 \providecommand{\frontmatterlocation}{}
 \InputIfFileExists{includes/cover-config.tex}{}{}
 
@@ -22,7 +22,7 @@
   \endgroup
 }
 \newcommand{\PrintAuthor}{%
-  {\Large\bfseries \@author\par}%
+  % Autores ocultos en la portada PDF
 }
 \newcommand{\PrintDate}{%
   {\small \@date\par}%
@@ -35,7 +35,7 @@
 \vspace*{10mm}
 
 % Logo o imagen institucional
-\includegraphics[width=0.35\textwidth]{assets/cover.png}\par
+\includegraphics[width=0.35\textwidth]{assets/cover.jpg}\par
 \vspace{12mm}
 
 % Titulo y subtitulo
@@ -43,7 +43,7 @@
 \vspace{6mm}
 \PrintSubtitle
 
-\vspace{22mm}
+\vspace{15mm}
 \begingroup
 \edef\temp{\detokenize{\frontmattercontext}}%
 \ifx\temp\empty\relax
@@ -84,6 +84,26 @@
 % Preliminares (numeros romanos) y estilo simple
 \frontmatter
 \pagestyle{scrheadings}
+
+% \cleardoublepage
+% \thispagestyle{empty}
+% \begin{center}
+% \setlength{\fboxsep}{10pt}
+% \fcolorbox{gray!60}{gray!10}{%
+% \begin{minipage}{0.92\textwidth}
+% \textbf{Esta investigación fue desarrollada por Tomás Urzúa, sociólogo y estudiante del Magister en Ciencias Sociales del Departamento de Sociología de la Universidad de Chile.} Contó con la asesoría de los profesores Juan Carlos Castillo (Departamento de Sociología), y Daniel Miranda (Departamento de Psicología), de la Universidad de Chile.
+% 
+% El informe se encuentra disponible en versión web en https://data-soc.github.io/estudio-notas/ y en formato PDF en https://data-soc.github.io/estudio-notas/estudio-notas.pdf.
+% 
+% \textbf{Citar de la siguiente manera:}
+% 
+% \begin{itemize}
+% \tightlist
+% \item \emph{Urzúa, T., Castillo, J-C \& Miranda, D. (2026). Estudio de Notas: Análisis de las calificaciones de los estudiantes de la Facultad de Ciencias Sociales. Informe técnico. Dirección de Investigación, Facultad de Ciencias Sociales, Universidad de Chile. Disponible en https://data-soc.github.io/estudio-notas/estudio-notas.pdf}
+% \end{itemize}
+% \end{minipage}}
+% \end{center}
+\cleardoublepage
 
 \setcounter{tocdepth}{2} % (o 1/3 segun prefieras)
 \tableofcontents
