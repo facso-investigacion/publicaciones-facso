@@ -34,7 +34,7 @@ jobs:
             any::rmarkdown
             any::tidyverse
             any::ggrepel
-            any::kablExtra
+            any::kableExtra
             any::scales
             any::rlang
             
