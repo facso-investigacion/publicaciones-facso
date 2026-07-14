@@ -62,24 +62,15 @@
   pdfauthor={\@author},
   pdftitle={\@title}
 }
+\makeatletter
+\renewcommand{\maketitle}{}
+\makeatother
 
 % ---------- Leyendas de figuras/tablas ----------
 \usepackage[labelfont=bf,textfont=it]{caption}
 \captionsetup{
   skip=8pt
 }
-
-% ---------- Ubicacion de figuras y tablas ----------
-% Por defecto, los flotantes se colocan lo mas cerca posible de su posicion
-% en el texto (!ht = "aqui o arriba, ignorando restricciones esteticas").
-% Para que un flotante concreto vuelva a moverse libremente, usa en su bloque
-% #| fig-pos: "tbp"  (o #| tbl-pos: "tbp"); para anclarlo de forma rigida,
-% usa #| fig-pos: "H".
-\usepackage{float}
-\makeatletter
-\def\fps@figure{!ht}
-\def\fps@table{!ht}
-\makeatother
 
 % ---------- Tabla de contenidos ----------
 \KOMAoptions{toc=graduated}

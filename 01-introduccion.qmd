@@ -1,3 +1,7 @@
+```{=latex}
+\renewcommand{\thechapter}{\arabic{chapter}}
+```
+
 # Introducción {#sec-introduction}
 
 El presente informe expone los resultados del estudio sobre las publicaciones de académicas y académicos de la Facultad de Ciencias Sociales (FACSO) de la Universidad de Chile aparecidas entre los años 2020 y 2025. Este estudio se enmarca en el interés de la Facultad por contar con una caracterización sistemática y actualizada de la producción académica de sus miembros en un contexto de cierre y balance de la Decanatura 2022-2026. 

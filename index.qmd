@@ -1,5 +1,4 @@
 ---
-number-sections: false
 format:
   html:
     toc: false
@@ -59,7 +58,7 @@ El análisis desagrado revela diferencias sistemáticas según las característi
 
 **Edad**: La mayor productividad se concentra en el tramo de entre 50 a 59 años (10,58 por JCE), con una caída abrupta en el grupo de más de 60 años (ver @fig-publicacion-edad). Estas diferencias se replican en los indicadores de impacto académico. 
 
-**Jerarquía**: Existe una brecha importante entre la Jerarquía de Asistente (4,49 por JCE) y la de Asociado. La brecha entre Asociados y Titulares es menor, variando según el indicador. Los asociados publican más por JCE (@fig-publicacion-jerarquia) y suman mayor número de citas. sin embargo, los titulares los superan en canitdad de publicaciones en WoS (@fig-index-carac-3) y en revistas Q1 o Q2 (@fig-sjr-depto) 
+**Jerarquía**: Existe una brecha importante entre la Jerarquía de Asistente (4,49 por JCE) y la de Asociado. La brecha entre Asociados y Titulares es menor, variando según el indicador. Los asociados publican más por JCE (@fig-publicacion-jerarquia) y suman mayor número de citas. sin embargo, los titulares los superan en canitdad de publicaciones en WoS (@tbl-index-carac) y en revistas Q1 o Q2 (@fig-sjr-depto) 
 
 ### Impacto Académico
 

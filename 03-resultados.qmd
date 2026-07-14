@@ -208,8 +208,6 @@ ggsave(
 
 ```
 
-La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produciendo entre 1 y 9 publicaciones en el período mencionado, con máximos que llegan hasta las 45 publicaciones. Esto indica una alta dispersión y una concentración de publicaciones entre los académicos más productivos, como se observan en la @fig-publicacion-lorenz. Así, el 20% de los académicos más productivos concentra dos tercios de las publicaciones; el 50% del total de las publicaciones de la Facultad corresponden al 13% de los académicos con mayor productividad. 
-
 ```{r}
 #| label: fig-publicacion-lorenz
 #| fig-cap: "Concentración de publicaciones por porcentaje de académicos acumulado (2020-2025)"
@@ -307,14 +305,14 @@ ggsave(
 
 ```
 
+La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produciendo entre 1 y 9 publicaciones en el período mencionado, con máximos que llegan hasta las 45 publicaciones. Esto indica una alta dispersión y una concentración de publicaciones entre los académicos más productivos, como se observan en la @fig-publicacion-lorenz. Así, el 20% de los académicos más productivos concentra dos tercios de las publicaciones; el 50% del total de las publicaciones de la Facultad corresponden al 13% de los académicos con mayor productividad. 
+
 ### Caracterización de los autores
 
-Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.4 publicaciones por JCE, Psicología con 8.5, Antropología con 8.2 y Educación con 4.7. 
-
 ```{r}
-#| layout-ncol: 1
 #| label: fig-publicacion-depto
 #| fig-cap: "Publicaciones por Departamento por JCE (2020-2025)"
+#| fig-pos: "H"
 
 # figura_3 <- base_final |> 
 #   mutate(tipo_documento = recode(tipo_documento,
@@ -398,11 +396,12 @@ ggsave(
 )
 ```
 
-En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.73 publicaciones por JCE en le período analizado, contra 7.19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
+Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9.4 publicaciones por JCE, Psicología con 8.5, Antropología con 8.2 y Educación con 4.7. 
 
 ```{r}
 #| label: fig-publicacion-genero
 #| fig-cap: "Publicaciones por Género (2020-2025)"
+#| fig-pos: "H"
 
 
 jce_genero <- acad |>  group_by(sexo) |> summarise(jce = sum(horas_reales)/44)
@@ -454,11 +453,13 @@ ggsave(
 )
 ```
 
+En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10.73 publicaciones por JCE en le período analizado, contra 7.19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia 2.71 publicaciones por jornada completa. 
+
 El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10.58 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 10.03 publicaciones por JCE, aunque con un menor peso relativo de los artículos en comparación a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de de 60 años es de 4.79 publicaciones por JCE.
 
 ```{r}
 #| label: fig-publicacion-edad
-#| fig-cap: "Publicaciones por Edad y Departamento (2020-2025)"
+#| fig-cap: "Publicaciones por tramo de edad (2020-2025)"
 
 
 jce_edad <- acad |> mutate(edad_tramo = case_when(edad < 50 ~ "Menos de 50 años",
@@ -542,6 +543,7 @@ LA @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa
 ```{r}
 #| label: fig-publicacion-jerarquia
 #| fig-cap: "Publicaciones por Jerarquía y Departamento (2020-2025)"
+#| fig-pos: "H"
 
 jce_jerarquia <- acad |>  
   group_by(jerarquia) |> 
@@ -778,123 +780,77 @@ top5 |>
 
 ```
 
-@fig-index-carac muestra la cantidad de publicaciones por JCE según género, edad y jerarquía de los autores. En general, se aprecia que las tendencias observadas son las mismas, con WoS y Scopus acaparando la mayor parte de la productividad, y la primera estando sobre la segunda en la mayoría de los grupos analizados. También se mantienen tendencias tales como que las mujeres (@fig-index-carac-1) y los académicos de entre 50 y 59 años (@fig-index-carac-2) publican más en todas las indexaciones. Respecto a la jerarquía, como se observa en @fig-index-carac-3, mientras los profesores titulares son quienes más publican en WoS por JCE, los profesores asociados los superan en Scopus y Scielo. 
+La @tbl-index-carac muestra la cantidad de publicaciones por JCE según género, edad y jerarquía de los autores. En general, se aprecia que las tendencias observadas son las mismas, con WoS y Scopus acaparando la mayor parte de la productividad, y la primera estando sobre la segunda en la mayoría de los grupos analizados. También se mantienen tendencias tales como que las mujeres y los académicos de entre 50 y 59 años publican más en todas las indexaciones. Respecto a la jerarquía, mientras los profesores titulares son quienes más publican en WoS por JCE, los profesores asociados los superan en Scopus y Scielo. 
 
 ```{r}
-#| label: fig-index-carac
-#| layout-col: 1
-#| fig-cap: "Publicaciones por Indexación y características de los autores"
-#| fig-subcap:
-#|          - "Publicaciones por Indexación de la Revista por Género del autor(2020-2025)"
-#|          - "Publicaciones por Indexación de la Revista por Edad del autor(2020-2025)"
-#|          - "Publicaciones por Indexación de la Revista por Jerarquia del autor(2020-2025)"
-#| fig-pos: "p"
-#| out-height: "85%"
+#| label: tbl-index-carac
+#| tbl-cap: "Publicaciones por Indexación y características de los autores"
+#| tbl-pos: "H"
 
+base_filtrada <- base_final |> 
+  filter(tipo_documento == "journal-article" & !is.na(indexacion),
+         departamento != "Postgrado")
 
-
-base_final |> 
-  filter(tipo_documento =="journal-article" & !is.na(indexacion), departamento !="Postgrado") |> 
+# Sexo
+tabla_sexo <- base_filtrada |> 
   count(sexo, indexacion) |> 
   left_join(jce_genero, by = "sexo") |> 
-  mutate(tasa_jce = n / jce) |> 
-  ggplot(aes(x = reorder(sexo, -tasa_jce), y = tasa_jce, fill = indexacion)) +
-  geom_col(position = position_dodge(width = 0.9)) +
-  geom_text(
-    aes(label = round(tasa_jce, 2)),
-    position = position_dodge(width = 0.9),
-    vjust = -0.5,
-    size = 3
-  ) +
-  scale_fill_manual(values = c(
-    "WoS" = "steelblue",
-    "Scopus" = "firebrick",
-    "Scielo" = "#E0A458",
-    "Otra" = "grey"
-  )) +
-  labs(
-    x = "Sexo",
-    y = "Tasa por JCE",
-    fill = "Indexación"
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",
-    plot.caption = element_text(hjust = 0, size = 8, face = "italic")
-  )
+  mutate(tasa_jce = round(n / jce, 2)) |> 
+  select(grupo = sexo, indexacion, tasa_jce)
 
-base_final |> 
-  filter(tipo_documento =="journal-article" & !is.na(indexacion), departamento !="Postgrado") |> 
-  mutate(edad_tramo = case_when(edad < 50 ~ "Menos de 50 años",
-                                edad >= 50 & edad <60 ~ "50 a 59 años",
-                                edad >= 60 ~ "60 años o más"),
-         edad_tramo = factor(edad_tramo, 
-                             levels = c("Menos de 50 años", 
-                                       "50 a 59 años", 
-                                       "60 años o más"))) |> 
+# Edad
+tabla_edad <- base_filtrada |> 
+  mutate(edad_tramo = case_when(
+           edad < 50 ~ "Menos de 50 años",
+           edad >= 50 & edad < 60 ~ "50 a 59 años",
+           edad >= 60 ~ "60 años o más"),
+         edad_tramo = factor(edad_tramo,
+                             levels = c("Menos de 50 años",
+                                        "50 a 59 años",
+                                        "60 años o más"))) |> 
   count(edad_tramo, indexacion) |> 
   left_join(jce_edad, by = "edad_tramo") |> 
-  mutate(tasa_jce = n / jce) |> 
-  ggplot(aes(x = edad_tramo, y = tasa_jce, fill = indexacion)) +
-  geom_col(position = position_dodge(width = 0.9)) +
-  geom_text(
-    aes(label = round(tasa_jce, 2)),
-    position = position_dodge(width = 0.9),
-    vjust = -0.5,
-    size = 3
-  ) +
-  scale_fill_manual(values = c(
-    "WoS" = "steelblue",
-    "Scopus" = "firebrick",
-    "Scielo" = "#E0A458",
-    "Otra" = "grey"
-  )) +
-  labs(
-    x = "Edad",
-    y = "Tasa por JCE",
-    fill = "Indexación"
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",
-    plot.caption = element_text(hjust = 0, size = 8, face = "italic")
-  )
+  mutate(tasa_jce = round(n / jce, 2)) |> 
+  select(grupo = edad_tramo, indexacion, tasa_jce)
 
-
-base_final |> 
-  filter(tipo_documento =="journal-article" & !is.na(indexacion), departamento !="Postgrado",
-         jerarquia %in% c("Asistente", "Asociado", "Titular")) |> 
+# Jerarquía
+tabla_jerarquia <- base_filtrada |> 
+  filter(jerarquia %in% c("Asistente", "Asociado", "Titular")) |> 
   mutate(jerarquia = factor(jerarquia,
                             levels = c("Asistente", "Asociado", "Titular"))) |> 
   count(jerarquia, indexacion) |> 
   left_join(jce_jerarquia, by = "jerarquia") |> 
-  mutate(tasa_jce = n / jce) |> 
-  ggplot(aes(x = jerarquia, y = tasa_jce, fill = indexacion)) +
-  geom_col(position = position_dodge(width = 0.9)) +
-  geom_text(
-    aes(label = round(tasa_jce, 2)),
-    position = position_dodge(width = 0.9),
-    vjust = -0.5,
-    size = 3
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
-  scale_fill_manual(values = c(
-    "WoS" = "steelblue",
-    "Scopus" = "firebrick",
-    "Scielo" = "#E0A458",
-    "Otra" = "grey"
-  )) +
-  labs(
-    x = "Jerarquia",
-    y = "Tasa por JCE",
-    fill = "Indexación"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",
-    plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
+  mutate(tasa_jce = round(n / jce, 2)) |> 
+  select(grupo = jerarquia, indexacion, tasa_jce)
+
+# Consolidar en formato ancho (una columna por indexación)
+tabla_final <- bind_rows(
+  Sexo = tabla_sexo,
+  Edad = tabla_edad,
+  Jerarquía = tabla_jerarquia,
+  .id = "categoria"
+) |> 
+  mutate(indexacion = factor(indexacion,
+                             levels = c("WoS", "Scopus", "Scielo", "Otra"))) |> 
+  pivot_wider(names_from = indexacion,
+              values_from = tasa_jce,
+              values_fill = NA) |> 
+  select(categoria, grupo, WoS, Scopus, Scielo, Otra)
+
+# Índices para pack_rows
+n_sexo <- sum(tabla_final$categoria == "Sexo")
+n_edad <- sum(tabla_final$categoria == "Edad")
+n_jerarquia <- sum(tabla_final$categoria == "Jerarquía")
+
+tabla_final |> 
+  select(-categoria) |> 
+  kbl(col.names = c("Grupo", "WoS", "Scopus", "Scielo", "Otra"),
+      align = c("l", "c", "c", "c", "c")) |> 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE) |> 
+  pack_rows("Sexo", 1, n_sexo) |> 
+  pack_rows("Edad", n_sexo + 1, n_sexo + n_edad) |> 
+  pack_rows("Jerarquía", n_sexo + n_edad + 1, n_sexo + n_edad + n_jerarquia)
 
 ```
 
@@ -928,7 +884,6 @@ calcular_indice_h(citas)
 
 
 ```
-
 
 Ahora bien, se observa una gran dispersión en la cantidad de citas por artículo. El rango de citas va de 0 a un máximo de 307. El artículo mediano cuenta con 3 citaciones, con el 50% de las publicaciones registrando entre 1 y 7 citas. Esta amplia dispersión se observa claramente en @fig-citas-densidad, donde se observa una mayor proporción de artículos con 0 a 2 citas, con una cola larga hacia la derecha que se extiende más allá de las 300 citas. 
 
@@ -1062,6 +1017,7 @@ Se registraron un total de 741 publicaciones en revistas con un SJR (*SCImago Jo
 ```{r}
 #| label: tbl-sjr
 #| tbl-cap: "Cuartil en SJR publicaciones FACSO (2020-2025)"
+#| tbl-pos: "H"
 
 
 tabla_quartiles <- consolidado_wide |>
@@ -1362,12 +1318,10 @@ tabla_final |>
 
 A partir de las base de revistas de Scopus, es posible analizar los artículos de académicos de la Facultad publicadas en revistas de acceso abierto[^1]. Se encontró información para 746 artículos. Cabe destacar, que aunque muchas revistas que están indexadas en Scielo se encuentran en Scopus, no siempre es el caso. Por ello, dado que Scielo requiere que las revistas que integran su base de datos sean de acceso abierto, es muy posible que la cantidad de artículos de libre acceso publicados en la Facultad sea mayor que la aquí reportada. 
 
-Hecha esa consideración metodológica, se observa que 362 publicaciones, o un 49% de los artículos analizados, fueron publicados en revistas de acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza el 70%; Para Web of Science, en cambio, es del solo el 30%. En @fig-oa, se grafica la evolución de este indicador en el período estudiado. Se observa un peak durante la pandemia en 2020, con un 56%, para luego bajar y mantenerse estable en los años subsiguiente, oscilando entre un 44% y un 50%.
-
-
 ```{r}
 #| label: fig-oa
 #| fig-cap: "Porcentaje de publicaciones en revistas de acceso abierto (2020-2025)"
+#| fig-pos: "H"
 
 # consolidado_wide |>
 #   filter(!is.na(oa)) |>
@@ -1402,11 +1356,15 @@ ggplot(datos_oa, aes(x = anio, y = pct, group = 1)) +
     plot.title = element_text(face = "bold")
   )
 ```
+
+Hecha esa consideración metodológica, se observa que 362 publicaciones, o un 49% de los artículos analizados, fueron publicados en revistas de acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza el 70%; Para Web of Science, en cambio, es del solo el 30%. En @fig-oa, se grafica la evolución de este indicador en el período estudiado. Se observa un peak durante la pandemia en 2020, con un 56%, para luego bajar y mantenerse estable en los años subsiguiente, oscilando entre un 44% y un 50%.
+
 Como se puede apreciar en a @tbl-oa, las tendencias se mantienen bastante constante en distintos grupos. La proporción de publicaciones en acceso abieto es algo superior en los Departamento de Sociología (52%) y Trabajo Social (55%), académicos de 50 a 59 años (53%) y profesores asociados (53%). En cambio, es algo menor en los académicos menores de 50 años (42%) y los profesores con jerarquía académicas de Asistente (41%)
 
 ```{r}
 #| label: tbl-oa
 #| tbl-cap: "Cantidad y porcentaje de publicaciones en acceso abierto por características del autor (2020-2025)"
+#| tbl-pos: "H"
 
 # 1. Calcular cada dimensión, renombrando la columna de grupo a "categoria"
 tabla_departamento <- consolidado_depto |>

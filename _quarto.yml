@@ -10,7 +10,7 @@ project:
 book:
   title: Publicaciones Académicos y Académicas FACSO
   subtitle: 2020-2025
-  output-file: reportes-facso-plantilla
+  output-file: publicaciones
   repo-url: https://github.com/facso-investigacion/publicaciones-facso  #URL del repositorio del libro (cambia segun tu repo)
   author:
     - name: Gabriel Cortés
@@ -69,7 +69,7 @@ format:
     include-after-body:
       - includes/logo-link.html   # Enlaces adicionales (logo clicable y descarga ZIP)
       - includes/citefix.html     # Corrige estilos de citas
-      - includes/renumber.html    # Reajusta numeracion de figuras/tablas si es necesario
+      # - includes/renumber.html    # Reajusta numeracion de figuras/tablas si es necesario
       - includes/code-toggle.html # Boton global para mostrar/ocultar bloques de codigo
       - includes/toc-enhance.html # Sincroniza el resaltado del TOC en el margen
 
@@ -95,6 +95,8 @@ format:
     include-after-body: includes/backmatter.tex  # Material posterior (glosario, licencias, etc.)
     fig-cap-location: top
     tbl-cap-location: top
+    fig-pos: "htpb"
+    tbl-pos: "htpb"
     variables:
       babel-lang: spanish
 

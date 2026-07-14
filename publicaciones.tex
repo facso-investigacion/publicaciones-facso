@@ -41,7 +41,7 @@
 \usepackage{xcolor}
 \usepackage[top=25mm,bottom=25mm,left=30mm,right=20mm]{geometry}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
 \makeatletter
 \ifx\paragraph\undefined\else
@@ -652,8 +652,8 @@ Asistente (4,49 por JCE) y la de Asociado. La brecha entre Asociados y
 Titulares es menor, variando según el indicador. Los asociados publican
 más por JCE (Figura~\ref{fig-publicacion-jerarquia}) y suman mayor
 número de citas. sin embargo, los titulares los superan en canitdad de
-publicaciones en WoS (Figura~\ref{fig-index-carac-3}) y en revistas Q1 o
-Q2 (Figura~\ref{fig-sjr-depto})
+publicaciones en WoS (Tabla~\ref{tbl-index-carac}) y en revistas Q1 o Q2
+(Figura~\ref{fig-sjr-depto})
 
 \subsection*{Impacto Académico}\label{impacto-acaduxe9mico}
 \addcontentsline{toc}{subsection}{Impacto Académico}
@@ -672,7 +672,7 @@ de 0 a 307 citas (Figura~\ref{fig-citas-densidad}). El Departamento de
 Psicología registra el mayor número absoluto de citas entre los
 departamentos de la Facultad (Tabla~\ref{tbl-citas-depto})
 
-\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, breakable, toprule=.15mm, opacityback=0, left=2mm, colframe=quarto-callout-note-color-frame, colback=white, rightrule=.15mm, arc=.35mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, opacityback=0, colback=white, toprule=.15mm, arc=.35mm, bottomrule=.15mm, rightrule=.15mm, leftrule=.75mm, colframe=quarto-callout-note-color-frame, left=2mm]
 \begin{minipage}[t]{5.5mm}
 \textcolor{quarto-callout-note-color}{\faInfo}
 \end{minipage}%
@@ -790,6 +790,8 @@ de la Facultad.
 \bookmarksetup{startatroot}
 
 \chapter{Introducción}\label{sec-introduction}
+
+\renewcommand{\thechapter}{\arabic{chapter}}
 
 El presente informe expone los resultados del estudio sobre las
 publicaciones de académicas y académicos de la Facultad de Ciencias
@@ -1103,7 +1105,7 @@ FACSO}\label{caractertizaciuxf3n-de-las-publicaciones-de-acaduxe9micos-facso}
 \subsection{Volúmen total de Publicaciones
 (2020-2025)}\label{voluxfamen-total-de-publicaciones-2020-2025}
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-tipo-publicaciones}Cantidad de publicaciones por
 tipo de publicación}
@@ -1128,7 +1130,7 @@ volumen total de publicaciones. Considerando que al 31 de diciembre de
 esto significa que el período estudiado se registraron 7.8 publicaciones
 por JCE: 6.35 artículos, 1.15 capítulos de libros y 0.3 libros.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-publicacion-anio}Publicaciones por año}
 
@@ -1148,16 +1150,7 @@ por un efecto de rebote tras el inicio de la Pandemia por COVID19 en
 Así, los artículos se mantienen entre 148 y 185, los capítulos de libro
 entre 22 y 39, y entre 3 y 11 libros monográficos o editados.
 
-La mediana de publicaciones por académico es de 3, con el 50\% de la
-Facultad produciendo entre 1 y 9 publicaciones en el período mencionado,
-con máximos que llegan hasta las 45 publicaciones. Esto indica una alta
-dispersión y una concentración de publicaciones entre los académicos más
-productivos, como se observan en la Figura~\ref{fig-publicacion-lorenz}.
-Así, el 20\% de los académicos más productivos concentra dos tercios de
-las publicaciones; el 50\% del total de las publicaciones de la Facultad
-corresponden al 13\% de los académicos con mayor productividad.
-
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-publicacion-lorenz}Concentración de publicaciones
 por porcentaje de académicos acumulado (2020-2025)}
@@ -1170,21 +1163,17 @@ por porcentaje de académicos acumulado (2020-2025)}
 
 \end{figure}%
 
+La mediana de publicaciones por académico es de 3, con el 50\% de la
+Facultad produciendo entre 1 y 9 publicaciones en el período mencionado,
+con máximos que llegan hasta las 45 publicaciones. Esto indica una alta
+dispersión y una concentración de publicaciones entre los académicos más
+productivos, como se observan en la Figura~\ref{fig-publicacion-lorenz}.
+Así, el 20\% de los académicos más productivos concentra dos tercios de
+las publicaciones; el 50\% del total de las publicaciones de la Facultad
+corresponden al 13\% de los académicos con mayor productividad.
+
 \subsection{Caracterización de los
 autores}\label{caracterizaciuxf3n-de-los-autores}
-
-Según se observa en el Figura~\ref{fig-publicacion-depto}, el predominio
-de los artículos sobre otras formas de publicaciones es apreciable en
-todos los departamentos, aunque la publicación de capítulos de libros es
-superior en Trabajo Social, Sociología y Psicología. Se destaca que el
-departamento de Trabajo Social es el que más publicaciones por Jornada
-Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le
-sigue el Departamento de Sociología con 9.4 publicaciones por JCE,
-Psicología con 8.5, Antropología con 8.2 y Educación con 4.7.
-
-\begin{figure}
-
-\begin{minipage}{\linewidth}
 
 \begin{figure}[H]
 
@@ -1199,18 +1188,16 @@ JCE (2020-2025)}
 
 \end{figure}%
 
-\end{minipage}%
+Según se observa en el Figura~\ref{fig-publicacion-depto}, el predominio
+de los artículos sobre otras formas de publicaciones es apreciable en
+todos los departamentos, aunque la publicación de capítulos de libros es
+superior en Trabajo Social, Sociología y Psicología. Se destaca que el
+departamento de Trabajo Social es el que más publicaciones por Jornada
+Completa Equivalente (2025) produce, con 13.9 publicaciones por JCE. Le
+sigue el Departamento de Sociología con 9.4 publicaciones por JCE,
+Psicología con 8.5, Antropología con 8.2 y Educación con 4.7.
 
-\end{figure}%
-
-En la Figura~\ref{fig-publicacion-genero} se observa que las académicas
-de la Facultad son más productivas que los académicos, completando 10.73
-publicaciones por JCE en le período analizado, contra 7.19 publicaciones
-por JCE entre los hombres. Aunque esta diferencia se repite en todos los
-tipos de publicaciones, es más acentuada en los artículos, con una
-diferencia 2.71 publicaciones por jornada completa.
-
-\begin{figure}
+\begin{figure}[H]
 
 \caption{\label{fig-publicacion-genero}Publicaciones por Género
 (2020-2025)}
@@ -1223,6 +1210,13 @@ diferencia 2.71 publicaciones por jornada completa.
 
 \end{figure}%
 
+En la Figura~\ref{fig-publicacion-genero} se observa que las académicas
+de la Facultad son más productivas que los académicos, completando 10.73
+publicaciones por JCE en le período analizado, contra 7.19 publicaciones
+por JCE entre los hombres. Aunque esta diferencia se repite en todos los
+tipos de publicaciones, es más acentuada en los artículos, con una
+diferencia 2.71 publicaciones por jornada completa.
+
 El Figura~\ref{fig-publicacion-edad} muestra que el tramo etario con
 mayor productividad en el período analizado se encuentra entre los 50 y
 59 años, con 10.58 publicaciones por JCE, y fuerte concentración en los
@@ -1232,10 +1226,10 @@ comparación a los capítulos de libro. Mientras tanto, la productividad
 de los académicos mayores de de 60 años es de 4.79 publicaciones por
 JCE.
 
-\begin{figure}
+\begin{figure}[htpb]
 
-\caption{\label{fig-publicacion-edad}Publicaciones por Edad y
-Departamento (2020-2025)}
+\caption{\label{fig-publicacion-edad}Publicaciones por tramo de edad
+(2020-2025)}
 
 \centering{
 
@@ -1251,7 +1245,7 @@ asistente y de asociado, pasando de 4.49 publicaciones por JCE a 12.19.
 La diferencia entre profesores asociados y titulares es menor, con los
 segundos registrando 11.49 publicaciones por JCE.
 
-\begin{figure}
+\begin{figure}[H]
 
 \caption{\label{fig-publicacion-jerarquia}Publicaciones por Jerarquía y
 Departamento (2020-2025)}
@@ -1283,7 +1277,7 @@ revistas en indexadas en el \emph{Emerging Sources Citacion Index}
 Sciences} (ERIH Plus), \emph{Latindex}, el \emph{Directory of Open
 Access Journals} (DOAJ), entre otras.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-index}Publicaciones por Indexación de la Revista
 (2020-2025)}
@@ -1296,7 +1290,7 @@ Access Journals} (DOAJ), entre otras.
 
 \end{figure}%
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-index-evolucion}Evolución de Publicaciones por
 Indexación de la Revista (2020-2025)}
@@ -1321,7 +1315,7 @@ incluso en 2020 durante la pandemia, para caer bruscamente en 2025. Por
 supuesto, no es posible establecer aún las causas o si esto es una
 tendencia que se mantendrá en el tiempo.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-index-depto}Publicaciones por Indexación de la
 Revista por Departamento (2020-2025)}
@@ -1405,56 +1399,55 @@ Publicación & Indexación & Frecuencia\\
 
 \end{table}%
 
-Figura~\ref{fig-index-carac} muestra la cantidad de publicaciones por
+La Tabla~\ref{tbl-index-carac} muestra la cantidad de publicaciones por
 JCE según género, edad y jerarquía de los autores. En general, se
 aprecia que las tendencias observadas son las mismas, con WoS y Scopus
 acaparando la mayor parte de la productividad, y la primera estando
 sobre la segunda en la mayoría de los grupos analizados. También se
-mantienen tendencias tales como que las mujeres
-(Figura~\ref{fig-index-carac-1}) y los académicos de entre 50 y 59 años
-(Figura~\ref{fig-index-carac-2}) publican más en todas las indexaciones.
-Respecto a la jerarquía, como se observa en
-Figura~\ref{fig-index-carac-3}, mientras los profesores titulares son
-quienes más publican en WoS por JCE, los profesores asociados los
-superan en Scopus y Scielo.
+mantienen tendencias tales como que las mujeres y los académicos de
+entre 50 y 59 años publican más en todas las indexaciones. Respecto a la
+jerarquía, mientras los profesores titulares son quienes más publican en
+WoS por JCE, los profesores asociados los superan en Scopus y Scielo.
 
-\begin{figure}[p]
+\begin{table}[H]
 
-\caption{\label{fig-index-carac}Publicaciones por Indexación y
+\caption{\label{tbl-index-carac}Publicaciones por Indexación y
 características de los autores}
 
 \centering{
 
-\subcaption{\label{fig-index-carac-1}Publicaciones por Indexación de la
-Revista por Género del autor(2020-2025)}
-
-\centering{
-
-\includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{03-resultados_files/figure-pdf/fig-index-carac-1.pdf}
+\centering
+\begin{tabular}[t]{l|c|c|c|c}
+\hline
+Grupo & WoS & Scopus & Scielo & Otra\\
+\hline
+\multicolumn{5}{l}{\textbf{Sexo}}\\
+\hline
+\hspace{1em}Femenino & 3.77 & 3.16 & 0.95 & 0.99\\
+\hline
+\hspace{1em}Masculino & 2.58 & 2.29 & 0.51 & 0.44\\
+\hline
+\multicolumn{5}{l}{\textbf{Edad}}\\
+\hline
+\hspace{1em}Menos de 50 años & 3.47 & 2.72 & 0.78 & 0.59\\
+\hline
+\hspace{1em}50 a 59 años & 3.77 & 3.51 & 0.81 & 1.07\\
+\hline
+\hspace{1em}60 años o más & 1.76 & 1.42 & 0.52 & 0.29\\
+\hline
+\multicolumn{5}{l}{\textbf{Jerarquía}}\\
+\hline
+\hspace{1em}Asistente & 1.81 & 1.23 & 0.42 & 0.22\\
+\hline
+\hspace{1em}Asociado & 4.12 & 3.82 & 0.98 & 0.99\\
+\hline
+\hspace{1em}Titular & 4.18 & 3.53 & 0.84 & 1.12\\
+\hline
+\end{tabular}
 
 }
 
-\subcaption{\label{fig-index-carac-2}Publicaciones por Indexación de la
-Revista por Edad del autor(2020-2025)}
-
-\centering{
-
-\includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{03-resultados_files/figure-pdf/fig-index-carac-2.pdf}
-
-}
-
-\subcaption{\label{fig-index-carac-3}Publicaciones por Indexación de la
-Revista por Jerarquia del autor(2020-2025)}
-
-\centering{
-
-\includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{03-resultados_files/figure-pdf/fig-index-carac-3.pdf}
-
-}
-
-}
-
-\end{figure}%
+\end{table}%
 
 \subsection{Número de Citas}\label{nuxfamero-de-citas}
 
@@ -1474,7 +1467,7 @@ claramente en Figura~\ref{fig-citas-densidad}, donde se observa una
 mayor proporción de artículos con 0 a 2 citas, con una cola larga hacia
 la derecha que se extiende más allá de las 300 citas.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-citas-densidad}Distribución de citas por artículos
 (2020-2025)}
@@ -1564,7 +1557,7 @@ Q1, con un 42\%. En conjunto, el 67\% de las publicaciones en revistas
 con factor de impacto en SCImago durante el período de referencia
 corresponden a revitas Q1 o Q2.
 
-\begin{table}
+\begin{table}[H]
 
 \caption{\label{tbl-sjr}Cuartil en SJR publicaciones FACSO (2020-2025)}
 
@@ -1595,7 +1588,7 @@ se produce una tendencia a la baja hasta 2023, revirtiendose para 2024.
 En 2025, se vuelve a niveles similares a 2021 on 102 publicaciones Q1 o
 Q2, lo que representa un 70\% de los artículos analizados.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-sjr}Evolución Cantidad y Proporción de Publicación
 FACSO en revistas Q1 y Q2 (2020-2025)}
@@ -1617,7 +1610,7 @@ artículos en estas categorías. Por su lado, el Departamento de Trabajo
 Social registra la mayor cantidad de publicaciones en revistas Q1, con
 2.8 artículos por JCE.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-sjr-depto}Cantidad y proporción de publicaciones en
 revistas Q1 y Q2 por JCE por Departamento (2020-2025)}
@@ -1760,16 +1753,7 @@ requiere que las revistas que integran su base de datos sean de acceso
 abierto, es muy posible que la cantidad de artículos de libre acceso
 publicados en la Facultad sea mayor que la aquí reportada.
 
-Hecha esa consideración metodológica, se observa que 362 publicaciones,
-o un 49\% de los artículos analizados, fueron publicados en revistas de
-acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza
-el 70\%; Para Web of Science, en cambio, es del solo el 30\%. En
-Figura~\ref{fig-oa}, se grafica la evolución de este indicador en el
-período estudiado. Se observa un peak durante la pandemia en 2020, con
-un 56\%, para luego bajar y mantenerse estable en los años subsiguiente,
-oscilando entre un 44\% y un 50\%.
-
-\begin{figure}
+\begin{figure}[H]
 
 \caption{\label{fig-oa}Porcentaje de publicaciones en revistas de acceso
 abierto (2020-2025)}
@@ -1782,6 +1766,15 @@ abierto (2020-2025)}
 
 \end{figure}%
 
+Hecha esa consideración metodológica, se observa que 362 publicaciones,
+o un 49\% de los artículos analizados, fueron publicados en revistas de
+acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza
+el 70\%; Para Web of Science, en cambio, es del solo el 30\%. En
+Figura~\ref{fig-oa}, se grafica la evolución de este indicador en el
+período estudiado. Se observa un peak durante la pandemia en 2020, con
+un 56\%, para luego bajar y mantenerse estable en los años subsiguiente,
+oscilando entre un 44\% y un 50\%.
+
 Como se puede apreciar en a Tabla~\ref{tbl-oa}, las tendencias se
 mantienen bastante constante en distintos grupos. La proporción de
 publicaciones en acceso abieto es algo superior en los Departamento de
@@ -1790,7 +1783,7 @@ Sociología (52\%) y Trabajo Social (55\%), académicos de 50 a 59 años
 académicos menores de 50 años (42\%) y los profesores con jerarquía
 académicas de Asistente (41\%)
 
-\begin{table}
+\begin{table}[H]
 
 \caption{\label{tbl-oa}Cantidad y porcentaje de publicaciones en acceso
 abierto por características del autor (2020-2025)}
@@ -1848,7 +1841,7 @@ escribir en más de un idioma, muy posiblemente incluyendo alguno de los
 idiomas antes menconados. Finalmente, existe una cantidad cerca al 1\%
 de escritos en otros idiomas, como el alemán, el francés y el italiano.
 
-\begin{figure}
+\begin{figure}[htpb]
 
 \caption{\label{fig-idioma}Distribución de publicaciones por idioma
 según indexación (2020-2025)}

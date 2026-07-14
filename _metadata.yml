@@ -4,7 +4,6 @@ crossref:
   fig-title: Figura
   tbl-prefix: Tabla
   tbl-title: Tabla
-  sec-prefix: Capítulo
 df-print: default
 lang: es
 link-citations: true
