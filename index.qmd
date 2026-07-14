@@ -9,7 +9,7 @@ format:
 ::: {.content-visible when-format="html"}
 ::: {.callout-note appearance="minimal" style="background-color: #f5f5f5; padding: 10px; border-left: 4px solid #999;"}
 
-Esta investigación la Dirección de Investigación y Publicaciones de la Facultad de Ciencias Sociales, Universidad de Chile.
+Estudio realizado por la Dirección de Investigación y Publicaciones de la Facultad de Ciencias Sociales, Universidad de Chile.
 
 El informe se encuentra disponible en versión web en [https://facso-investigacion.github.io/publicaciones-facso/](https://facso-investigacion.github.io/publicaciones-facso/) y con opción de descarga en formato PDF dentro del mismo reporte.
 :::
@@ -24,7 +24,7 @@ Este estudio corresponde a un análisis cuantitativo descriptivo que caracteriza
 
 ## Metodología
 
-**Datos**
+### Datos
 
 La construcción de la base combinó múltiples fuentes:
 
@@ -34,7 +34,7 @@ La construcción de la base combinó múltiples fuentes:
 
 La caracterización del cuerpo académico se basó en la base de personal de la Facultad, considerando todos los nombramientos vigentes al 31 de dicimebre del 2025, exclyendo a investigadores postdoctorales. 
 
-**Variables**
+### Variables
 
 Se incluyeron en el análisis artículos de revistas académicas, capítulos de libros y libros. Paa los análisis agregados a nivel de la Facultad, la unidad de análisis fue las publicaciones únicas (n=1.162). En tanto, para la caracterización según género, edad y jerarquía, la unidad fue cada par distinto de publicaicón autor (n=1.328). La mayoría de los análisis se ponderaron por Jornadas Completas Equivalente (JCE), calculadas como la suma de horas reales de dedicación académicas dividida por una jornada completa (44 horas). 
 
