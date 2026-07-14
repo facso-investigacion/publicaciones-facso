@@ -175,7 +175,7 @@ p {
       <a href="./">Publicaciones Académicos y Académicas FACSO</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/facso-investigacion/publicaciones-facso" title="Ejecutar el código" class="quarto-navigation-tool px-1" aria-label="Ejecutar el código"><i class="bi bi-github"></i></a>
-    <a href="./reportes-facso-plantilla.pdf" title="Descargar PDF" class="quarto-navigation-tool px-1" aria-label="Descargar PDF"><i class="bi bi-file-pdf"></i></a>
+    <a href="./publicaciones.pdf" title="Descargar PDF" class="quarto-navigation-tool px-1" aria-label="Descargar PDF"><i class="bi bi-file-pdf"></i></a>
 </div>
     </div>
       </div>
@@ -520,217 +520,6 @@ a[role="doc-biblioref"]:focus-visible {
 #refs .csl-entry { padding: .25rem 0; border-bottom: 1px dashed rgba(0,0,0,.06); }
 #refs .csl-entry:last-child { border-bottom: none; }
 </style>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const parseNumberParts = (value) =>
-    (value || "")
-      .split(".")
-      .map((part) => parseInt(part, 10))
-      .filter((num) => !Number.isNaN(num));
-
-  const formatNumberParts = (parts) => parts.join(".");
-
-  const adjustNumber = (value) => {
-    const trimmed = (value || "").trim();
-    if (!/^\d/.test(trimmed)) {
-      return trimmed;
-    }
-    const parts = parseNumberParts(trimmed);
-    if (!parts.length) {
-      return "";
-    }
-  parts[0] = parts[0] - 1;
-    if (parts[0] <= 0) {
-      return "";
-    }
-    return formatNumberParts(parts);
-  };
-
-  const removeSpacer = (node) => {
-    let sibling = node.nextSibling;
-    while (sibling && sibling.nodeType === Node.TEXT_NODE) {
-      const cleaned = sibling.textContent.replace(/\u00a0/g, "").trim();
-      const next = sibling.nextSibling;
-      if (cleaned.length === 0) {
-        sibling.remove();
-        sibling = next;
-      } else {
-        break;
-      }
-    }
-  };
-
-  const clearNumber = (node) => {
-    if (!node) return;
-    node.textContent = "";
-    node.classList.add("chapter-number--hidden");
-    node.style.display = "none";
-    removeSpacer(node);
-  };
-
-  const ensureChapterSpacing = (node) => {
-    if (!node || !node.classList.contains("chapter-number")) return;
-
-    let numeric = (node.textContent || "").replace(/\.+\s*$/u, "");
-    if (!numeric) return;
-
-    node.textContent = numeric;
-
-    const contextsNeedingSpace = node.closest(".quarto-title-block") ||
-      node.closest("nav.quarto-page-breadcrumbs");
-
-    node.textContent = `${numeric}.`;
-
-    if (contextsNeedingSpace) {
-      const next = node.nextSibling;
-      const hasWhitespaceText =
-        next &&
-        next.nodeType === Node.TEXT_NODE &&
-        /\s/.test(next.textContent || "");
-      if (!hasWhitespaceText) {
-        node.insertAdjacentText("afterend", "\u00a0");
-      }
-    }
-  };
-
-  const applyNumber = (node) => {
-    if (!node) return;
-    const adjusted = adjustNumber(node.textContent);
-    if (!adjusted) {
-      clearNumber(node);
-    } else {
-      node.textContent = adjusted;
-      node.classList.remove("chapter-number--hidden");
-      node.style.display = "inline-block";
-      removeSpacer(node);
-      ensureChapterSpacing(node);
-    }
-  };
-
-  const updateDataNumber = (node) => {
-    const current = node.getAttribute("data-number");
-    if (current === null) return;
-    const adjusted = adjustNumber(current);
-    if (adjusted) {
-      node.setAttribute("data-number", adjusted);
-    } else {
-      node.removeAttribute("data-number");
-    }
-  };
-
-  const isFrontMatterHref = (href) =>
-    /\/?index\.html(?:#|$)/i.test(href || "") ||
-    /\/?00-prefacio\.html(?:#|$)/i.test(href || "");
-
-  document
-    .querySelectorAll(".sidebar .chapter-number")
-    .forEach((node) => {
-      const link = node.closest("a");
-      const href = link ? link.getAttribute("href") : "";
-      if (isFrontMatterHref(href)) {
-        clearNumber(node);
-      } else {
-        applyNumber(node);
-      }
-    });
-
-  const pathname = window.location.pathname || "";
-
-  document
-    .querySelectorAll('.quarto-title-block .chapter-number')
-    .forEach((node) => {
-      if (isFrontMatterHref(pathname)) {
-        clearNumber(node);
-      } else {
-        applyNumber(node);
-      }
-    });
-
-  document
-    .querySelectorAll('nav.quarto-page-breadcrumbs .chapter-number')
-    .forEach((node) => {
-      const link = node.closest('a');
-      const href = link ? link.getAttribute('href') : pathname;
-      if (isFrontMatterHref(href)) {
-        clearNumber(node);
-      } else {
-        applyNumber(node);
-      }
-    });
-
-  document
-    .querySelectorAll("main .header-section-number")
-    .forEach((node) => {
-      if (isFrontMatterHref(pathname)) {
-        const section = node.closest("section");
-        if (section && section.matches(".level1:first-of-type, .level2:first-of-type")) {
-          clearNumber(node);
-          return;
-        }
-      }
-      applyNumber(node);
-    });
-
-  document
-    .querySelectorAll("main [data-number]")
-    .forEach(updateDataNumber);
-
-  document
-    .querySelectorAll("#TOC .header-section-number")
-    .forEach((node) => {
-      const link = node.closest("a");
-      const href = link ? link.getAttribute("href") : "";
-      if (isFrontMatterHref(href)) {
-        clearNumber(node);
-      } else {
-        applyNumber(node);
-      }
-    });
-
-  document
-    .querySelectorAll("#TOC [data-number]")
-    .forEach(updateDataNumber);
-
-  document
-    .querySelectorAll('#TOC a[data-scroll-target][data-number]')
-    .forEach(updateDataNumber);
-
-  const expandMarginToc = () => {
-    const toc = document.getElementById("TOC");
-    if (!toc) return;
-    toc.querySelectorAll("ul.collapse").forEach((node) => {
-      node.classList.remove("collapse");
-      node.classList.add("toc-expanded");
-    });
-    toc.querySelectorAll("[data-bs-toggle='collapse']").forEach((trigger) => {
-      trigger.removeAttribute("data-bs-toggle");
-      trigger.setAttribute("aria-expanded", "true");
-    });
-  };
-
-  expandMarginToc();
-});
-</script>
-<style>
-.sidebar .chapter-number {
-  display: inline-block;
-  min-width: 1ch;
-  margin-right: 0.1ch;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.chapter-number--hidden {
-  visibility: hidden !important;
-  display: none !important;
-}
-.toc-expanded {
-  display: block !important;
-  visibility: visible !important;
-  height: auto !important;
-  overflow: visible !important;
-}
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const codeSelectors = [
@@ -1451,19 +1240,23 @@ document.addEventListener("DOMContentLoaded", () => {
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introducción {#sec-introduction}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>El presente informe expone los resultados del estudio sobre las publicaciones de académicas y académicos de la Facultad de Ciencias Sociales (FACSO) de la Universidad de Chile aparecidas entre los años 2020 y 2025. Este estudio se enmarca en el interés de la Facultad por contar con una caracterización sistemática y actualizada de la producción académica de sus miembros en un contexto de cierre y balance de la Decanatura 2022-2026. </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{=latex}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="in">\renewcommand{\thechapter}{\arabic{chapter}}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Este trabajo continúa y actualiza un primer esfuerzo realizado en 2022, que caracterizó las publicaciones de la Facultad durante el quinquenio 2015-2019 <span class="co">[</span><span class="ot">@moya_publicaciones_</span><span class="co">]</span>. Aquel estudio precursor sentó las bases metodológicas y conceptuales para el diagnóstico de las prácticas de publicación en FACSO, y una de sus principales recomendaciones fue, precisamente, extender la mirada en el tiempo mediante un monitoreo periódico que permitiera observar la evolución de estos indicadores. El presente informe recoge esa recomendación: retoma el propósito de aquel primer diagnóstico y lo proyecta sobre un nuevo período, dando continuidad a la línea de trabajo entonces iniciada.</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introducción {#sec-introduction}</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Con este objetivo se ha recolectado y producido información acerca de las publicaciones y sus autores. Las publicaciones consideradas en este estudio comprenden artículos de investigación, capítulos de libros y libros. Estas formas de publicación reflejan la diversidad de la productividad académica de las ciencias sociales, así como incluyen aquellas omúnmente consideradas en la evaluación de la productividad por parte de las instituciones que financian investigación a nivel nacional e internacional.</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>El presente informe expone los resultados del estudio sobre las publicaciones de académicas y académicos de la Facultad de Ciencias Sociales (FACSO) de la Universidad de Chile aparecidas entre los años 2020 y 2025. Este estudio se enmarca en el interés de la Facultad por contar con una caracterización sistemática y actualizada de la producción académica de sus miembros en un contexto de cierre y balance de la Decanatura 2022-2026. </span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Respecto de su antecesor, este estudio incorporar innovaciones en su enfoque metodológico. Mientras que el informe de 2022 se apoyó principalmente en Google Scholar, la presente edición consolida su base a partir del mantenedor institucional de publicaciones (SEPA-VID), complementado con la API de ORCID y enriquecido con las principales fuentes de indexación e impacto —Web of Science, Scopus, Scielo y SCImago Journal Rank—. Ello permite caracterizar con mayor precisión aspectos como la indexación de las revistas, el cuartil en que se posicionan, el acceso abierto y el número de citas de cada publicación. Asimismo, el código de análisis utilizado quedará albergado en un <span class="co">[</span><span class="ot">repositorio en Github de la Dirección de Investigación</span><span class="co">](https://github.com/facso-investigacion/publicaciones-facso)</span>, y podrá ser integrado al sistema de gestión de información científica desarrollado por la misma Dirección, <span class="co">[</span><span class="ot">CINDAI</span><span class="co">](https://facso-investigacion.github.io/documentacion-cindai/)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Este trabajo continúa y actualiza un primer esfuerzo realizado en 2022, que caracterizó las publicaciones de la Facultad durante el quinquenio 2015-2019 <span class="co">[</span><span class="ot">@moya_publicaciones_</span><span class="co">]</span>. Aquel estudio precursor sentó las bases metodológicas y conceptuales para el diagnóstico de las prácticas de publicación en FACSO, y una de sus principales recomendaciones fue, precisamente, extender la mirada en el tiempo mediante un monitoreo periódico que permitiera observar la evolución de estos indicadores. El presente informe recoge esa recomendación: retoma el propósito de aquel primer diagnóstico y lo proyecta sobre un nuevo período, dando continuidad a la línea de trabajo entonces iniciada.</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>En este estudio presentamos resultados sobre el volumen y la composición de la producción académica, su concentración y evolución en el tiempo, así como características de las publicaciones tales como su nivel de impacto —medido a través de las citas y del índice h—, la calidad e indexación de las revistas, el acceso abierto y el idioma de publicación. Estos resultados se examinan tanto a nivel agregado de la Facultad como de forma desagregada según el departamento, el género, la edad y la jerarquía de los autores, con el fin de identificar perfiles, fortalezas y brechas al interior de la comunidad académica.</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>Con este objetivo se ha recolectado y producido información acerca de las publicaciones y sus autores. Las publicaciones consideradas en este estudio comprenden artículos de investigación, capítulos de libros y libros. Estas formas de publicación reflejan la diversidad de la productividad académica de las ciencias sociales, así como incluyen aquellas omúnmente consideradas en la evaluación de la productividad por parte de las instituciones que financian investigación a nivel nacional e internacional.</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>A continuación, se describen la <span class="co">[</span><span class="ot">metodología</span><span class="co">](02-metodologia.qmd)</span> empleada en la construcción y el análisis de la base de datos. Luego se presentan los <span class="co">[</span><span class="ot">resultados</span><span class="co">](03-resultados.qmd)</span>, organizados en torno a la caracterización general de la producción y al análisis específico de los artículos y las revistas en que se publican. Finalmente, se un conjunto de <span class="co">[</span><span class="ot">conclusiones</span><span class="co">](04-conclusiones.qmd)</span> orientadas a relevar fortalezas, desafíos y oportunidades para la Facultad, así como a nutrir el debate en torno a las políticas de investigación y publicación en el cierre de este período y de cara a los desafíos futuros.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>Respecto de su antecesor, este estudio incorporar innovaciones en su enfoque metodológico. Mientras que el informe de 2022 se apoyó principalmente en Google Scholar, la presente edición consolida su base a partir del mantenedor institucional de publicaciones (SEPA-VID), complementado con la API de ORCID y enriquecido con las principales fuentes de indexación e impacto —Web of Science, Scopus, Scielo y SCImago Journal Rank—. Ello permite caracterizar con mayor precisión aspectos como la indexación de las revistas, el cuartil en que se posicionan, el acceso abierto y el número de citas de cada publicación. Asimismo, el código de análisis utilizado quedará albergado en un <span class="co">[</span><span class="ot">repositorio en Github de la Dirección de Investigación</span><span class="co">](https://github.com/facso-investigacion/publicaciones-facso)</span>, y podrá ser integrado al sistema de gestión de información científica desarrollado por la misma Dirección, <span class="co">[</span><span class="ot">CINDAI</span><span class="co">](https://facso-investigacion.github.io/documentacion-cindai/)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>En este estudio presentamos resultados sobre el volumen y la composición de la producción académica, su concentración y evolución en el tiempo, así como características de las publicaciones tales como su nivel de impacto —medido a través de las citas y del índice h—, la calidad e indexación de las revistas, el acceso abierto y el idioma de publicación. Estos resultados se examinan tanto a nivel agregado de la Facultad como de forma desagregada según el departamento, el género, la edad y la jerarquía de los autores, con el fin de identificar perfiles, fortalezas y brechas al interior de la comunidad académica.</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>A continuación, se describen la <span class="co">[</span><span class="ot">metodología</span><span class="co">](02-metodologia.qmd)</span> empleada en la construcción y el análisis de la base de datos. Luego se presentan los <span class="co">[</span><span class="ot">resultados</span><span class="co">](03-resultados.qmd)</span>, organizados en torno a la caracterización general de la producción y al análisis específico de los artículos y las revistas en que se publican. Finalmente, se un conjunto de <span class="co">[</span><span class="ot">conclusiones</span><span class="co">](04-conclusiones.qmd)</span> orientadas a relevar fortalezas, desafíos y oportunidades para la Facultad, así como a nutrir el debate en torno a las políticas de investigación y publicación en el cierre de este período y de cara a los desafíos futuros.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
