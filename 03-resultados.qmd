@@ -52,18 +52,18 @@ figura_1 <- consolidado_wide |>
 
 figura_1
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones.png",
-  plot = figura_1,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones.png",
+#   plot = figura_1,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 
 
 ```
 
-En el período de referencia (2020-2025), se encontró un total de 1162 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 155 Jornadas Completas Equivalente (JCE), esto significa que en el período estudiado se registraron 7,8 publicaciones por JCE: 6,35 artículos, 1,15 capítulos de libros y 0,3 libros.  
+En el período de referencia (2020-2025), se encontró un total de 1162 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 148.9 Jornadas Completas Equivalente (JCE), esto significa que en el período estudiado se registraron 7,8 publicaciones por JCE: 6,35 artículos, 1,15 capítulos de libros y 0,3 libros.  
 
 ```{r}
 #| label: fig-publicacion-anio
@@ -101,13 +101,13 @@ figura_2 <- consolidado_wide |>
 figura_2
 
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones_anio.png",
-  plot = figura_2,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones_anio.png",
+#   plot = figura_2,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 
 ```
 
@@ -197,13 +197,13 @@ tabla_resumen
 # 
 # tabla_resumen_total
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones_dispersion.png",
-  plot = figura_7,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones_dispersion.png",
+#   plot = figura_7,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 
 
 ```
@@ -294,13 +294,13 @@ figura_8
 # # El % de publicaciones que concentra el 20% más productivo:
 # punto_20$pct_publicaciones
 
-ggsave(
-  filename = "output/graficos/lorenz.png",
-  plot = figura_8,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/lorenz.png",
+#   plot = figura_8,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 
 
 ```
@@ -387,13 +387,13 @@ figura_3_jce <- base_final |>
 figura_3_jce
 
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones_depto_jce.png",
-  plot = figura_3_jce,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones_depto_jce.png",
+#   plot = figura_3_jce,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 ```
 
 Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13,9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9,4 publicaciones por JCE, Psicología con 8,5, Antropología con 8,2 y Educación con 4,7. 
@@ -444,13 +444,13 @@ figura_4 <- base_final |>
 figura_4
 
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones_genero.png",
-  plot = figura_4,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones_genero.png",
+#   plot = figura_4,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 ```
 
 En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10,73 publicaciones por JCE en el período analizado, contra 7,19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia de 2,71 publicaciones por jornada completa. 
@@ -515,13 +515,13 @@ figura_5 <- base_final |>
 figura_5
 
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones_edad.png",
-  plot = figura_5,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones_edad.png",
+#   plot = figura_5,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 
 # tabla_edad <- base_final |> 
 #   count(edad, name = "n_publicaciones") |> 
@@ -587,13 +587,13 @@ figura_6 <- base_final |>
 figura_6
 
 
-ggsave(
-  filename = "output/graficos/tipo_publicaciones_jerarquia.png",
-  plot = figura_6,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
+# ggsave(
+#   filename = "output/graficos/tipo_publicaciones_jerarquia.png",
+#   plot = figura_6,
+#   width = 8,
+#   height = 6,
+#   dpi = 300
+# )
 
 
 ```
@@ -644,7 +644,7 @@ figura_9
 
 ```
 
-Los artículos de investigación representan con diferencia la mayor parte de la producción académica de la Facultad, con 946 registros diferentes, o un 77% del total de las publicaciones identificadas. La @fig-index muestra la distribución de las indexaciones de las revistas en que publican los académicos de FACSO. De tal modo, se observa que el 78% de las publicaciones se encuentran en revistas indexadas en WoS (42%) o Scopus (36%), posiblemente en consonancia con los modelos de evaluación de ANID en sus fondos concursables. Más abajo se encuentran las revistas indexadas en Scielo, con un 11% de las publicaciones en el período analizado. La categoría "Otra" agrega revistas indexadas en el *Emerging Sources Citation Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras.
+Los artículos de investigación representan con diferencia la mayor parte de la producción académica de la Facultad, con 946 registros diferentes, o un 81% del total de las publicaciones identificadas. La @fig-index muestra la distribución de las indexaciones de las revistas en que publican los académicos de FACSO. De tal modo, se observa que el 78% de las publicaciones se encuentran en revistas indexadas en WoS (42%) o Scopus (36%), posiblemente en consonancia con los modelos de evaluación de ANID en sus fondos concursables. Más abajo se encuentran las revistas indexadas en Scielo, con un 11% de las publicaciones en el período analizado. La categoría "Otra" agrega revistas indexadas en el *Emerging Sources Citation Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras.
 
 
 ```{r}
@@ -780,7 +780,7 @@ consolidado_depto |>
 ```
 
 
-El Departamento de Psicología y el Departamento de Sociología, por su lado, muestran un mayor nivel de paridad entre ambas bases de datos, con un leve predominio de WoS. La @tbl-index-depto muestra las revistas con mayor frecuencia por departamento, reflejando las tendencias antes mencionadas. Asimismo, se observa una fuerte presencia de las revistas de la Facultad, tales como Enfoques Educaciones (Departamento de Educación), Revista de Psicología (Departamento de Psicología), Última Década y Revista de Sociología (Departamento de Sociología), y Propuestas Críticas en Trabajo Social y Revista MAD (Departamento de Trabajo Social). 
+El Departamento de Psicología y el Departamento de Sociología, por su lado, muestran un mayor nivel de paridad entre ambas bases de datos, con un leve predominio de WoS. La @tbl-index-depto muestra las revistas con mayor frecuencia por departamento, reflejando las tendencias antes mencionadas. Asimismo, se observa una fuerte presencia de las revistas de la Facultad, tales como Enfoques Educacionales (Departamento de Educación), Revista de Psicología (Departamento de Psicología), Última Década y Revista de Sociología (Departamento de Sociología), y Propuestas Críticas en Trabajo Social y Revista MAD (Departamento de Trabajo Social). 
 
 
 ```{r}
@@ -964,7 +964,7 @@ ggplot(datos, aes(x = citas)) +
 
 ```
 
-La @tbl-citas-depto muestra la cantidad de artículos, el total de citas y el índice h para cada Departamento de la Facultad. El departamento de Psicología tiene la mayor cantidad de citas en el período analizado, con 2148 citas y un índice h de 22. Le siguen el departamento de Antropología con 1169 citas y un índice h de 16; el departamento de Sociología con 951 citas y un índice h de 15; el departamento de Trabajo Social y el departamento de Educación con 90 citas y un índice h de 5. 
+La @tbl-citas-depto muestra la cantidad de artículos, el total de citas y el índice h para cada Departamento de la Facultad. El departamento de Psicología tiene la mayor cantidad de citas en el período analizado, con 2148 citas y un índice h de 22. Le siguen el departamento de Antropología con 1169 citas y un índice h de 16; el departamento de Sociología con 951 citas y un índice h de 15; el departamento de Trabajo Social con 774 citas y un índice h de 12; y el departamento de Educación con 90 citas y un índice h de 5. 
 
 ```{r}
 #| label: tbl-citas-depto
@@ -1540,6 +1540,6 @@ ggplot(datos_idioma, aes(x = reorder(idioma, pct), y = pct)) +
     panel.spacing = unit(1, "lines")
   )
 ```
-En @fig-idioma se pueden apreciar las diferencias para cada tipo de indexación. En Scielo, predominan ampliamente las publicaciones en más de un idioma. Dado el carácter latinoamericano de esta base de datos, es posible asumir que la mayoría de estos artículos fueron escritos en español o, en menor medida, en portugués. El caso de Scopus muestra mayor diversidad, con el español (32%), las revistas multidiomas (32%) y el inglés (28%) corresponden a tercios prácticamente iguales. Finalmente, en WoS se observa un marcado predominio del inglés (68%) sobre otros idiomas. 
+En @fig-idioma se pueden apreciar las diferencias para cada tipo de indexación. En Scielo, predominan ampliamente las publicaciones en más de un idioma. Dado el carácter latinoamericano de esta base de datos, es posible asumir que la mayoría de estos artículos fueron escritos en español o, en menor medida, en portugués. El caso de Scopus muestra mayor diversidad, con el español (32%), las revistas multidiomas (32%) y el inglés (28%) representando tercios prácticamente iguales. Finalmente, en WoS se observa un marcado predominio del inglés (68%) sobre otros idiomas. 
 
 
