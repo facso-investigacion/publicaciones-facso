@@ -284,7 +284,7 @@ window.Quarto = {
 </section>
 <section id="variables" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="variables"><span class="header-section-number">2.2</span> Variables</h2>
-<p>La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta “libros” aplica a ambos tipos de publicaciones. Se excluyeron del análisis material editorial, correcciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total de 1162 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (946), seguido de 171 capítulos de libros y 45 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontraron un total de 1328 publicaciones-autor.</p>
+<p>La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta “libros” aplica a ambos tipos de publicaciones. Se excluyeron del análisis material editorial, correcciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total de 1104 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (900), seguido de 161 capítulos de libros y 43 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontraron un total de 1273 publicaciones-autor.</p>
 <p>Se consideraron, además, variables de caracterización de los académicos de la Facultad tales como departamento, género, edad y jerarquía. Para posibilitar la comparación entre estas variables, la mayoría de los análisis se ponderaron por Jornadas Completas Equivalentes (JCE), calculadas como:</p>
 <p><span class="math display">\[JCE = \frac{\sum_{i=1}^{n} h_i}{44}\]</span></p>
 <p>Donde:</p>
@@ -423,23 +423,23 @@ Tabla&nbsp;2.2: N analítico por variable de análisis
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Indexación</td>
-<td style="text-align: center;">937</td>
+<td style="text-align: center;">895</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Cuartil</td>
-<td style="text-align: center;">736</td>
+<td style="text-align: center;">694</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">N° de citas</td>
-<td style="text-align: center;">703</td>
+<td style="text-align: center;">639</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Acceso abierto (OA)</td>
-<td style="text-align: center;">737</td>
+<td style="text-align: center;">692</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Idioma</td>
-<td style="text-align: center;">829</td>
+<td style="text-align: center;">781</td>
 </tr>
 </tbody>
 </table>
@@ -452,7 +452,7 @@ Tabla&nbsp;2.2: N analítico por variable de análisis
 </section>
 <section id="métodos" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="métodos"><span class="header-section-number">2.3</span> Métodos</h2>
-<p>Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas (n= 1162). En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizó como unidad de análisis cada par de publicación-autor.</p>
+<p>Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas. En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizó como unidad de análisis cada par de publicación-autor.</p>
 <p>Las bases de datos fueron recolectadas, procesadas y analizadas mediante el lenguaje de programación R. Los datos y el código de análisis, incluyendo el que produce este documento, se encuentran alojados en un <a href="https://github.com/facso-investigacion/publicaciones-facso">repositorio de la Dirección de Investigación en GitHub</a>.</p>
 <p>En el caso de los artículos, se analizó tanto volumen como cantidad de citas, impacto, indexación, acceso abierto e idioma. En cambio, dada la baja calidad de la información relativa a libros y capítulos de libros, se optó por limitar su análisis al volumen de producción y sus cruces con características de los autores.</p>
 
@@ -1457,7 +1457,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variables</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta "libros" aplica a ambos tipos de publicaciones. Se excluyeron del análisis material editorial, correcciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total de 1162 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (946), seguido de 171 capítulos de libros y 45 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontraron un total de 1328 publicaciones-autor.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta "libros" aplica a ambos tipos de publicaciones. Se excluyeron del análisis material editorial, correcciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total de 1104 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (900), seguido de 161 capítulos de libros y 43 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontraron un total de 1273 publicaciones-autor.</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Se consideraron, además, variables de caracterización de los académicos de la Facultad tales como departamento, género, edad y jerarquía. Para posibilitar la comparación entre estas variables, la mayoría de los análisis se ponderaron por Jornadas Completas Equivalentes (JCE), calculadas como:</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
@@ -1565,17 +1565,17 @@ document.addEventListener("DOMContentLoaded", () => {
 <span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-datos</span></span>
 <span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "N analítico por variable de análisis"</span></span>
 <span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/base-completa-facso.rdata"</span>)</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/consolidado-wide.rdata"</span>)</span>
 <span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de conteos no-NA por variable</span></span>
 <span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>tabla_conteos <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"Indexación"</span>, <span class="st">"Cuartil"</span>, <span class="st">"N° de citas"</span>, <span class="st">"Acceso abierto (OA)"</span>, <span class="st">"Idioma"</span>),</span>
 <span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="fu">c</span>(</span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(indexacion)) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(quartil)) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(n_citas)) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(oa)) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(idioma)) <span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(indexacion), tipo_documento<span class="sc">==</span><span class="st">"journal-article"</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(quartil), tipo_documento<span class="sc">==</span><span class="st">"journal-article"</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(n_citas), tipo_documento<span class="sc">==</span><span class="st">"journal-article"</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(oa), tipo_documento<span class="sc">==</span><span class="st">"journal-article"</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>(),</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>    consolidado_wide <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(idioma), tipo_documento<span class="sc">==</span><span class="st">"journal-article"</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span>
 <span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
@@ -1595,7 +1595,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a><span class="fu">## Métodos</span></span>
 <span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas (n= 1162). En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizó como unidad de análisis cada par de publicación-autor.</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas. En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizó como unidad de análisis cada par de publicación-autor.</span>
 <span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>Las bases de datos fueron recolectadas, procesadas y analizadas mediante el lenguaje de programación R. Los datos y el código de análisis, incluyendo el que produce este documento, se encuentran alojados en un <span class="co">[</span><span class="ot">repositorio de la Dirección de Investigación en GitHub</span><span class="co">](https://github.com/facso-investigacion/publicaciones-facso)</span>.</span>
 <span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
