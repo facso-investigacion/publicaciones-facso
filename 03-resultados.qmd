@@ -3,9 +3,9 @@
 ```{r}
 library(tidyverse)
 
-load("output/base_final.rdata")
-load("output/base-completa-facso.rdata")
-load("output/base-completa-depto.rdata")
+load("output/base-final.rdata")
+load("output/consolidado-depto.rdata")
+load("output/consolidado-wide.rdata")
 load("input/acad-proc.rdata")
 
 acad <- acad |>
@@ -63,7 +63,7 @@ figura_1
 
 ```
 
-En el período de referencia (2020-2025), se encontró un total de 1162 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=946), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 148.9 Jornadas Completas Equivalente (JCE), esto significa que en el período estudiado se registraron 7,8 publicaciones por JCE: 6,35 artículos, 1,15 capítulos de libros y 0,3 libros.  
+En el período de referencia (2020-2025), se encontró un total de 1104 publicaciones diferentes. Entre estas, como se expone en la @fig-tipo-publicaciones, se observa un claro dominio de la publicación de artículos en revistas académicas (n=900), representando un 81% del total de publicaciones identificadas. Los capítulos de libros en libros editados, en tanto, representan un 15% del total, mientras que los libros monográficos o editados son solo el 4% del volumen total de publicaciones. Considerando que al 31 de diciembre de 2025 la Facultad contaba con 148.9 Jornadas Completas Equivalente (JCE), esto significa que en el período estudiado se registraron un total 7,41 publicaciones por JCE.
 
 ```{r}
 #| label: fig-publicacion-anio
@@ -111,7 +111,7 @@ figura_2
 
 ```
 
-Observando la evolución por año en el período de referencia se aprecia que entre 2020 y 2021 aumentó la cantidad de publicaciones de manera sustancial para los tres tipos de publicaciones analizadas, posiblemente por un efecto de rebote tras el inicio de la Pandemia por COVID19 en 2020. Desde ahí, se observan fluctuaciones con relativa estabilidad. Así, los artículos se mantienen entre 148 y 185, los capítulos de libro entre 22 y 39, y entre 3 y 11 libros monográficos o editados. 
+Observando la evolución por año en el período de referencia se aprecia que entre 2020 y 2021 aumentó la cantidad de publicaciones de manera sustancial para los tres tipos de publicaciones analizadas, posiblemente por un efecto de rebote tras el inicio de la Pandemia por COVID19 en 2020. Desde ahí, se observan fluctuaciones con relativa estabilidad. 
 
 ```{r}
 #| label: fig-publicacion-dispersion
@@ -241,58 +241,56 @@ figura_8 <- lorenz_data |>
   theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
 
 figura_8
-# 
+# # 
 # punto_50 <- lorenz_data |>
-#     filter(pct_publicaciones >= 50)
-# 
-# 
-# |>
+#     filter(pct_publicaciones >= 50) |>
 #   slice(1)
 # 
 # punto_50
-# 
-# # El % de académicos MÁS productivos que acumula el 50% de publicaciones:
+# # 
+# # # El % de académicos MÁS productivos que acumula el 50% de publicaciones:
 # pct_top_50 <- 100 - punto_50$pct_academicos
 # pct_top_50
 #
 # # 
-# lorenz_data_invertido <- acad |>
-#   distinct(rut) |>
-#   left_join(
-#     base_final |> count(rut, name = "n_publicaciones"),
-#     by = "rut"
-#   ) |>
-#   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |>
-#   arrange(desc(n_publicaciones)) |>
-#   mutate(
-#     pct_academicos = row_number() / n() * 100,
-#     pct_publicaciones = cumsum(n_publicaciones) / sum(n_publicaciones) * 100
-#   )
 
-# figura_7_invertido <- lorenz_data_invertido |>
-#   ggplot(aes(x = pct_academicos, y = pct_publicaciones)) +
-#   geom_line(color = "steelblue", linewidth = 1) +
-#   geom_point(data = lorenz_data_invertido |> filter(abs(pct_academicos - 10) == min(abs(pct_academicos - 10))),
-#              color = "firebrick", size = 3) +
-#   geom_vline(xintercept = 10, linetype = "dotted", color = "gray50") +
-#   labs(
-#     x = "Porcentaje acumulado de académicos (ordenados de mayor a menor productividad)",
-#     y = "Porcentaje acumulado de publicaciones",
-#     caption = "El punto rojo marca el 10% de académicos más productivos"
-#   ) +
-#   theme_minimal() +
-#   theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
-# 
-# figura_7_invertido
-
-# punto_20 <- lorenz_data_invertido |>
-#   filter(pct_academicos >= 20) |>
-#   slice(1)
-# 
-# punto_20
-# 
-# # El % de publicaciones que concentra el 20% más productivo:
-# punto_20$pct_publicaciones
+ lorenz_data_invertido <- acad |>
+   distinct(rut) |>
+   left_join(
+     base_final |> count(rut, name = "n_publicaciones"),
+     by = "rut"
+   ) |>
+   mutate(n_publicaciones = replace_na(n_publicaciones, 0)) |>
+   arrange(desc(n_publicaciones)) |>
+   mutate(
+     pct_academicos = row_number() / n() * 100,
+     pct_publicaciones = cumsum(n_publicaciones) / sum(n_publicaciones) * 100
+   )
+ 
+ # figura_7_invertido <- lorenz_data_invertido |>
+ #   ggplot(aes(x = pct_academicos, y = pct_publicaciones)) +
+ #   geom_line(color = "steelblue", linewidth = 1) +
+ #   geom_point(data = lorenz_data_invertido |> filter(abs(pct_academicos - 10) = min(abs(pct_academicos - 10))),
+ #              color = "firebrick", size = 3) +
+ #   geom_vline(xintercept = 10, linetype = "dotted", color = "gray50") +
+ #   labs(
+ #     x = "Porcentaje acumulado de académicos (ordenados de mayor a menor roductividad)",
+ #     y = "Porcentaje acumulado de publicaciones",
+ #     caption = "El punto rojo marca el 10% de académicos más productivos"
+ #   ) +
+ #   theme_minimal() +
+ #   theme(plot.caption = element_text(hjust = 0, size = 8, face = "italic"))
+ # 
+ # figura_7_invertido
+ 
+ # punto_20 <- lorenz_data_invertido |>
+ #   filter(pct_academicos >= 20) |>
+ #   slice(1)
+ # 
+ # punto_20
+ # 
+ # # El % de publicaciones que concentra el 20% más productivo:
+ # punto_20$pct_publicaciones
 
 # ggsave(
 #   filename = "output/graficos/lorenz.png",
@@ -305,7 +303,7 @@ figura_8
 
 ```
 
-La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produciendo entre 1 y 9 publicaciones en el período mencionado, con máximos que llegan hasta las 45 publicaciones. Esto indica una alta dispersión y una concentración de publicaciones entre los académicos más productivos, como se observa en la @fig-publicacion-lorenz. Así, el 20% de los académicos más productivos concentra dos tercios de las publicaciones; el 50% del total de las publicaciones de la Facultad corresponde al 13% de los académicos con mayor productividad. 
+La mediana de publicaciones por académico es de 3, con el 50% de la Facultad produciendo entre 1 y 9 publicaciones en el período mencionado, con máximos que llegan hasta las 45 publicaciones. Esto indica una alta dispersión y una concentración de publicaciones entre los académicos más productivos, como se observa en la @fig-publicacion-lorenz. Así, el 20% de los académicos más productivos concentra casi dos tercios de las publicaciones (64%); el 50% del total de las publicaciones de la Facultad corresponde al 13% de los académicos con mayor productividad. 
 
 ### Caracterización de los autores
 
@@ -396,7 +394,7 @@ figura_3_jce
 # )
 ```
 
-Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 13,9 publicaciones por JCE. Le sigue el Departamento de Sociología con 9,4 publicaciones por JCE, Psicología con 8,5, Antropología con 8,2 y Educación con 4,7. 
+Según se observa en el @fig-publicacion-depto, el predominio de los artículos sobre otras formas de publicaciones es apreciable en todos los departamentos, aunque la publicación de capítulos de libros es superior en Trabajo Social, Sociología y Psicología. Se destaca que el departamento de Trabajo Social es el que más publicaciones por Jornada Completa Equivalente (2025) produce, con 12.8 publicaciones por JCE. Le sigue el Departamento de Sociología con 8.87 publicaciones por JCE, Psicología con 8,19, Antropología con 8,13 y Educación con 4,55. 
 
 ```{r}
 #| label: fig-publicacion-genero
@@ -453,9 +451,9 @@ figura_4
 # )
 ```
 
-En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10,73 publicaciones por JCE en el período analizado, contra 7,19 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia de 2,71 publicaciones por jornada completa. 
+En la @fig-publicacion-genero se observa que las académicas de la Facultad son más productivas que los académicos, completando 10,06 publicaciones por JCE en el período analizado, contra 7,12 publicaciones por JCE entre los hombres. Aunque esta diferencia se repite en todos los tipos de publicaciones, es más acentuada en los artículos, con una diferencia de 2,51 publicaciones por jornada completa. 
 
-El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 10,58 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 10,03 publicaciones por JCE, aunque con un menor peso relativo de los artículos en comparación a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de 60 años es de 4,79 publicaciones por JCE.
+El @fig-publicacion-edad muestra que el tramo etario con mayor productividad en el período analizado se encuentra entre los 50 y 59 años, con 9.93 publicaciones por JCE, y fuerte concentración en los artículos. Le sigue el grupo menor de 50 años, con 9.71 publicaciones por JCE, aunque con un menor peso relativo de los artículos en comparación a los capítulos de libro. Mientras tanto, la productividad de los académicos mayores de 60 años es de 4,82 publicaciones por JCE.
 
 ```{r}
 #| label: fig-publicacion-edad
@@ -538,7 +536,7 @@ figura_5
 
 ```
 
-La @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4,49 publicaciones por JCE a 12,19. La diferencia entre profesores asociados y titulares es menor, con los segundos registrando 11,49 publicaciones por JCE. 
+La @fig-publicacion-jerarquia muestra las diferencias por jerarquía. Se observa que hay un salto importante entre la jerarquía de asistente y de asociado, pasando de 4,25 publicaciones por JCE a 11.7. La diferencia entre profesores asociados y titulares es menor, con los segundos registrando 10.9 publicaciones por JCE. 
 
 ```{r}
 #| label: fig-publicacion-jerarquia
@@ -644,7 +642,7 @@ figura_9
 
 ```
 
-Los artículos de investigación representan con diferencia la mayor parte de la producción académica de la Facultad, con 946 registros diferentes, o un 81% del total de las publicaciones identificadas. La @fig-index muestra la distribución de las indexaciones de las revistas en que publican los académicos de FACSO. De tal modo, se observa que el 78% de las publicaciones se encuentran en revistas indexadas en WoS (42%) o Scopus (36%), posiblemente en consonancia con los modelos de evaluación de ANID en sus fondos concursables. Más abajo se encuentran las revistas indexadas en Scielo, con un 11% de las publicaciones en el período analizado. La categoría "Otra" agrega revistas indexadas en el *Emerging Sources Citation Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras.
+Los artículos de investigación representan con diferencia la mayor parte de la producción académica de la Facultad, con 900 registros diferentes, o un 81% del total de las publicaciones identificadas. La @fig-index muestra la distribución de las indexaciones de las revistas en que publican los académicos de FACSO. De tal modo, se observa que el 78% de las publicaciones se encuentran en revistas indexadas en WoS (42%) o Scopus (35%), posiblemente en consonancia con los modelos de evaluación de ANID en sus fondos concursables. Más abajo se encuentran las revistas indexadas en Scielo, con un 11% de las publicaciones en el período analizado. La categoría "Otra" agrega revistas indexadas en el *Emerging Sources Citation Index* (ESCI), la *European Reference Index for the Humanities and Social Sciences* (ERIH Plus), *Latindex*, el *Directory of Open Access Journals* (DOAJ), entre otras.
 
 
 ```{r}
@@ -690,7 +688,7 @@ consolidado_wide |>
 
 ```
 
-La @fig-index-evolucion muestra la evolución de la cantidad de publicaciones en cada indexación durante el período analizado. La predominancia de WoS y Scopus se mantiene en todos los años, particularmente tras la recuperación post-pandemia en 2021. Durante 2021 y 2022, prácticamente no hay diferencias entre ambas bases de datos. Sin embargo, desde 2023 se abre una brecha en favor de Web of Science que ha fluctuado entre 7 y 12 publicaciones por año. También es interesante que las publicaciones indexadas en Scielo se habían mantenido entre 14 y 22, incluso en 2020 durante la pandemia, para caer bruscamente en 2025. Por supuesto, no es posible establecer aún las causas o si esto es una tendencia que se mantendrá en el tiempo. 
+La @fig-index-evolucion muestra la evolución de la cantidad de publicaciones en cada indexación durante el período analizado. La predominancia de WoS y Scopus se mantiene en todos los años, particularmente tras la recuperación post-pandemia en 2021, con predominio de WoS en todo el período. También es interesante que las publicaciones indexadas en Scielo se habían mantenido entre 13 y 19, incluso en 2020 durante la pandemia, para caer bruscamente en 2025. Por supuesto, no es posible establecer aún las causas o si esto es una tendencia que se mantendrá en el tiempo. 
 
 ```{r}
 #| label: fig-index-depto
@@ -731,7 +729,7 @@ consolidado_depto |>
 
 ```
 
-La @fig-index-depto y @fig-index-depto-evo muestran que hay diferencias importantes entre los departamentos. Por un lado, en Antropología predominan las publicaciones en WoS, principalmente en revistas relacionadas con la arqueología y la antropología física. Mientras tanto, el Departamento de Trabajo Social muestra una mayor cantidad de publicaciones en Scopus por JCE, al igual que el Departamento de Educación. Con todo, se debe destacar que las publicaciones WoS del Departamento de Trabajo Social han aumentado de forma sostenida desde 2023, llegando a 17 en 2025. 
+La @fig-index-depto y @fig-index-depto-evo muestran que hay diferencias importantes entre los departamentos. Por un lado, en Antropología predominan las publicaciones en WoS, principalmente en revistas relacionadas con la arqueología y la antropología física. Mientras tanto, el Departamento de Trabajo Social muestra una mayor cantidad de publicaciones en Scopus por JCE, al igual que el Departamento de Educación. Con todo, se debe destacar que las publicaciones WoS del Departamento de Trabajo Social han aumentado de forma sostenida desde 2023, llegando a 16 en 2025. 
 
 ```{r}
 #| label: fig-index-depto-evo
@@ -778,7 +776,6 @@ consolidado_depto |>
 
 
 ```
-
 
 El Departamento de Psicología y el Departamento de Sociología, por su lado, muestran un mayor nivel de paridad entre ambas bases de datos, con un leve predominio de WoS. La @tbl-index-depto muestra las revistas con mayor frecuencia por departamento, reflejando las tendencias antes mencionadas. Asimismo, se observa una fuerte presencia de las revistas de la Facultad, tales como Enfoques Educacionales (Departamento de Educación), Revista de Psicología (Departamento de Psicología), Última Década y Revista de Sociología (Departamento de Sociología), y Propuestas Críticas en Trabajo Social y Revista MAD (Departamento de Trabajo Social). 
 
@@ -906,10 +903,12 @@ tabla_final |>
 
 ### Número de Citas
 
-A través de la API de Scopus, se encontraron registros de las citas de 674 artículos durante el período estudiado. La suma de citas entre 2020 y 2025 asciende a un total de 4854, lo que equivale a un promedio de 6,7 citas por artículo. Si se ordenan las citas de mayor a menor, es posible observar que el índice h agregado de la institución es igual a 30. En otras palabras, entre 2020 y 2025 los académicos de la Facultad publicaron un total de 30 artículos que registran 30 citas o más. 
+A través de la API de Scopus, se encontraron registros de las citas de 662 artículos durante el período estudiado. La suma de citas entre 2020 y 2025 asciende a un total de 4773, lo que equivale a un promedio de 7,47 citas por artículo. Si se ordenan las citas de mayor a menor, es posible observar que el índice h agregado de la institución es igual a 30. En otras palabras, entre 2020 y 2025 los académicos de la Facultad publicaron un total de 30 artículos que registran 30 citas o más. 
 
 ```{r}
 #| include: false
+
+# articulos_citas |> summarise(n_citas=sum(n_citas))
 
 resumen <- consolidado_wide |> filter(tipo_documento=="journal-article", n_citas>=0) |>  
   summarise(articulos = n(),
@@ -964,7 +963,7 @@ ggplot(datos, aes(x = citas)) +
 
 ```
 
-La @tbl-citas-depto muestra la cantidad de artículos, el total de citas y el índice h para cada Departamento de la Facultad. El departamento de Psicología tiene la mayor cantidad de citas en el período analizado, con 2148 citas y un índice h de 22. Le siguen el departamento de Antropología con 1169 citas y un índice h de 16; el departamento de Sociología con 951 citas y un índice h de 15; el departamento de Trabajo Social con 774 citas y un índice h de 12; y el departamento de Educación con 90 citas y un índice h de 5. 
+La @tbl-citas-depto muestra la cantidad de artículos, el total de citas y el índice h para cada Departamento de la Facultad. El departamento de Psicología tiene la mayor cantidad de citas en el período analizado, con 2165 citas y un índice h de 22. Le siguen el departamento de Antropología con 1186 citas y un índice h de 16; el departamento de Sociología con 951 citas y un índice h de 15; el departamento de Trabajo Social con 662 citas y un índice h de 12; y el departamento de Educación con 88 citas y un índice h de 5. 
 
 ```{r}
 #| label: tbl-citas-depto
@@ -1062,7 +1061,7 @@ tabla_final %>%
 
 ### Cuartil de las revistas
 
-Se registró un total de 741 publicaciones en revistas con un SJR (*SCImago Journal Rank*) registrado. La @tbl-sjr muestra la distribución por Cuartil de SJR de las publicaciones analizadas. Se destaca que la mayoría de las publicaciones se encuentran en el rango de Q1, con un 42%. En conjunto, el 67% de las publicaciones en revistas con factor de impacto en SCImago durante el período de referencia corresponden a revistas Q1 o Q2. 
+Se registró un total de 694 publicaciones en revistas con un SJR (*SCImago Journal Rank*) registrado. La @tbl-sjr muestra la distribución por Cuartil de SJR de las publicaciones analizadas. Se destaca que la mayoría de las publicaciones se encuentran en el rango de Q1, con un 44%. En conjunto, el 68% de las publicaciones en revistas con factor de impacto en SCImago durante el período de referencia corresponden a revistas Q1 o Q2. 
 
 ```{r}
 #| label: tbl-sjr
@@ -1100,7 +1099,7 @@ tabla_quartiles |>
 
 ```
 
-La @fig-sjr muestra la evolución de la cantidad y proporción de publicaciones de académicos FACSO en revistas Q1 y Q2 durante el período de referencia. Como era de esperar, se repite el patrón de recuperación tras el 2020, alcanzando un peak de 103 publicaciones Q1 o Q2 que representan un 73% del total de artículos con SJR. Desde ahí, se produce una tendencia a la baja hasta 2023, revirtiéndose para 2024. En 2025, se vuelve a niveles similares a 2021 con 102 publicaciones Q1 o Q2, lo que representa un 70% de los artículos analizados. 
+La @fig-sjr muestra la evolución de la cantidad y proporción de publicaciones de académicos FACSO en revistas Q1 y Q2 durante el período de referencia. Como era de esperar, se repite el patrón de recuperación tras el 2020, alcanzando un peak de 93 publicaciones Q1 o Q2 que representan un 73% del total de artículos con SJR. Desde ahí, se produce una tendencia a la baja hasta 2023, revirtiéndose para 2024. En 2025, se vuelve a niveles similares a 2021 con 90 publicaciones Q1 o Q2, lo que representa un 69% de los artículos analizados. 
 
 ```{r}
 #| label: fig-sjr
@@ -1164,7 +1163,7 @@ ggplot() +
 
 ```
  
-La @fig-sjr-depto permite describir el volúmen y la proporción de publicaciones en revistas Q1y Q2 por departamento, ajustadas por JCE. Antropología destaca por tener la mayor cantidad de publicaciones Q1 y Q2 durante el período analizado, con 4,4 artículos por JCE. Asimismo, es el departamento que tiene una mayor proporción de artículos en estas categorías. Por su lado, el Departamento de Trabajo Social registra la mayor cantidad de publicaciones en revistas Q1, con 2,8 artículos por JCE. 
+La @fig-sjr-depto permite describir el volúmen y la proporción de publicaciones en revistas Q1y Q2 por departamento, ajustadas por JCE. Antropología destaca por tener la mayor cantidad de publicaciones Q1 y Q2 durante el período analizado, con 4,7 artículos por JCE (3 en Q1).
 
 ```{r}
 #| label: fig-sjr-depto
@@ -1240,6 +1239,7 @@ ggplot() +
     axis.title.y.left = element_text(color = "steelblue"))
 
 ```
+
 La @tbl-sjr-depto expone las principales revistas Q1 o Q2 en que han publicado los académicos de la Facultad durante el período analizado. Los resultados son similares a los observados en @tbl-index-depto, especialmente en Antropología y Trabajo Social. Destacan publicaciones en revistas tales como *Earth Future* (Q1 en Ciencias del Medioambiente), *Journal of Archaeological Science* (Q1 en Arqueología), *BMC Psychiatry* (Q1 en Psiquiatría y Salud Mental), *Frontiers in Sociology* (Q1 en Ciencias Sociales) y *Frontiers in Psychology* (Q1 en Psicología). Por otro lado, vuelve a aparecer una revista de la Facultad: *Cinta de Moebio*, que se encuentra calificada como Q2 en el área de Filosofía. 
 
 ```{r}
@@ -1284,7 +1284,7 @@ top5 |>
 
 ```
 
-En @tbl-sjr-carac se muestran las diferencias por características del autor en la cantidad y proporción de publicaciones en Q1 y Q2. En líneas generales, todos los grupos muestran proporciones de publicación en estas categorías sobre el 60%, con porcentajes especialmente altos entre las mujeres (71%) y los profesores titulares (72%). Nuevamente, las académicas mujeres muestran una mayor productividad que sus pares masculinos, publicando 1,8 artículos más por JCE. La diferencia entre académicos menores de 50 años y aquellos entre 50 y 59 es menor, pero la cantidad de publicaciones cae bruscamente en el grupo mayor de 60. Por último, se observa una gran brecha entre los profesores asistentes y los asociados o titulares, con estos últimos mostrando una productividad levemente superior (0,5 artículos más por JCE, en relación con la jerarquía de Asociado).
+En @tbl-sjr-carac se muestran las diferencias por características del autor en la cantidad y proporción de publicaciones en Q1 y Q2. En líneas generales, todos los grupos muestran proporciones de publicación en estas categorías sobre el 60%, con porcentajes especialmente altos entre las mujeres (71%) y los profesores titulares (74%). Nuevamente, las académicas mujeres muestran una mayor productividad que sus pares masculinos, publicando 1,8 artículos más por JCE. La diferencia entre académicos menores de 50 años y aquellos entre 50 y 59 es menor, pero la cantidad de publicaciones cae bruscamente en el grupo mayor de 60. Por último, se observa una gran brecha entre los profesores asistentes y los asociados o titulares, con estos últimos mostrando una productividad levemente superior.
 
 ```{r}
 #| label: tbl-sjr-carac
@@ -1366,7 +1366,7 @@ tabla_final |>
 
 ### Revistas de Acceso Abierto
 
-A partir de la base de revistas de Scopus, es posible analizar los artículos de académicos de la Facultad publicados en revistas de acceso abierto[^1]. Se encontró información para 746 artículos. Cabe destacar, que aunque muchas revistas que están indexadas en Scielo se encuentran en Scopus, no siempre es el caso. Por ello, dado que Scielo requiere que las revistas que integran su base de datos sean de acceso abierto, es muy posible que la cantidad de artículos de libre acceso publicados en la Facultad sea mayor que la aquí reportada. 
+A partir de la base de revistas de Scopus, es posible analizar los artículos de académicos de la Facultad publicados en revistas de acceso abierto[^1]. Se encontró información para 692 artículos. Cabe destacar, que aunque muchas revistas que están indexadas en Scielo se encuentran en Scopus, no siempre es el caso. Por ello, dado que Scielo requiere que las revistas que integran su base de datos sean de acceso abierto, es muy posible que la cantidad de artículos de libre acceso publicados en la Facultad sea mayor que la aquí reportada. 
 
 ```{r}
 #| label: fig-oa
@@ -1375,10 +1375,17 @@ A partir de la base de revistas de Scopus, es posible analizar los artículos de
 
 # consolidado_wide |>
 #   filter(!is.na(oa)) |>
-#   mutate(anio = as.numeric(anio)) |> 
+#   mutate(anio = as.numeric(anio)) |>
 #   count(oa) |>
 #   mutate(pct = n / sum(n)) |>
 #   filter(oa == "Sí")
+
+# consolidado_wide |>
+#   filter(!is.na(oa)) |>
+#   group_by(indexacion) |> 
+#   mutate(anio = as.numeric(anio)) |>
+#   count(oa) |>
+#   mutate(pct = n / sum(n)) 
 
 # 1. Preparar los datos
 datos_oa <- consolidado_wide |>
@@ -1407,9 +1414,9 @@ ggplot(datos_oa, aes(x = anio, y = pct, group = 1)) +
   )
 ```
 
-Hecha esa consideración metodológica, se observa que 362 publicaciones, o un 49% de los artículos analizados, fueron publicados en revistas de acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza el 70%; para Web of Science, en cambio, es de solo un 30%. En @fig-oa, se grafica la evolución de este indicador en el período estudiado. Se observa un peak durante la pandemia en 2020, con un 56%, para luego bajar y mantenerse estable en los años subsiguientes, oscilando entre un 44% y un 50%.
+Hecha esa consideración metodológica, se observa que 329 publicaciones, o un 47% de los artículos analizados, fueron publicados en revistas de acceso abierto. Entre revistas indexadas en Scopus, esta cifra alcanza el 69%; para Web of Science, en cambio, es de solo un 29%. En @fig-oa, se grafica la evolución de este indicador en el período estudiado. Se observa un peak durante la pandemia en 2020, con un 56%, para luego bajar y mantenerse estable en los años subsiguientes, oscilando entre un 44% y un 50%.
 
-Como se puede apreciar en @tbl-oa, las tendencias se mantienen bastante constantes en distintos grupos. La proporción de publicaciones en acceso abierto es algo superior en los Departamentos de Sociología (52%) y Trabajo Social (55%), académicos de 50 a 59 años (53%) y profesores asociados (53%). En cambio, es algo menor en los académicos menores de 50 años (42%) y los profesores con jerarquía académica de Asistente (41%)
+Como se puede apreciar en @tbl-oa, las tendencias se mantienen bastante constantes en distintos grupos. La proporción de publicaciones en acceso abierto es algo superior en el Departamento de Trabajo Social (53%), académicos de 50 a 59 años (52%) y profesores asociados (51%). En cambio, es algo menor en los académicos menores de 50 años (40%) y los profesores con jerarquía académica de Asistente (39%)
 
 ```{r}
 #| label: tbl-oa
@@ -1503,7 +1510,7 @@ tabla_final |>
 
 ### Idioma de la publicación
 
-Se utiliza el idioma principal de la revista reportado por WoS, Scopus o Scielo como *proxy* para el idioma de la publicación. Dado que algunas revistas permiten publicaciones en múltiples idiomas, éstas fueron recodificadas como multidiomas. De tal forma se encontró información para 927 publicaciones. Los datos apuntan a que el principal idioma de publicación es el inglés, con 374 artículos, o el 45% del total. Le sigue el español, con 189 publicaciones que representan el 23% del total. Fuera de estos dos idiomas, solo es relevante el portugués, con un 4% del total de artículos. Asimismo, existe una amplia proporción (28%) de publicaciones en revistas que permiten escribir en más de un idioma, muy posiblemente incluyendo alguno de los idiomas antes mencionados. Finalmente, existe una cantidad cercana al 1% de escritos en otros idiomas, como el alemán, el francés y el italiano. 
+Se utiliza el idioma principal de la revista reportado por WoS, Scopus o Scielo como *proxy* para el idioma de la publicación. Dado que algunas revistas permiten publicaciones en múltiples idiomas, éstas fueron recodificadas como multidiomas. De tal forma se encontró información para 781 publicaciones. Los datos apuntan a que el principal idioma de publicación es el inglés, con 353 artículos, o el 45% del total. Le sigue el español, con 191 publicaciones que representan el 24% del total. Fuera de estos dos idiomas, solo es relevante el portugués, con un 4% del total de artículos. Asimismo, existe una amplia proporción (28%) de publicaciones en revistas que permiten escribir en más de un idioma, muy posiblemente incluyendo alguno de los idiomas antes mencionados. Finalmente, existe una cantidad cercana al 1% de escritos en otros idiomas, como el alemán, el francés y el italiano. 
 
 ```{r}
 #| label: fig-idioma
@@ -1540,6 +1547,7 @@ ggplot(datos_idioma, aes(x = reorder(idioma, pct), y = pct)) +
     panel.spacing = unit(1, "lines")
   )
 ```
-En @fig-idioma se pueden apreciar las diferencias para cada tipo de indexación. En Scielo, predominan ampliamente las publicaciones en más de un idioma. Dado el carácter latinoamericano de esta base de datos, es posible asumir que la mayoría de estos artículos fueron escritos en español o, en menor medida, en portugués. El caso de Scopus muestra mayor diversidad, con el español (32%), las revistas multidiomas (32%) y el inglés (28%) representando tercios prácticamente iguales. Finalmente, en WoS se observa un marcado predominio del inglés (68%) sobre otros idiomas. 
+
+En @fig-idioma se pueden apreciar las diferencias para cada tipo de indexación. En Scielo, predominan ampliamente las publicaciones en más de un idioma. Dado el carácter latinoamericano de esta base de datos, es posible asumir que la mayoría de estos artículos fueron escritos en español o, en menor medida, en portugués. El caso de Scopus muestra mayor diversidad, con el español (31%), las revistas multidiomas (31%) y el inglés (28%) representando tercios prácticamente iguales. Finalmente, en WoS se observa un marcado predominio del inglés (69%) sobre otros idiomas. 
 
 

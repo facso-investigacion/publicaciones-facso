@@ -16,7 +16,7 @@ Se utilizó la base de personal académico de la Facultad de Ciencias Sociales p
 
 ## Variables
 
-La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta "libros" aplica a ambos tipos de publicaciones. Se excluyeron del análisis material editorial, correcciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total de 1162 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (946), seguido de 171 capítulos de libros y 45 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontraron un total de 1328 publicaciones-autor.
+La variable principal del estudio son las publicaciones producidas por académicos y académicas de la Facultad de Ciencias Sociales entre 2020 y 2025. Se incluyeron en el estudio tres tipos de publicaciones: artículos de revistas, capítulos de libros y libros. Con la información disponible, no fue posible distinguir entre libros monográficos y libros editados, por lo que la etiqueta "libros" aplica a ambos tipos de publicaciones. Se excluyeron del análisis material editorial, correcciones, cartas, revisiones de libros y otros tipos de publicaciones menores. De tal modo, se incluyeron en el análisis un total de 1104 publicaciones diferentes, de las cuales la mayoría corresponden a artículos (900), seguido de 161 capítulos de libros y 43 libros. Dado que una publicación puede tener más de un autor perteneciente a la Facultad, se encontraron un total de 1273 publicaciones-autor.
 
 Se consideraron, además, variables de caracterización de los académicos de la Facultad tales como departamento, género, edad y jerarquía. Para posibilitar la comparación entre estas variables, la mayoría de los análisis se ponderaron por Jornadas Completas Equivalentes (JCE), calculadas como:
 
@@ -124,17 +124,17 @@ Dado que la base final se construyó desde diversas fuentes, el tamaño real de 
 #| label: tbl-datos
 #| tbl-cap: "N analítico por variable de análisis"
 
-load("output/base-completa-facso.rdata")
+load("output/consolidado-wide.rdata")
 
 # Tabla de conteos no-NA por variable
 tabla_conteos <- tibble(
   variable = c("Indexación", "Cuartil", "N° de citas", "Acceso abierto (OA)", "Idioma"),
   n = c(
-    consolidado_wide |> filter(!is.na(indexacion)) |> nrow(),
-    consolidado_wide |> filter(!is.na(quartil)) |> nrow(),
-    consolidado_wide |> filter(!is.na(n_citas)) |> nrow(),
-    consolidado_wide |> filter(!is.na(oa)) |> nrow(),
-    consolidado_wide |> filter(!is.na(idioma)) |> nrow()
+    consolidado_wide |> filter(!is.na(indexacion), tipo_documento=="journal-article") |> nrow(),
+    consolidado_wide |> filter(!is.na(quartil), tipo_documento=="journal-article") |> nrow(),
+    consolidado_wide |> filter(!is.na(n_citas), tipo_documento=="journal-article") |> nrow(),
+    consolidado_wide |> filter(!is.na(oa), tipo_documento=="journal-article") |> nrow(),
+    consolidado_wide |> filter(!is.na(idioma), tipo_documento=="journal-article") |> nrow()
   )
 )
 
@@ -154,7 +154,7 @@ Por último, como medida complementaria para medir el impacto académico de las 
 
 ## Métodos
 
-Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas (n= 1162). En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizó como unidad de análisis cada par de publicación-autor.
+Se realizó un análisis cuantitativo descriptivo a partir de las variables antes introducidas. Para análisis agregados a nivel de la Facultad se tomaron como referencias las publicaciones únicas identificadas. En cambio, para la caracterización a partir del género, edad y jerarquía de los autores, se utilizó como unidad de análisis cada par de publicación-autor.
 
 Las bases de datos fueron recolectadas, procesadas y analizadas mediante el lenguaje de programación R. Los datos y el código de análisis, incluyendo el que produce este documento, se encuentran alojados en un [repositorio de la Dirección de Investigación en GitHub](https://github.com/facso-investigacion/publicaciones-facso).
 

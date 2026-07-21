@@ -80,16 +80,16 @@ Respecto al idioma de publicación, predomina el inglés con un 45%, seguido del
 
 | Indicador | Valor |
 |:----------------------------------------|:-------------:|
-| Publicaciones únicas (2020-2025) | 1.162 |
-| Pares publicación-autor | 1.328 |
-| Artículos / capítulos / libros | 946 / 171 / 45 |
+| Publicaciones únicas (2020-2025) | 1.104 |
+| Pares publicación-autor | 1.273 |
+| Artículos / capítulos / libros | 900 / 161 / 43 |
 | Proporción de artículos | 81% |
-| Publicaciones por JCE | 7,8 |
+| Publicaciones por JCE | 7,41 |
 | Artículos en revistas WoS o Scopus | 78% |
-| Publicaciones en revistas Q1 o Q2 (SJR) | 67% |
-| Total de citas / promedio por artículo | 4.854 / 6,7 |
+| Publicaciones en revistas Q1 o Q2 (SJR) | 68% |
+| Total de citas / promedio por artículo | 4.773 / 7,47 |
 | Índice h institucional | 30 |
-| Publicaciones en acceso abierto (no incluye Scielo) | 49% |
+| Publicaciones en acceso abierto (no incluye Scielo) | 47% |
 | Idioma predominante (inglés) | 45% |
 
 : Indicadores principales de la producción académica FACSO (2020-2025) {#tbl-sintesis}
