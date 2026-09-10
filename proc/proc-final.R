@@ -5,16 +5,28 @@
 # genera los tres productos finales.
 #
 # FLUJO
-#   01-sepavid      publicaciones declaradas en SEPAVID + planta academica
-#   02-orcid        publicaciones recuperadas desde ORCID/Crossref/OpenAlex
-#   03-id-revistas  consolidacion de ambas fuentes + identificador de revista
-#   04-indexaciones catalogos WoS/Scopus/SciELO -> indexacion por revista
-#   05-idiomas      idioma de publicacion y acceso abierto por revista
-#   06-scopus       citas y resumen por DOI; SJR y cuartil por revista
-#   07-coautores    listado COMPLETO de autores (FACSO y externos) con
-#                   afiliacion y pais, via OpenAlex; base para redes de
-#                   coautoria y colaboracion internacional
-#   (este script)   integracion, filtro final y productos
+#   01-sepavid       publicaciones declaradas en SEPAVID + planta academica
+#   02-orcid         publicaciones recuperadas desde ORCID/Crossref/OpenAlex
+#   02a-orcid-consolidado  cruce rut <-> ORCID (colab.xlsx + revision manual
+#                          + lo recuperado del perfil de OpenAlex en 02b)
+#   02b-openalex-autores   cruce rut <-> author_id de OpenAlex (ancla por
+#                          ORCID + evidencia por DOI)
+#   (02a y 02b se corren dos veces: la 1ra pasada resuelve la ancla con lo
+#    que ya trae colab.xlsx; la 2da aprovecha el ORCID que 02b recupero del
+#    propio perfil de OpenAlex para anclar a mas academicos. usar_cache()
+#    hace que la 2da pasada sea rapida: solo consulta lo nuevo)
+#   02c-openalex-publicaciones  articulos de revista descubiertos via
+#                          OpenAlex para academicos sin ORCID (o con
+#                          cobertura ORCID incompleta)
+#   03-id-revistas   consolidacion de las tres fuentes + identificador de
+#                    revista
+#   04-indexaciones  catalogos WoS/Scopus/SciELO -> indexacion por revista
+#   05-idiomas       idioma de publicacion y acceso abierto por revista
+#   06-scopus        citas y resumen por DOI; SJR y cuartil por revista
+#   07-coautores     listado COMPLETO de autores (FACSO y externos) con
+#                    afiliacion y pais, via OpenAlex; base para redes de
+#                    coautoria y colaboracion internacional
+#   (este script)    integracion, filtro final y productos
 #
 # PRODUCTOS  (carpeta output/)
 #   base-final.rdata         base larga: una fila por autor x publicacion
@@ -57,6 +69,11 @@ source("proc/00-funciones.R", encoding = "UTF-8")
 etapas <- c(
   "proc/01-sepavid.R",
   "proc/02-orcid.R",
+  "proc/02a-orcid-consolidado.R",
+  "proc/02b-openalex-autores.R",
+  "proc/02a-orcid-consolidado.R",   # 2da pasada: incorpora ORCID recuperado por 02b
+  "proc/02b-openalex-autores.R",    # 2da pasada: usa esos ORCID nuevos como ancla
+  "proc/02c-openalex-publicaciones.R",
   "proc/03-id-revistas.R",
   "proc/04-indexaciones.R",
   "proc/05-idiomas.R",

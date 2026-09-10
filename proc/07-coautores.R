@@ -1,5 +1,5 @@
 # =====================================================================
-# 07-coautores.R  |  Etapa 7 (posterior a 01-06; solo depende de 02 y 03)
+# 07-coautores.R  |  Etapa 7 (posterior a 01-06; depende de 02a, 02b y 03)
 #
 # Recupera, via OpenAlex, el listado COMPLETO de autores de cada publicacion
 # (FACSO y externos) con su afiliacion institucional y pais. Es el insumo
@@ -7,10 +7,12 @@
 # consolidado_wide solo traen los coautores que son planta FACSO (via RUT),
 # porque SEPAVID no registra a nadie mas.
 #
-# Entradas : input/temp/base-consolidada.rds (etapa 3; doi -> clave_pub,
-#                                              y el rut/nombre_completo FACSO
-#                                              ya conocido de cada pub)
-#            input/temp/acad-orcid.rds       (etapa 2; rut <-> id_orcid)
+# Entradas : input/temp/base-consolidada.rds     (etapa 3; doi -> clave_pub,
+#                                                  y el rut/nombre_completo
+#                                                  FACSO ya conocido de cada
+#                                                  pub)
+#            input/temp/acad-openalex.rds        (etapa 02b; rut <-> author_id)
+#            input/temp/acad-orcid-consolidado.rds (etapa 02a; rut <-> id_orcid)
 # Salidas  : input/temp/coautores.rds  (una fila por autor x publicacion,
 #                                       FACSO y externos)
 #
@@ -27,24 +29,64 @@
 ## 1. CONSULTA A OPENALEX: AUTORES DE UNA OBRA
 ## ---------------------------------------------------------------------
 
-# Parametro opcional de "polite pool" (respuestas mas rapidas y estables).
-# No es una credencial: solo identifica al llamador ante OpenAlex.
-OPENALEX_MAILTO <- Sys.getenv("OPENALEX_MAILTO")
+# OPENALEX_MAILTO vive en 00-funciones.R (la usa tambien la etapa 02b).
 
 obtener_openalex_autores <- function(doi, mailto = OPENALEX_MAILTO) {
   vacio <- tibble(orden_autor = integer(), nombre_autor = character(),
-                  orcid_autor = character(), institucion = character(),
+                  orcid_autor = character(), author_id_autor = character(),
+                  institucion = character(),
                   pais_iso = character(), es_corresponding = logical())
   if (is.na(doi)) return(vacio)
 
   url <- paste0("https://api.openalex.org/works/https://doi.org/", doi)
-  if (!identical(mailto, "")) url <- paste0(url, "?mailto=", mailto)
 
-  resp <- tryCatch(GET(url), error = function(e) NULL)
-  if (is.null(resp) || status_code(resp) != 200) return(vacio)
+  # Reintentos con backoff ante 429/5xx (mismo patron que consultar_doi() en
+  # 02b-openalex-autores.R): sin esto, una racha de rate-limit en una corrida
+  # larga se traduce en cientos de filas vacias silenciosas, no en un error
+  # visible.
+  #
+  # `after` tope la espera a 20s: httr2 por defecto respeta el header
+  # Retry-After tal cual venga, y OpenAlex puede pedir horas de espera
+  # cuando el presupuesto de creditos del tier gratuito esta agotado (no es
+  # un limite por segundo que valga la pena reintentar). Sin este tope,
+  # max_seconds NO protege: solo se chequea antes de decidir un reintento,
+  # no limita el sleep de un reintento ya en curso.
+  solicitud <- request(url) |>
+    req_user_agent("facso-coautores/1.0") |>
+    req_timeout(45) |>
+    req_retry(
+      max_tries = 5,
+      max_seconds = 180,
+      retry_on_failure = TRUE,
+      is_transient = \(respuesta) resp_status(respuesta) %in%
+        c(429L, 500L, 502L, 503L, 504L),
+      after = \(respuesta) {
+        espera <- suppressWarnings(as.numeric(resp_header(respuesta, "retry-after")))
+        min(if (is.na(espera)) 5 else espera, 20)
+      }
+    ) |>
+    req_error(is_error = \(respuesta) FALSE)
+  if (nzchar(OPENALEX_API_KEY)) solicitud <- req_auth_bearer_token(solicitud, OPENALEX_API_KEY)
+  if (!identical(mailto, "")) solicitud <- req_url_query(solicitud, mailto = mailto)
 
+  respuesta <- tryCatch(req_perform(solicitud), error = function(e) NULL)
+  if (is.null(respuesta) || resp_status(respuesta) != 200L) {
+    # Estado agotado (401/403/429, incluso tras los reintentos con tope de
+    # 20s): se marca en un atributo para que consultar_openalex_autores()
+    # corte el lote entero en vez de seguir intentando DOI por DOI durante
+    # horas sin avanzar -- son miles de DOI y cada intento fallido igual
+    # cuesta ~20-60s de reintentos.
+    if (!is.null(respuesta) && resp_status(respuesta) %in% c(401L, 403L, 429L)) {
+      attr(vacio, "agotado") <- TRUE
+    }
+    return(vacio)
+  }
+
+  # fromJSON() con su simplifyVector = TRUE por defecto (no resp_body_json():
+  # el resto de esta funcion espera `authorships` como data.frame, no como
+  # lista anidada).
   datos <- tryCatch(
-    content(resp, as = "text", encoding = "UTF-8") |> fromJSON(flatten = FALSE),
+    resp_body_string(respuesta) |> fromJSON(flatten = FALSE),
     error = function(e) NULL
   )
   aut <- datos$authorships
@@ -77,6 +119,7 @@ obtener_openalex_autores <- function(doi, mailto = OPENALEX_MAILTO) {
       orden_autor      = i,
       nombre_autor     = nombre,
       orcid_autor      = orcid,
+      author_id_autor  = safe_chr(aut$author$id[i]),
       institucion      = institucion,
       pais_iso         = pais_iso,
       es_corresponding = isTRUE(aut$is_corresponding[i])
@@ -100,15 +143,30 @@ consultar_openalex_autores <- function(dois, pausa_seg = 1,
     doi <- pendientes[i]
     message(sprintf("  [%d/%d] DOI %s", i, length(pendientes), doi))
 
-    fila <- tryCatch(
-      obtener_openalex_autores(doi) |> mutate(doi = doi, .before = 1),
+    resultado <- tryCatch(
+      obtener_openalex_autores(doi),
       error = function(e) {
         message("    -> error: ", conditionMessage(e))
-        tibble(doi = doi)
+        tibble()
       }
     )
+
+    # Cuota agotada (401/403/429 persistente, incluso tras reintentos): se
+    # corta el lote entero en vez de seguir DOI por DOI durante horas sin
+    # avanzar. Este DOI NO se marca como hecho (no se guarda fila centinela
+    # para el), asi que se reintenta de verdad en la proxima corrida en vez
+    # de quedar erroneamente como "ya revisado, sin autores".
+    if (isTRUE(attr(resultado, "agotado"))) {
+      message("  ADVERTENCIA: OpenAlex devolvio 401/403/429 persistente (cuota ",
+              "probablemente agotada). Se corta el lote: quedan ",
+              length(pendientes) - i + 1, " DOI pendientes para la proxima ",
+              "corrida (lo ya avanzado no se pierde, queda en ", archivo_parcial, ").")
+      break
+    }
+
     # Fila centinela si la obra no trajo autores (o fallo la consulta): sin
     # ella, el DOI se reintentaria en cada corrida futura.
+    fila <- resultado |> mutate(doi = doi, .before = 1)
     if (nrow(fila) == 0) fila <- tibble(doi = doi)
 
     acumulado <- bind_rows(acumulado, fila)
@@ -144,7 +202,7 @@ doi_a_clave <- base_consolidada |>
   filter(!is.na(doi)) |>
   distinct(doi, clave_pub)
 
-quitar_tildes <- function(x) stringi::stri_trans_general(x, "Latin-ASCII")
+# quitar_tildes() vive en 00-funciones.R (la usan tambien las etapas 02a y 02b).
 
 # Nombres FACSO ya conocidos con certeza (via RUT) para cada clave_pub: el
 # candidato al que se compara cada autor de OpenAlex, acotado a su propia
@@ -172,9 +230,12 @@ facso_por_pub <- base_consolidada |>
 ## considera match si CUALQUIERA de los 2 apellidos oficiales aparece como
 ## palabra completa en el nombre que reporta OpenAlex (sin tildes, por si
 ## una fuente las trae y la otra no).
-## Complemento menor: ORCID, solo cuando el academico tiene id_orcid en
-## colab.xlsx Y OpenAlex trajo orcid para esa fila -- la cobertura de ORCID
-## en la planta es baja, por eso no es el mecanismo principal.
+## Complementos, en orden de fuerza: author_id (etapa 02b: si el author.id
+## que trae la autoria calza con el cruce rut<->author_id ya resuelto, es
+## una senal mas fuerte que el apellido porque no depende de texto) y ORCID
+## (solo cuando el academico tiene id_orcid conocido Y OpenAlex trajo orcid
+## para esa fila -- la cobertura de ORCID en la planta es baja, por eso no
+## es el mecanismo principal).
 
 autores_openalex <- autores_openalex_crudo |>
   filter(!is.na(nombre_autor)) |>
@@ -193,13 +254,30 @@ match_nombre <- autores_openalex |>
   distinct(clave_pub, rut, .keep_all = TRUE) |>     # un mismo FACSO no se asigna 2 veces en la misma pub
   transmute(id_autor, rut_nombre = rut)
 
-acad_orcid <- readRDS(ruta_temp("acad-orcid.rds")) |>
+acad_openalex <- readRDS(ruta_temp("acad-openalex.rds")) |>
+  filter(estado_perfil %in% c("propuesto_orcid", "propuesto_exacto")) |>
+  distinct(rut, author_id)
+
+autores_openalex <- autores_openalex |>
+  mutate(author_id_norm = str_extract(author_id_autor, "A[0-9]+$"))
+
+match_author_id <- autores_openalex |>
+  filter(!is.na(author_id_norm)) |>
+  inner_join(
+    acad_openalex |> mutate(author_id_norm = str_extract(author_id, "A[0-9]+$")),
+    by = "author_id_norm", relationship = "many-to-many"
+  ) |>
+  distinct(id_autor, .keep_all = TRUE) |>
+  transmute(id_autor, rut_author_id = rut)
+
+acad_orcid <- readRDS(ruta_temp("acad-orcid-consolidado.rds")) |>
   filter(!is.na(id_orcid)) |>
   distinct(rut, id_orcid)
 
 autores_sin_match <- autores_openalex |>
-  left_join(match_nombre, by = "id_autor") |>
-  filter(is.na(rut_nombre), !is.na(orcid_autor))
+  left_join(match_nombre,     by = "id_autor") |>
+  left_join(match_author_id,  by = "id_autor") |>
+  filter(is.na(rut_nombre), is.na(rut_author_id), !is.na(orcid_autor))
 
 match_orcid <- autores_sin_match |>
   inner_join(acad_orcid, by = c("orcid_autor" = "id_orcid")) |>
@@ -207,11 +285,15 @@ match_orcid <- autores_sin_match |>
   transmute(id_autor, rut_orcid = rut)
 
 coautores <- autores_openalex |>
-  left_join(match_nombre, by = "id_autor") |>
-  left_join(match_orcid,  by = "id_autor") |>
+  left_join(match_nombre,    by = "id_autor") |>
+  left_join(match_author_id, by = "id_autor") |>
+  left_join(match_orcid,     by = "id_autor") |>
   mutate(
-    rut          = coalesce(rut_nombre, rut_orcid),
+    # author_id es la senal mas fuerte (no depende de texto); nombre y
+    # orcid quedan como respaldo cuando no hay cruce de author_id.
+    rut          = coalesce(rut_author_id, rut_nombre, rut_orcid),
     metodo_match = case_when(
+      !is.na(rut_author_id) ~ "author_id",
       !is.na(rut_nombre) & !is.na(rut_orcid) ~ "nombre+orcid",
       !is.na(rut_nombre)                     ~ "nombre",
       !is.na(rut_orcid)                      ~ "orcid",

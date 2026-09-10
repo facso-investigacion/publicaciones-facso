@@ -10,8 +10,9 @@
 # de esas etapas reconstruia por su cuenta la tabla larga de ISSN; ahora
 # se construye una sola vez, aqui.
 #
-# Entradas : input/temp/sepavid-publicaciones.rds (etapa 1)
-#            input/temp/orcid-publicaciones.rds   (etapa 2)
+# Entradas : input/temp/sepavid-publicaciones.rds   (etapa 1)
+#            input/temp/orcid-publicaciones.rds     (etapa 2)
+#            input/temp/openalex-publicaciones.rds  (etapa 2c)
 # Salidas  : input/temp/base-consolidada.rds  (base larga con id_fila, clave_pub,
 #                                        revista_id)
 #            input/temp/revistas-issn.rds     (revista_id <-> issn, formato largo)
@@ -31,10 +32,10 @@
 
 
 ## ---------------------------------------------------------------------
-## 1. CONSOLIDACION DE LAS DOS FUENTES
+## 1. CONSOLIDACION DE LAS TRES FUENTES
 ## ---------------------------------------------------------------------
-## Ambas bases estan en formato largo (una fila por autor x publicacion) y
-## ya comparten vocabulario de tipo documental, jerarquia y departamento,
+## Las tres bases estan en formato largo (una fila por autor x publicacion)
+## y ya comparten vocabulario de tipo documental, jerarquia y departamento,
 ## porque se recodificaron con las mismas funciones en las etapas previas.
 
 sepavid <- readRDS(ruta_temp("sepavid-publicaciones.rds")) |>
@@ -51,7 +52,15 @@ orcid <- readRDS(ruta_temp("orcid-publicaciones.rds")) |>
             reparticion, departamento, jerarquia,
             num_autor = NA_integer_)
 
-base_consolidada <- bind_rows(SEPAVID = sepavid, ORCID = orcid, .id = "fuente") |>
+openalex <- readRDS(ruta_temp("openalex-publicaciones.rds")) |>
+  transmute(titulo, revista, anio, doi, tipo_documento,
+            issn, issn_p = NA_character_, issn_e = NA_character_,
+            rut, nombre_completo, sexo, edad, horas_reales,
+            reparticion, departamento, jerarquia,
+            num_autor = NA_integer_)
+
+base_consolidada <- bind_rows(SEPAVID = sepavid, ORCID = orcid, OpenAlex = openalex,
+                              .id = "fuente") |>
   mutate(clave_pub = clave_publicacion(doi, titulo))
 
 # Una misma publicacion puede venir por las dos vias. Se conserva la

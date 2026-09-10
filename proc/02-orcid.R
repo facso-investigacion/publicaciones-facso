@@ -120,8 +120,13 @@ obtener_openalex <- function(doi) {
                   revista_openalex = NA_character_)
   if (is.na(doi)) return(vacio)
   
+  encabezados <- if (nzchar(OPENALEX_API_KEY)) {
+    add_headers(Authorization = paste("Bearer", OPENALEX_API_KEY))
+  } else {
+    NULL
+  }
   resp <- tryCatch(
-    GET(paste0("https://api.openalex.org/works/https://doi.org/", doi)),
+    GET(paste0("https://api.openalex.org/works/https://doi.org/", doi), encabezados),
     error = function(e) NULL
   )
   if (is.null(resp) || status_code(resp) != 200) return(vacio)

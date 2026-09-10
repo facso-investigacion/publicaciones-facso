@@ -26,7 +26,11 @@ pacman::p_load(
   readxl,      # lectura de .xlsx
   janitor,     # clean_names()
   httr,        # consultas HTTP a las APIs
-  jsonlite     # parseo de respuestas JSON
+  httr2,       # consultas HTTP con reintentos/backoff (etapa 02b)
+  jsonlite,    # parseo de respuestas JSON
+  stringi,     # quitar_tildes()
+  stringdist,  # similitud Jaro-Winkler (etapa 02b)
+  digest       # nombres de archivo de cache por hash (etapa 02b)
 )
 
 # Version minima de tidyr por separate_longer_delim() (tidyr >= 1.3.0)
@@ -76,6 +80,18 @@ JERARQUIAS_VALIDAS <- c("Titular", "Asociado", "Asistente",
 
 # Tope de horas semanales de una jornada completa (para consolidar contratos).
 JORNADA_COMPLETA <- 44
+
+# Parametro opcional de "polite pool" de OpenAlex (respuestas mas rapidas y
+# estables). No es una credencial: solo identifica al llamador ante la API.
+# La usan las etapas 02, 02b, 02c y 07.
+OPENALEX_MAILTO <- Sys.getenv("OPENALEX_MAILTO")
+
+# Credencial opcional de OpenAlex Premium: cuota separada y mas alta que el
+# tier gratuito/anonimo. Definir OPENALEX_API_KEY en ~/.Renviron (NUNCA en
+# un .Renviron dentro del repo, para no arriesgar subirla a git) y reiniciar
+# la sesion de R. Si esta vacia, todas las llamadas siguen funcionando igual
+# que hoy, solo que contra el tier gratuito.
+OPENALEX_API_KEY <- Sys.getenv("OPENALEX_API_KEY")
 
 
 ## ---------------------------------------------------------------------
@@ -152,6 +168,12 @@ norm_texto <- function(x) {
 clave_publicacion <- function(doi, titulo) {
   coalesce(norm_doi(doi), paste0("TIT:", norm_texto(titulo)))
 }
+
+#' Quita tildes/diacriticos (para comparar apellidos sin depender de si la
+#' fuente los escribio o no: "Asún" vs "Asun", etc.). La usan la etapa 02a
+#' (join con colab.xlsx), la 02b (comparacion de nombres) y 07-coautores.R
+#' (match de autores de OpenAlex por apellido).
+quitar_tildes <- function(x) stringi::stri_trans_general(x, "Latin-ASCII")
 
 
 ## ---------------------------------------------------------------------
