@@ -42,7 +42,7 @@ acad <- acad |>
   mutate(
     rut       = norm_rut(rut),
     materno   = limpiar_apellido(materno),
-    # `apellidos` es la llave de cruce con colab.xlsx en la etapa ORCID
+    # `apellidos` se conserva para comparar nombres en etapas posteriores
     apellidos = str_squish(paste(paterno, coalesce(materno, ""))),
     nombre_completo = str_squish(paste(nombres, paterno, coalesce(materno, ""))),
     departamento    = recodificar_departamento(reparticion),

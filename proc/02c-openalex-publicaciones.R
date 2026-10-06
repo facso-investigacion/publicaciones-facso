@@ -10,10 +10,8 @@
 #
 # Alcance acotado a journal-article, no a libros/capitulos: OpenAlex los
 # indexa peor que ORCID (dependen de DOI/registro en Crossref, el
-# autorreporte en ORCID no), y proc-final.R solo valida libros contra
-# orcid-libros.rds -- un libro nuevo encontrado solo aqui quedaria
-# igualmente filtrado al final. Esa funcion se queda exclusivamente en
-# 02-orcid.R.
+# autorreporte en ORCID no) y su tipo documental es menos confiable. La
+# recuperacion de libros/capitulos se queda en SEPAVID y 02-orcid.R.
 #
 # Entradas : input/temp/acad.rds             (etapa 1)
 #            input/temp/acad-openalex.rds    (etapa 02b; rut -> author_id)
@@ -123,11 +121,22 @@ safe_chr_vec <- function(x) {
 #' consultar_openalex_autores() en 07-coautores.R).
 consultar_openalex_publicaciones <- function(autores_por_rut, pausa_seg = 0.5,
                                              archivo_parcial = ruta_temp("openalex-publicaciones-parcial.rds")) {
+  # Cada rut se consulta con una "firma" (sus author_id ordenados): si en
+  # una corrida posterior cambian sus perfiles aceptados (02b), la firma
+  # cambia y el rut se vuelve a consultar, en vez de quedar con las obras de
+  # los perfiles viejos.
+  firmas <- map_chr(autores_por_rut, \(ids) paste(sort(unique(ids)), collapse = "|"))
   acumulado <- if (file.exists(archivo_parcial)) readRDS(archivo_parcial) else tibble()
-  ya_hechos <- if (nrow(acumulado) > 0) unique(acumulado$rut) else character()
-  pendientes <- setdiff(names(autores_por_rut), ya_hechos)
+  if (nrow(acumulado) > 0 && !"firma" %in% names(acumulado)) {
+    # checkpoint anterior a las firmas: se asume que corresponde a los
+    # perfiles vigentes (migracion de una sola vez)
+    acumulado$firma <- unname(firmas[acumulado$rut])
+  }
+  ya_hechos <- if (nrow(acumulado) > 0) unique(paste(acumulado$rut, acumulado$firma)) else character()
+  pendientes <- names(autores_por_rut)[!paste(names(autores_por_rut), firmas) %in% ya_hechos]
+  if (nrow(acumulado) > 0) acumulado <- acumulado |> filter(!rut %in% pendientes)   # descarta obras de firmas viejas
 
-  if (length(pendientes) == 0) return(acumulado)
+  if (length(pendientes) == 0) return(acumulado |> filter(paste(rut, firma) %in% paste(names(firmas), firmas)))
   message("  RUT pendientes (obras OpenAlex): ", length(pendientes), " de ", length(autores_por_rut))
 
   for (i in seq_along(pendientes)) {
@@ -142,23 +151,26 @@ consultar_openalex_publicaciones <- function(autores_por_rut, pausa_seg = 0.5,
       }
     )
 
-    # Cuota agotada: se corta el lote entero (este rut NO se marca como
-    # hecho, para que se reintente de verdad en la proxima corrida).
+    # Cuota agotada: se DETIENE la corrida (este rut NO se marca como hecho).
+    # Devolver el lote incompleto haria que se guardara como
+    # openalex-publicaciones-crudo.rds definitivo; el avance ya quedo en
+    # archivo_parcial, asi que la proxima corrida retoma desde aqui.
     if (isTRUE(attr(resultado, "agotado"))) {
-      message("  ADVERTENCIA: OpenAlex devolvio 401/403/429 (cuota probablemente ",
-              "agotada). Se corta el lote: quedan ", length(pendientes) - i + 1,
-              " rut pendientes para la proxima corrida.")
-      break
+      stop("OpenAlex devolvio 401/403/429 (cuota agotada). Quedan ",
+           length(pendientes) - i + 1, " rut pendientes. Vuelve a correr ",
+           "proc-final.R mas tarde (o define OPENALEX_API_KEY en ~/.Renviron); ",
+           "el avance queda en ", archivo_parcial, ".", call. = FALSE)
     }
 
-    fila <- resultado |> mutate(rut = rut, .before = 1)
-    if (nrow(fila) == 0) fila <- tibble(rut = rut)  # centinela: no reintentar en corridas futuras
+    firma_rut <- firmas[[rut]]   # fuera de mutate(): ahi `rut` seria la columna
+    fila <- resultado |> mutate(rut = rut, firma = firma_rut, .before = 1)
+    if (nrow(fila) == 0) fila <- tibble(rut = rut, firma = firma_rut)  # centinela: no reintentar en corridas futuras
 
     acumulado <- bind_rows(acumulado, fila)
     saveRDS(acumulado, archivo_parcial)
     Sys.sleep(pausa_seg)
   }
-  acumulado
+  acumulado |> filter(paste(rut, firma) %in% paste(names(firmas), firmas))
 }
 
 
@@ -167,13 +179,14 @@ consultar_openalex_publicaciones <- function(autores_por_rut, pausa_seg = 0.5,
 ## ---------------------------------------------------------------------
 
 acad_openalex <- readRDS(ruta_temp("acad-openalex.rds")) |>
-  filter(estado_perfil %in% c("propuesto_orcid", "propuesto_exacto"))
+  filter(estado_perfil %in% ESTADOS_PERFIL_ACEPTADOS)
 
 autores_por_rut <- split(acad_openalex$author_id, acad_openalex$rut)
 
-openalex_crudo <- usar_cache(
-  ruta_temp("openalex-publicaciones-crudo.rds"),
-  consultar_openalex_publicaciones(autores_por_rut)
+openalex_crudo <- cache_incremental(
+  ruta_temp("openalex-publicaciones-crudo.rds"), ruta_temp("openalex-publicaciones-parcial.rds"),
+  \() consultar_openalex_publicaciones(autores_por_rut),
+  claves = names(autores_por_rut), columna = "rut"
 )
 
 
@@ -184,18 +197,37 @@ openalex_crudo <- usar_cache(
 ## (OpenAlex ingiere ORCID como una de sus fuentes): se descartan DOI ya
 ## presentes en cualquiera de las dos, no solo en SEPAVID, para no
 ## reintroducir como "nuevo" algo que 02-orcid.R ya capturo.
+## El descarte es por par (rut, doi), no por DOI solo: un articulo que
+## SEPAVID atribuye a un coautor FACSO pero no a este academico (p. ej.
+## Marambio en 10.22380/2539472x.2930) debe seguir sumando para este rut.
 
 acad <- readRDS(ruta_temp("acad.rds"))
 
-dois_conocidos <- c(
-  readRDS(ruta_temp("sepavid-publicaciones.rds"))$doi,
-  readRDS(ruta_temp("orcid-publicaciones.rds"))$doi
-) |> norm_doi() |> na.omit() |> unique()
+pares_conocidos <- bind_rows(
+  readRDS(ruta_temp("sepavid-publicaciones.rds")) |> select(rut, doi),
+  readRDS(ruta_temp("orcid-publicaciones.rds"))   |> select(rut, doi)
+) |>
+  mutate(doi = norm_doi(doi)) |>
+  filter(!is.na(doi)) |>
+  distinct()
+
+# Obras de homonimos dentro de un perfil MIXTO de OpenAlex (que tambien
+# tiene obras reales del academico, por lo que no se puede excluir entero
+# en exclusiones_manuales de 02b). Se excluyen obra por obra.
+exclusiones_obras <- tribble(
+  ~rut,          ~doi,                             ~motivo,
+  "0091297612",  "10.3389/fpls.2021.679059",       "Hector Morales: genetica de ciruelos (homonimo en perfil mixto A5064024428)",
+  "0091297612",  "10.3389/fpls.2022.805744",       "Hector Morales: genetica de ciruelos (homonimo en perfil mixto A5064024428)",
+  "0091297612",  "10.1016/j.scienta.2024.113798",  "Hector Morales: genetica de ciruelos (homonimo en perfil mixto A5064024428)",
+  "0091297612",  "10.1108/jefas-07-2021-0113",     "Hector Morales: ley de Benford en auditoria (homonimo en perfil mixto A5064024428)"
+)
 
 openalex_publicaciones <- openalex_crudo |>
-  filter(!is.na(titulo), !is.na(doi), !doi %in% dois_conocidos) |>
+  filter(!is.na(titulo), !is.na(doi)) |>
+  anti_join(exclusiones_obras, by = c("rut", "doi")) |>
+  anti_join(pares_conocidos, by = c("rut", "doi")) |>
   mutate(tipo_documento = "journal-article") |>
-  distinct(doi, .keep_all = TRUE) |>
+  distinct(rut, doi, .keep_all = TRUE) |>
   inner_join(acad, by = "rut") |>
   filter(jerarquia %in% JERARQUIAS_VALIDAS,
          between(anio, ANIO_INICIO, ANIO_FIN)) |>

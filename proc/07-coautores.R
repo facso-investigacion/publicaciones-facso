@@ -12,7 +12,7 @@
 #                                                  FACSO ya conocido de cada
 #                                                  pub)
 #            input/temp/acad-openalex.rds        (etapa 02b; rut <-> author_id)
-#            input/temp/acad-orcid-consolidado.rds (etapa 02a; rut <-> id_orcid)
+#            input/original/orcid.csv          (rut <-> id_orcid, via leer_orcid())
 # Salidas  : input/temp/coautores.rds  (una fila por autor x publicacion,
 #                                       FACSO y externos)
 #
@@ -186,9 +186,10 @@ base_consolidada <- readRDS(ruta_temp("base-consolidada.rds"))
 
 dois <- base_consolidada$doi |> na.omit() |> unique()
 
-autores_openalex_crudo <- usar_cache(
-  ruta_temp("openalex-coautores-crudo.rds"),
-  consultar_openalex_autores(dois)
+autores_openalex_crudo <- cache_incremental(
+  ruta_temp("openalex-coautores-crudo.rds"), ruta_temp("openalex-coautores-parcial.rds"),
+  \() consultar_openalex_autores(dois),
+  claves = dois, columna = "doi"
 )
 
 
@@ -255,7 +256,7 @@ match_nombre <- autores_openalex |>
   transmute(id_autor, rut_nombre = rut)
 
 acad_openalex <- readRDS(ruta_temp("acad-openalex.rds")) |>
-  filter(estado_perfil %in% c("propuesto_orcid", "propuesto_exacto")) |>
+  filter(estado_perfil %in% ESTADOS_PERFIL_ACEPTADOS) |>
   distinct(rut, author_id)
 
 autores_openalex <- autores_openalex |>
@@ -270,9 +271,7 @@ match_author_id <- autores_openalex |>
   distinct(id_autor, .keep_all = TRUE) |>
   transmute(id_autor, rut_author_id = rut)
 
-acad_orcid <- readRDS(ruta_temp("acad-orcid-consolidado.rds")) |>
-  filter(!is.na(id_orcid)) |>
-  distinct(rut, id_orcid)
+acad_orcid <- leer_orcid()
 
 autores_sin_match <- autores_openalex |>
   left_join(match_nombre,     by = "id_autor") |>

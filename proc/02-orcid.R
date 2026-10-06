@@ -6,13 +6,18 @@
 # abierto (OpenAlex). Sirve para capturar produccion que no fue declarada
 # en SEPAVID, sobre todo libros y capitulos.
 #
-# Entradas : input/original/orcid-ids.csv        (columna id_orcid)
-#            input/original/colab.xlsx           (ORCID <-> apellidos)
+# Entradas : input/original/orcid.csv            (rut <-> id_orcid, unica
+#                                                  fuente de ORCID; ver
+#                                                  leer_orcid() en 00-funciones.R)
 #            input/temp/acad.rds              (etapa 1)
 #            input/temp/sepavid-publicaciones.rds (etapa 1)
+#            catalogos de revistas en input/original/ (via
+#            diccionario_revistas(); para articulos sin DOI)
 # Salidas  : input/temp/orcid-crudo.rds          (respuesta cruda de las APIs)
+#            input/temp/orcid-metadatos-obras.rds (revista e ids externos por obra)
 #            input/temp/orcid-publicaciones.rds  (base depurada y cruzada)
-#            input/temp/orcid-libros.rds         (libros y capitulos validados)
+#            output/orcid-sin-doi.csv            (decision sobre cada articulo
+#                                                  sin DOI)
 #
 # APIs consultadas (todas publicas, sin credenciales):
 #   ORCID     https://pub.orcid.org/v3.0/
@@ -77,6 +82,37 @@ obtener_obras_orcid <- function(id_orcid) {
       doi      = doi
     )
   })
+}
+
+
+#' Metadatos de revista que ORCID declara para cada obra (todas las
+#' versiones de cada grupo): nombre de revista, tipos de identificador
+#' externo (eid = Scopus, wosuid = WoS, isbn, ...) e ISSN. Se usan para
+#' decidir que articulos SIN DOI entran a la base (seccion 5), que no pasan
+#' por Crossref y por eso no traen revista ni ISSN.
+obtener_metadatos_orcid <- function(id_orcid) {
+  vacio <- tibble(put_code = NA_character_, revista_orcid = NA_character_,
+                  ext_tipos = NA_character_, issn_orcid = NA_character_)
+  resp <- tryCatch(GET(paste0("https://pub.orcid.org/v3.0/", id_orcid, "/works"),
+                       add_headers(Accept = "application/json")),
+                   error = function(e) NULL)
+  if (is.null(resp) || status_code(resp) != 200) return(vacio)
+  grupos <- content(resp, as = "text", encoding = "UTF-8") |>
+    fromJSON(simplifyVector = FALSE) |>
+    pluck("group")
+  if (length(grupos) == 0) return(vacio)
+
+  map_dfr(grupos, \(g) map_dfr(g$`work-summary`, \(s) {
+    ids <- s$`external-ids`$`external-id` %||% list()
+    tipos <- map_chr(ids, \(e) e$`external-id-type` %||% "")
+    tibble(
+      put_code      = as.character(s$`put-code`),
+      revista_orcid = s$`journal-title`$value %||% NA_character_,
+      ext_tipos     = paste(unique(tipos), collapse = ";"),
+      issn_orcid    = map_chr(ids[tipos == "issn"], \(e) e$`external-id-value` %||% "") |>
+                        paste(collapse = "; ") |> na_if("")
+    )
+  }))
 }
 
 
@@ -202,24 +238,39 @@ pipeline_orcid_multi <- function(ids_orcid, pausa_seg = 1,
 ## 4. DESCARGA (con cache)
 ## ---------------------------------------------------------------------
 
-verificar_archivos(ruta_input("orcid-ids.csv"))
+orcid_acad <- leer_orcid()
+ids_orcid  <- unique(orcid_acad$id_orcid)
 
-ids_orcid <- read_csv(ruta_input("orcid-ids.csv"), show_col_types = FALSE) |>
-  pull(id_orcid) |>
-  unique()
-
-orcid_crudo <- usar_cache(
-  ruta_temp("orcid-crudo.rds"),
-  pipeline_orcid_multi(ids_orcid)
+orcid_crudo <- cache_incremental(
+  ruta_temp("orcid-crudo.rds"), ruta_temp("orcid-parcial.rds"),
+  \() pipeline_orcid_multi(ids_orcid),
+  claves = ids_orcid, columna = "id_orcid"
 )
+
+# Metadatos de revista: cache incremental (solo se consultan los ORCID que
+# aun no estan; un ORCID sin obras queda igual registrado, con put_code NA).
+ruta_meta <- ruta_temp("orcid-metadatos-obras.rds")
+orcid_meta <- if (file.exists(ruta_meta) && !FORZAR_API) readRDS(ruta_meta) else tibble(id_orcid = character())
+pendientes_meta <- setdiff(ids_orcid, orcid_meta$id_orcid)
+if (length(pendientes_meta) > 0) {
+  message("  Metadatos de revista ORCID pendientes: ", length(pendientes_meta))
+  orcid_meta <- bind_rows(orcid_meta, map_dfr(pendientes_meta, \(id) {
+    Sys.sleep(0.2)
+    obtener_metadatos_orcid(id) |> mutate(id_orcid = id, .before = 1)
+  }))
+  saveRDS(orcid_meta, ruta_meta)
+}
 
 
 ## ---------------------------------------------------------------------
 ## 5. SELECCION DE OBRAS DENTRO DEL ALCANCE
 ## ---------------------------------------------------------------------
-## De ORCID interesan dos cosas:
+## De ORCID interesan tres cosas:
 ##   a) libros y capitulos (SEPAVID los subregistra);
-##   b) articulos con DOI que NO fueron declarados en SEPAVID.
+##   b) articulos con DOI que NO fueron declarados en SEPAVID;
+##   c) articulos SIN DOI identificables como tales (seccion 5b): sobre
+##      todo revistas latinoamericanas sin DOI, clave para reconstruir la
+##      trayectoria completa del periodo (no solo la estancia en la U.).
 
 sepavid <- readRDS(ruta_temp("sepavid-publicaciones.rds"))
 
@@ -236,61 +287,137 @@ orcid_obras <- orcid_crudo |>
 orcid_libros_raw <- orcid_obras |>
   filter(tipo_documento %in% c("book", "book-chapter"))
 
-orcid_articulos <- orcid_obras |>
+# El descarte contra SEPAVID se hace mas abajo, por par (rut, doi), una vez
+# que cada obra ya tiene academico asignado (ver seccion 8).
+orcid_articulos_doi <- orcid_obras |>
   filter(tipo_documento == "journal-article",
-         !is.na(doi),
-         !doi %in% sepavid$doi) |>       # ambos DOI ya normalizados
-  distinct(doi, .keep_all = TRUE)
+         !is.na(doi))
+
+
+## ---------------------------------------------------------------------
+## 5b. ARTICULOS SIN DOI: ¿SON ARTICULOS?
+## ---------------------------------------------------------------------
+## ORCID clasifica como "journal-article" cosas muy distintas. Un articulo
+## sin DOI entra solo si se puede identificar como tal:
+##   ACEPTA  - identificador de Scopus (eid) o WoS (wosuid); o
+##           - revista conocida: su ISSN o su nombre (exacto o Jaro-Winkler
+##             >= 0.95) esta en WoS, Scopus, SciELO, Latindex o ERIH; o
+##           - el nombre del medio es de revista ("Revista", "Journal",
+##             "Cuadernos", "Estudios", ...).
+##   EXCLUYE - sin nombre de revista;
+##           - titulo de no-articulo (presentacion, editorial, documento de
+##             trabajo, entrevista, resena, ...);
+##           - medio no academico (prensa, blogs, columnas, anuarios de
+##             opinion, congresos, repositorios);
+##           - trae ISBN y la revista no es conocida (capitulo mal tipeado).
+## Ademas, en 03-id-revistas.R (seccion 1c) se descartan los que tienen la
+## misma revista y anio que otro articulo del mismo academico: en el
+## diagnostico, ~85% de esos casos eran la misma obra con el titulo
+## traducido, algo que la comparacion de titulos no detecta.
+## Todas las decisiones quedan en output/orcid-sin-doi.csv.
+
+dic_revistas <- diccionario_revistas()
+
+re_titulo_no_articulo <- regex(str_c(
+  "documento de trabajo", "working paper", "^informe", "boletin", "^resena", "resena de",
+  "book review", "review of", "^editorial", "^presentacion", "^introduccion", "^entrevista",
+  "^interview", "prologo", "^columna", "^carta", "in memoriam", "obituario", "minuta",
+  "policy brief", "documento n", "^dossier", "palabras de agradecimiento", sep = "|"),
+  ignore_case = TRUE)
+re_medio_no_academico <- regex(str_c(
+  "ciper", "mostrador", "la tercera", "desconcierto", "le monde", "the conversation", "blog",
+  "ssrn", "preprint", "congreso", "conference", "seminario", "jornadas", "actas", "proceedings",
+  "diario", "periodico", "newspaper", "radio", "mercurio", "interferencia", "biobio",
+  "cooperativa", "observatorio", "documento", "working paper", "repositorio", "zenodo",
+  "researchgate", "academia edu", "medium", "palabra publica", "^mensaje", "analisis del ano",
+  "^libro", "^series", sep = "|"), ignore_case = TRUE)
+re_nombre_de_revista <- regex(str_c(
+  "revista", "journal", "cuadernos", "anales", "estudios", "review", "revue", "rivista",
+  "boletin", "bulletin", "papers", "psicolog", "sociolog", "antropolog", "educaci",
+  "trabajo social", "quaderns", "cadernos", "praxis", "polis", "athenea", "perspectiva",
+  "dialog", "investigaci", sep = "|"), ignore_case = TRUE)
+
+orcid_sin_doi <- orcid_obras |>
+  filter(tipo_documento == "journal-article", is.na(doi)) |>
+  left_join(orcid_meta |> filter(!is.na(put_code)) |> distinct(id_orcid, put_code, .keep_all = TRUE),
+            by = c("id_orcid", "put_code")) |>
+  mutate(revista_norm = norm_nombre_revista(revista_orcid),
+         # ISSN declarado como identificador o escrito dentro del nombre
+         # ("Perfiles Latinoamericanos (WoS. ISSN: 0188-7653)")
+         issn_conocido = map2_lgl(issn_orcid, revista_orcid, \(i, r) {
+           v <- c(str_split_1(coalesce(i, ""), ";\\s*"),
+                  str_extract_all(coalesce(r, ""), "[0-9]{4}-?[0-9]{3}[0-9Xx]")[[1]])
+           any(norm_issn(v) %in% dic_revistas$issn)
+         }))
+
+#' Variantes del nombre de revista tal como lo escriben los autores en
+#' ORCID: completo; sin volumen/numero ni parentesis ("Campos en Ciencias
+#' Sociales, Vol. 9 N 2"); y antes del primer punto o dos puntos (sigla con
+#' subtitulo: "CUHSO. Cultura-Hombre-Sociedad").
+variantes_revista <- function(r) {
+  sin_vol <- r |>
+    str_remove_all("\\([^)]*\\)") |>
+    str_remove(regex("[,.;]?\\s*(vol\\.?|volumen|volume|n[°ºo.]|num\\.?|numero|no\\.\\s|\\d{4}).*$", ignore_case = TRUE))
+  antes_punto <- str_remove(r, "\\s*[.:].*$")
+  unique(na.omit(norm_nombre_revista(c(r, sin_vol, antes_punto))))
+}
+
+# Nombre conocido: alguna variante calza exacto, o con Jaro-Winkler >= 0.95
+# (variantes de 10+ caracteres) para tolerar diferencias de escritura.
+nombres_orcid <- unique(na.omit(orcid_sin_doi$revista_orcid))
+conocido <- map_lgl(nombres_orcid, \(r) {
+  v <- variantes_revista(r)
+  if (any(v %in% dic_revistas$nombres)) return(TRUE)
+  v <- v[nchar(v) >= 10]
+  length(v) > 0 && any(map_lgl(v, \(n) max(1 - stringdist(n, dic_revistas$nombres, method = "jw", p = 0.1)) >= 0.95))
+})
+nombre_conocido <- nombres_orcid[conocido]
+
+orcid_sin_doi <- orcid_sin_doi |>
+  mutate(
+    revista_conocida = issn_conocido | revista_orcid %in% nombre_conocido,
+    titulo_ascii = quitar_tildes(titulo),
+    decision = case_when(
+      is.na(revista_norm)                                         ~ "excluido: sin revista",
+      str_detect(titulo_ascii, re_titulo_no_articulo)             ~ "excluido: titulo de no-articulo",
+      str_detect(revista_norm, re_medio_no_academico)             ~ "excluido: medio no academico",
+      str_detect(coalesce(ext_tipos, ""), "eid|wosuid")           ~ "aceptado: indexado (Scopus/WoS)",
+      str_detect(coalesce(ext_tipos, ""), "isbn") & !revista_conocida ~ "excluido: ISBN (probable capitulo)",
+      revista_conocida                                            ~ "aceptado: revista en catalogo",
+      str_detect(revista_norm, re_nombre_de_revista)              ~ "aceptado: nombre de revista",
+      TRUE                                                        ~ "excluido: medio no reconocible"
+    )
+  )
+
+orcid_articulos <- bind_rows(
+  orcid_articulos_doi,
+  orcid_sin_doi |>
+    filter(str_starts(decision, "aceptado")) |>
+    mutate(revista = revista_orcid, issn = issn_orcid) |>
+    select(any_of(names(orcid_articulos_doi)))
+)
 
 
 ## ---------------------------------------------------------------------
 ## 6. VINCULAR ORCID CON LA PLANTA ACADEMICA
 ## ---------------------------------------------------------------------
-## colab.xlsx es el puente ORCID -> persona. El unico campo comun con
-## acad.xlsx son los apellidos, por lo que el cruce es sensible a
-## homonimos: se emite una advertencia si los hay.
-
-verificar_archivos(ruta_input("colab.xlsx"))
+## orcid.csv trae el rut, asi que el cruce es directo (sin pasar por
+## apellidos). Se avisa si la planta trae academicos que aun no tienen fila
+## en orcid.csv, para que se agreguen (con id_orcid vacio si no se conoce).
 
 acad <- readRDS(ruta_temp("acad.rds"))
 
-colab <- read_xlsx(ruta_input("colab.xlsx")) |>
-  clean_names() |>
-  mutate(
-    ap_materno = limpiar_apellido(ap_materno),
-    apellidos  = str_squish(paste(ap_paterno, coalesce(ap_materno, "")))
-  ) |>
-  select(id_orcid, apellidos) |>
-  distinct()
-
-duplicados <- colab |> count(apellidos) |> filter(n > 1)
-if (nrow(duplicados) > 0) {
-  message("  ADVERTENCIA: ", nrow(duplicados),
-          " apellidos duplicados en colab.xlsx; el cruce por apellidos ",
-          "puede generar filas espurias.")
-}
-
 acad_orcid <- acad |>
-  left_join(colab, by = "apellidos") |>
-  filter(!is.na(id_orcid))
+  inner_join(orcid_acad, by = "rut")
 
-# rut <-> id_orcid: lo usa 07-coautores.R como señal adicional (menor) para
-# reconocer coautores FACSO entre los autores completos que trae OpenAlex.
-saveRDS(acad_orcid |> distinct(rut, id_orcid), ruta_temp("acad-orcid.rds"))
-
-
-## ---------------------------------------------------------------------
-## 7. LISTA DE VALIDACION DE LIBROS
-## ---------------------------------------------------------------------
-## Esta lista solo responde una pregunta: "¿este libro/capitulo existe,
-## segun el propio ORCID de su autor?". Por eso exige unicamente que el
-## autor este vinculado a un ORCID.
-
-libros_lookup <- orcid_libros_raw |>
-  inner_join(acad_orcid, by = "id_orcid") |>
-  transmute(clave_pub = clave_publicacion(doi, titulo), titulo, anio, rut)
-
-saveRDS(libros_lookup, ruta_temp("orcid-libros.rds"))
+ruts_en_archivo <- read_csv(ruta_input("orcid.csv"), col_types = cols(.default = "c")) |>
+  pull(rut) |>
+  norm_rut()
+sin_fila <- acad |> filter(!rut %in% ruts_en_archivo)
+if (nrow(sin_fila) > 0) {
+  message("  ADVERTENCIA: ", nrow(sin_fila), " academicos de la planta no tienen fila en ",
+          "input/original/orcid.csv: ", paste(sin_fila$nombre_completo, collapse = "; "))
+}
 
 
 ## ---------------------------------------------------------------------
@@ -309,8 +436,23 @@ adjuntar_academico <- function(obras) {
 
 orcid_libros <- adjuntar_academico(orcid_libros_raw)
 
-orcid_publicaciones <- bind_rows(orcid_libros,
-                                 adjuntar_academico(orcid_articulos)) |>
+# Con DOI, por par (rut, doi): un DOI que SEPAVID atribuye a otro academico
+# FACSO sigue contando para este rut. Sin DOI no hay con que cruzar contra
+# SEPAVID aqui (NA calzaria con NA): se deduplican por titulo y el cruce
+# con las otras fuentes lo hace 03-id-revistas.R (secciones 1b y 1c).
+orcid_articulos_acad <- adjuntar_academico(orcid_articulos)
+orcid_articulos_acad <- bind_rows(
+  orcid_articulos_acad |>
+    filter(!is.na(doi)) |>
+    anti_join(sepavid |> filter(!is.na(doi)) |> select(rut, doi), by = c("rut", "doi")) |>   # ambos DOI ya normalizados
+    distinct(rut, doi, .keep_all = TRUE),
+  orcid_articulos_acad |>
+    filter(is.na(doi)) |>
+    distinct(rut, clave = clave_publicacion(doi, titulo), .keep_all = TRUE) |>
+    select(-clave)
+)
+
+orcid_publicaciones <- bind_rows(orcid_libros, orcid_articulos_acad) |>
   transmute(
     titulo,
     revista = coalesce(revista, revista_openalex),
@@ -319,10 +461,21 @@ orcid_publicaciones <- bind_rows(orcid_libros,
     tipo_documento,
     issn,                       # puede traer varios ISSN separados por ";"
     rut, nombre_completo, sexo, edad, horas_reales,
-    reparticion, departamento, jerarquia
+    reparticion, departamento, jerarquia,
+    # marca para 03-id-revistas.R (seccion 1c)
+    orcid_sin_doi = tipo_documento == "journal-article" & is.na(doi)
   )
 
 saveRDS(orcid_publicaciones, ruta_temp("orcid-publicaciones.rds"))
+
+# Registro de decisiones sobre articulos sin DOI (solo planta con jerarquia valida)
+orcid_sin_doi |>
+  inner_join(acad_orcid |> filter(jerarquia %in% JERARQUIAS_VALIDAS) |>
+               select(id_orcid, rut, nombre_completo, departamento), by = "id_orcid") |>
+  transmute(decision, nombre_completo, departamento, anio, revista_orcid, titulo,
+            ext_tipos, issn_orcid, revista_conocida, id_orcid, put_code) |>
+  arrange(decision, departamento, nombre_completo, anio) |>
+  write_excel_csv(ruta_output("orcid-sin-doi.csv"), na = "")
 
 
 ## ---------------------------------------------------------------------

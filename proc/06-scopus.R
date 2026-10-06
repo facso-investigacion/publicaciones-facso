@@ -128,9 +128,10 @@ if (identical(SCOPUS_API_KEY, "")) {
                                  scopus_keywords = character(),
                                  scopus_abstract = character())
 } else {
-  scopus_publicaciones <- usar_cache(
-    ruta_temp("scopus-publicaciones-crudo.rds"),
-    consultar_scopus(dois)
+  scopus_publicaciones <- cache_incremental(
+    ruta_temp("scopus-publicaciones-crudo.rds"), ruta_temp("scopus-parcial.rds"),
+    \() consultar_scopus(dois),
+    claves = dois, columna = "doi"
   ) |>
     select(doi, scopus_citas, scopus_keywords, scopus_abstract) |>
     distinct(doi, .keep_all = TRUE)

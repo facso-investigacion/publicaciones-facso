@@ -81,6 +81,11 @@ JERARQUIAS_VALIDAS <- c("Titular", "Asociado", "Asistente",
 # Tope de horas semanales de una jornada completa (para consolidar contratos).
 JORNADA_COMPLETA <- 44
 
+# Estados de acad-openalex.rds (etapa 02b) cuyos author_id se usan para
+# descubrir publicaciones (02c) y reconocer coautores FACSO (07):
+# ancla por ORCID, evidencia por DOI exacta e inclusion manual.
+ESTADOS_PERFIL_ACEPTADOS <- c("propuesto_orcid", "propuesto_exacto", "propuesto_manual")
+
 # Parametro opcional de "polite pool" de OpenAlex (respuestas mas rapidas y
 # estables). No es una credencial: solo identifica al llamador ante la API.
 # La usan las etapas 02, 02b, 02c y 07.
@@ -102,6 +107,26 @@ OPENALEX_API_KEY <- Sys.getenv("OPENALEX_API_KEY")
 #'
 #' `expr` se evalua de forma perezosa: si el cache existe y `forzar` es
 #' FALSE, la consulta a la API nunca llega a ejecutarse.
+#' Variante de usar_cache() para descargas con checkpoint (`archivo_parcial`)
+#' recorridas por clave (ORCID, rut, DOI). usar_cache() devolvia el archivo
+#' guardado aunque la lista de claves hubiera crecido (ORCID agregados a
+#' orcid.csv, publicaciones nuevas en la base), y las claves nuevas nunca se
+#' consultaban. Aqui SIEMPRE se llama a `consultar()`, que solo consulta lo
+#' pendiente en su checkpoint (es rapido si no hay nada nuevo), y el
+#' resultado se limita a las claves vigentes. Con forzar = TRUE se borra el
+#' checkpoint y se consulta todo de nuevo.
+cache_incremental <- function(ruta, archivo_parcial, consultar, claves, columna,
+                              forzar = FORZAR_API) {
+  if (forzar && file.exists(archivo_parcial)) file.remove(archivo_parcial)
+  valor <- consultar()
+  if (nrow(valor) > 0 && columna %in% names(valor)) {
+    valor <- valor[valor[[columna]] %in% claves, , drop = FALSE]
+  }
+  saveRDS(valor, ruta)
+  message("  [incremental] ", ruta)
+  valor
+}
+
 usar_cache <- function(ruta, expr, forzar = FORZAR_API) {
   if (!forzar && file.exists(ruta)) {
     message("  [cache] ", ruta)
@@ -130,16 +155,15 @@ norm_issn <- function(x) {
     na_if("00000000")
 }
 
-#' DOI en minuscula y sin prefijo de resolucion (https://doi.org/, doi:).
+#' DOI en minuscula, reducido al patron 10.xxxx/... (sin prefijos como
+#' https://doi.org/, doi:, "/" o "doi.org/"). Lo que no contiene un DOI
+#' (p. ej. ".notiene", ".no tiene" en SEPAVID) queda como NA: si no, esos
+#' textos actuarian como clave de publicacion compartida por obras distintas.
 norm_doi <- function(x) {
   x |>
     as.character() |>
-    str_trim() |>
     str_to_lower() |>
-    str_remove("^https?://(dx\\.)?doi\\.org/") |>
-    str_remove("^doi:\\s*") |>
-    str_squish() |>
-    na_if("")
+    str_extract("10\\.[0-9]{4,9}/\\S+")
 }
 
 #' RUT a 10 caracteres, sin puntos ni guion, con digito verificador.
@@ -170,8 +194,8 @@ clave_publicacion <- function(doi, titulo) {
 }
 
 #' Quita tildes/diacriticos (para comparar apellidos sin depender de si la
-#' fuente los escribio o no: "Asún" vs "Asun", etc.). La usan la etapa 02a
-#' (join con colab.xlsx), la 02b (comparacion de nombres) y 07-coautores.R
+#' fuente los escribio o no: "Asún" vs "Asun", etc.). La usan la etapa
+#' 02b (comparacion de nombres) y 07-coautores.R
 #' (match de autores de OpenAlex por apellido).
 quitar_tildes <- function(x) stringi::stri_trans_general(x, "Latin-ASCII")
 
@@ -329,6 +353,39 @@ consolidar_horas <- function(datos) {
     select(-suma_horas)
 }
 
+#' ORCID de cada academico desde input/original/orcid.csv, la UNICA fuente
+#' de ORCID del pipeline (mantenida a mano: una fila por academico, con
+#' `id_orcid` vacio si no se conoce). Devuelve solo las filas con ORCID,
+#' como tibble(rut, id_orcid). Falla si un mismo ORCID aparece en dos rut
+#' o si un ORCID no tiene el formato 0000-0000-0000-000X.
+leer_orcid <- function(ruta = ruta_input("orcid.csv")) {
+  verificar_archivos(ruta)
+  orcid <- read_csv(ruta, col_types = cols(.default = "c"))
+  verificar_columnas(orcid, c("rut", "id_orcid"), ruta)
+
+  orcid <- orcid |>
+    mutate(rut      = norm_rut(rut),
+           id_orcid = str_remove(str_squish(id_orcid), "^https?://orcid\\.org/")) |>
+    filter(!is.na(rut), !is.na(id_orcid), id_orcid != "") |>
+    distinct(rut, id_orcid)
+
+  mal_formato <- orcid |> filter(!str_detect(id_orcid, "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"))
+  if (nrow(mal_formato) > 0) {
+    stop("ORCID con formato invalido en ", ruta, ": ",
+         paste(mal_formato$rut, mal_formato$id_orcid, sep = " -> ", collapse = "; "))
+  }
+  repetidos <- orcid |> filter(n() > 1, .by = id_orcid)
+  if (nrow(repetidos) > 0) {
+    stop("El mismo ORCID aparece en mas de un rut en ", ruta, ": ",
+         paste(unique(repetidos$id_orcid), collapse = ", "))
+  }
+  if (anyDuplicated(orcid$rut)) {
+    stop("Hay rut con mas de un ORCID en ", ruta, ": ",
+         paste(unique(orcid$rut[duplicated(orcid$rut)]), collapse = ", "))
+  }
+  orcid
+}
+
 
 ## ---------------------------------------------------------------------
 ## 9. UTILIDADES PARA CATALOGOS DE REVISTAS
@@ -372,6 +429,55 @@ catalogo_a_largo <- function(datos, columna_atributo) {
     distinct(issn, .data[[columna_atributo]])
 }
 
+#' Nombre de revista reducido a una clave comparable (sin tildes,
+#' mayusculas, puntuacion ni articulo "the" inicial).
+norm_nombre_revista <- function(x) {
+  x |>
+    as.character() |>
+    quitar_tildes() |>
+    str_to_lower() |>
+    str_replace_all("&", " and ") |>
+    str_replace_all("[^a-z0-9 ]", " ") |>
+    str_squish() |>
+    str_remove("^the ") |>
+    na_if("")
+}
+
+#' Diccionario de revistas conocidas: nombres normalizados e ISSN de WoS,
+#' Scopus (activas e inactivas), SciELO, Latindex (catalogo y, si existe,
+#' directorio) y ERIH PLUS. Lo usa 02-orcid.R para reconocer la revista de
+#' articulos ORCID sin DOI, que no traen ISSN de Crossref. Lee los mismos
+#' archivos que 04-indexaciones.R, pero sin filtrar por vigencia: aqui la
+#' pregunta es "existe esta revista", no "esta indexada hoy".
+diccionario_revistas <- function() {
+  leer <- function(ruta, f) if (file.exists(ruta)) f(ruta) else NULL
+  texto <- \(d) mutate(d, across(everything(), as.character))
+
+  wos <- map(ruta_input(c("ahci-wos.csv", "scie-wos.csv", "ssci-wos.csv")),
+             \(r) leer(r, \(p) read_csv(p, show_col_types = FALSE) |> texto() |> clean_names())) |>
+    bind_rows()
+  scopus <- leer(ruta_input("scopus-journals.xlsx"), \(p) read_xlsx(p) |> texto() |> clean_names())
+  latindex <- leer(ruta_input("latindex_catalogo.csv"),
+                   \(p) read_delim(p, delim = ";", show_col_types = FALSE) |> texto() |> clean_names())
+  latindex_dir <- leer(ruta_input("latindex_directorio.csv"),
+                       \(p) read_delim(p, delim = ";", show_col_types = FALSE) |> texto() |> clean_names())
+  erih <- leer(ruta_input("erih_plus.xlsx"), \(p) read_xlsx(p) |> texto() |> clean_names())
+  scielo <- leer(ruta_temp("scielo-catalogo.rds"), readRDS)
+
+  col <- \(d, x) if (!is.null(d) && x %in% names(d)) d[[x]] else character()
+  nombres <- c(col(wos, "journal_title"), col(scopus, "source_title"),
+               col(latindex, "tit_propio"), col(latindex_dir, "tit_propio"),
+               col(erih, "navn"), col(erih, "navn_en"), col(scielo, "titulo"))
+  issn <- c(col(wos, "issn"), col(wos, "e_issn"), col(scopus, "issn"), col(scopus, "eissn"),
+            col(latindex, "issn_e"), col(latindex, "issn_imp"), col(latindex, "issn_l"),
+            col(latindex_dir, "issn_e"), col(latindex_dir, "issn_imp"),
+            col(erih, "tidsskrift_issne"), col(erih, "tidsskrift_issnp"), col(scielo, "issn"))
+
+  nombres <- unique(norm_nombre_revista(nombres))
+  list(nombres = nombres[!is.na(nombres) & nchar(nombres) >= 4],
+       issn    = unique(na.omit(norm_issn(issn))))
+}
+
 #' Falla temprano y con un mensaje claro si un insumo no trae las
 #' columnas que el script espera.
 verificar_columnas <- function(datos, columnas, nombre_fuente) {
@@ -382,6 +488,39 @@ verificar_columnas <- function(datos, columnas, nombre_fuente) {
          "\nColumnas disponibles: ", paste(names(datos), collapse = ", "))
   }
   invisible(TRUE)
+}
+
+#' Agrupa elementos en componentes conexas (Union-Find).
+#'
+#' @param grupos lista de vectores; los elementos de un mismo vector se
+#'   consideran conectados entre si.
+#' @return tibble con una fila por elemento y su numero de componente.
+componentes_conexas <- function(grupos) {
+  elementos <- sort(unique(unlist(grupos, use.names = FALSE)))
+  padre <- seq_along(elementos)
+
+  # Busqueda con compresion de camino
+  buscar <- function(i) {
+    while (padre[i] != i) {
+      padre[i] <<- padre[padre[i]]
+      i <- padre[i]
+    }
+    i
+  }
+  unir <- function(a, b) {
+    ra <- buscar(a); rb <- buscar(b)
+    if (ra != rb) padre[ra] <<- rb
+  }
+
+  for (g in grupos) {
+    if (length(g) < 2) next
+    idx <- match(g, elementos)
+    for (j in idx[-1]) unir(idx[1], j)
+  }
+
+  raices <- vapply(seq_along(elementos), buscar, integer(1))
+  tibble(elemento   = elementos,
+         componente = match(raices, unique(raices)))
 }
 
 #' Lee un objeto especifico desde un .rdata sin contaminar el entorno

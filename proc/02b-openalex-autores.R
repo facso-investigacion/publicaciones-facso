@@ -5,16 +5,16 @@
 # nombre libre en el indice global de autores de OpenAlex:
 #
 #   1) Ancla por ORCID: para todo academico con id_orcid conocido
-#      (acad-orcid-consolidado.rds, etapa 02a), GET /authors/orcid/{id}
-#      devuelve un unico author_id -- sin ambiguedad posible.
-#   2) Evidencia por DOI ("identificacion inversa"): para el resto, se
+#      (input/original/orcid.csv, via leer_orcid()), se toman TODOS los
+#      perfiles de OpenAlex que declaran ese ORCID (/authors?filter=orcid:).
+#   2) Evidencia por DOI ("identificacion inversa"): para todos los rut, se
 #      toman los DOI que SEPAVID/ORCID ya atribuyen con confianza a un rut,
 #      se consulta cada work en OpenAlex, y se compara el nombre local del
 #      academico (con variantes) contra cada autor de esa publicacion.
 #
-# La ancla tiene prioridad total sobre la evidencia: si un rut ya quedo
-# resuelto por su ORCID conocido, sus candidatos por evidencia de DOI se
-# descartan sin mirarlos -- es asi como este script resuelve el caso
+# Para un rut con ancla, la evidencia de DOI solo AGREGA perfiles que
+# OpenAlex dejo partidos sin ORCID; un perfil que declara un ORCID distinto
+# al conocido se descarta -- es asi como este script resuelve el caso
 # "Catalina Arteaga" (dos author_id con evidencia de DOI igualmente
 # "exacta", pero solo uno con el ORCID real de la academica) sin necesitar
 # que alguien lo detecte a mano.
@@ -34,7 +34,7 @@
 # Entradas : input/original/acad.xlsx                 (nombres/paterno/materno
 #                                                       por separado; acad.rds
 #                                                       ya no los conserva)
-#            input/temp/acad-orcid-consolidado.rds     (etapa 02a)
+#            input/original/orcid.csv               (rut <-> id_orcid)
 #            input/temp/sepavid-publicaciones.rds      (etapa 1)
 #            input/temp/orcid-publicaciones.rds        (etapa 2)
 # Salidas  : input/temp/acad-openalex.rds        (rut, author_id, estado_perfil)
@@ -42,6 +42,9 @@
 #                                                    incluidos los descartados)
 #            output/openalex-insumos-por-revisar.csv
 #            output/openalex-estado-dois.csv
+#            output/orcid-sugeridos.csv  (ORCID que OpenAlex muestra para
+#                                          academicos sin ORCID en orcid.csv;
+#                                          se copian a mano si se confirman)
 #
 # API consultada (publica; OPENALEX_API_KEY y OPENALEX_MAILTO opcionales):
 #   OpenAlex  https://api.openalex.org/authors/, /works/
@@ -63,13 +66,27 @@ umbral_similitud    <- 0.90 # Jaro-Winkler
 
 # Exclusiones confirmadas (homonimos detectados y descartados a mano).
 # El caso Catalina Arteaga (rut 0099800682) NO necesita estar aqui: su
-# ORCID es conocido, asi que la ancla ya la resuelve antes de llegar a la
-# evidencia de DOI (ver seccion 4). Se deja documentado igual, como
-# respaldo/prueba de regresion si algun dia la ancla no pudiera resolverla.
+# ORCID es conocido, asi que la seccion 7a descarta el perfil homonimo por
+# declarar un ORCID distinto. Se deja documentado igual, como
+# respaldo/prueba de regresion.
 exclusiones_manuales <- tribble(
   ~rut,          ~author_id,                          ~motivo_exclusion,
   "0088927222",  "https://openalex.org/A5076046406",  "Homonimo: este perfil no corresponde a Claudio Duarte",
-  "0099800682",  "https://openalex.org/A5030462844",  "Homonimo: 'Catalina Arteaga' sin materno, ORCID distinto al de Catalina Arteaga Aguirre (respaldo; la ancla ORCID ya la excluye)"
+  "0099800682",  "https://openalex.org/A5030462844",  "Homonimo: 'Catalina Arteaga' sin materno, ORCID distinto al de Catalina Arteaga Aguirre (respaldo; la ancla ORCID ya la excluye)",
+  "0091297612",  "https://openalex.org/A5103109176",  "Homonimo: 'Hector Morales' de genetica de plantas y micotoxinas, no el antropologo",
+  "0136711946",  "https://openalex.org/A5056573302",  "Homonimo: 'Jose Luis Rossi' de nutricion animal, no el psicologo"
+)
+
+# Inclusiones confirmadas a mano: perfiles de OpenAlex que son del
+# academico pero que ni la ancla ORCID ni la evidencia de DOI encuentran
+# (sin ORCID en OpenAlex, con un ORCID distinto al de orcid.csv, o sin
+# publicaciones en SEPAVID/ORCID que sirvan de evidencia). Prevalecen sobre
+# los descartes automaticos.
+inclusiones_manuales <- tribble(
+  ~rut,          ~author_id,                          ~motivo_inclusion,
+  "0098430806",  "https://openalex.org/A5001930147",  "Omar Aguilar: perfil declara ORCID 0000-0002-0290-0155 (vacio, tambien suyo) y orcid.csv tiene 0009-0000-3080-0621 (vacio)",
+  "0104499252",  "https://openalex.org/A5115429812",  "Juan Enrique Opazo Marmentini: perfil sin ORCID, afiliacion U. de Chile",
+  "0139064119",  "https://openalex.org/A5086230531",  "Camila Marchant Fernandez: el mas completo de sus 3 perfiles; sin ORCID (orcid.csv tiene 0000-0001-8724-8700, vacio)"
 )
 
 
@@ -273,13 +290,16 @@ extraer_autorias <- function(registro) {
     list_rbind(ptype = plantilla_autorias)
 }
 
-#' Ancla por ORCID: un unico author_id por ORCID, sin ambiguedad.
+#' Ancla por ORCID: TODOS los author_id de OpenAlex que declaran ese ORCID.
+#' OpenAlex a veces parte a una persona en varios perfiles con el mismo
+#' ORCID (p. ej. Maria Paulina Castro); /authors/orcid/{id} devuelve solo
+#' uno, por eso se usa el filtro de la lista de autores.
 obtener_author_id_por_orcid <- function(orcid, mailto = OPENALEX_MAILTO) {
   vacio <- tibble(author_id = NA_character_, orcid_openalex = NA_character_,
                   works_count = NA_integer_)
   if (is.na(orcid) || orcid == "") return(vacio)
 
-  url <- paste0("https://api.openalex.org/authors/https://orcid.org/", orcid)
+  url <- paste0("https://api.openalex.org/authors?per-page=50&filter=orcid:", orcid)
 
   solicitud <- request(url) |>
     req_user_agent("facso-openalex-autores/1.0") |>
@@ -303,19 +323,22 @@ obtener_author_id_por_orcid <- function(orcid, mailto = OPENALEX_MAILTO) {
     resp_body_string(resp) |> fromJSON(flatten = TRUE),
     error = function(e) NULL
   )
-  if (is.null(datos) || is.null(datos$id)) return(vacio)
+  perfiles <- datos$results
+  if (is.null(perfiles) || !is.data.frame(perfiles) || nrow(perfiles) == 0) return(vacio)
 
   tibble(
-    author_id      = safe_chr(datos$id),
-    orcid_openalex = str_remove(safe_chr(datos$orcid), "^https?://orcid\\.org/"),
-    works_count    = as.integer(safe_num(datos$works_count))
-  )
+    author_id      = as.character(perfiles$id),
+    orcid_openalex = str_remove(as.character(perfiles$orcid), "^https?://orcid\\.org/"),
+    works_count    = as.integer(perfiles$works_count)
+  ) |>
+    # el filtro es exacto, pero se verifica igual
+    filter(toupper(orcid_openalex) == toupper(orcid))
 }
 
 #' Recorre ORCID con guardado incremental y reanudacion (mismo patron que
 #' pipeline_orcid_multi() en 02-orcid.R).
 resolver_ancla_orcid <- function(orcids, pausa_seg = 0.3,
-                                 archivo_parcial = ruta_temp("openalex-ancla-orcid-parcial.rds")) {
+                                 archivo_parcial = ruta_temp("openalex-ancla-orcid-v2-parcial.rds")) {
   acumulado <- if (file.exists(archivo_parcial)) readRDS(archivo_parcial) else tibble()
   ya_hechos <- if (nrow(acumulado) > 0) unique(acumulado$id_orcid) else character()
   pendientes <- setdiff(orcids, ya_hechos)
@@ -343,31 +366,34 @@ resolver_ancla_orcid <- function(orcids, pausa_seg = 0.3,
 ## 3. ANCLA POR ORCID
 ## ---------------------------------------------------------------------
 
-consolidado <- readRDS(ruta_temp("acad-orcid-consolidado.rds")) |>
-  filter(!is.na(id_orcid))
+consolidado <- leer_orcid()
 
-ancla_crudo <- usar_cache(
-  ruta_temp("openalex-ancla-orcid.rds"),
-  resolver_ancla_orcid(consolidado$id_orcid)
+ancla_crudo <- cache_incremental(
+  ruta_temp("openalex-ancla-orcid.rds"), ruta_temp("openalex-ancla-orcid-v2-parcial.rds"),
+  \() resolver_ancla_orcid(consolidado$id_orcid),
+  claves = consolidado$id_orcid, columna = "id_orcid"
 )
 
 candidatos_ancla <- consolidado |>
   inner_join(ancla_crudo, by = "id_orcid") |>
   filter(!is.na(author_id)) |>
-  distinct(rut, .keep_all = TRUE) |>
+  distinct(rut, author_id, .keep_all = TRUE) |>
   transmute(rut, author_id, orcid_openalex,
             n_dois_evidencia = NA_integer_, n_dois_exactos = NA_integer_,
             metodo = "orcid", estado_perfil = "propuesto_orcid")
 
-ruts_con_ancla <- candidatos_ancla$rut
+ruts_con_ancla <- unique(candidatos_ancla$rut)
 
-message("  Ancla ORCID resuelta: ", nrow(candidatos_ancla), " de ", nrow(consolidado),
-        " academicos con ORCID conocido")
+message("  Ancla ORCID resuelta: ", length(ruts_con_ancla), " de ", nrow(consolidado),
+        " academicos con ORCID conocido (", nrow(candidatos_ancla), " perfiles)")
 
 
 ## ---------------------------------------------------------------------
-## 4. EVIDENCIA POR DOI (identificacion inversa), SOLO PARA rut SIN ANCLA
+## 4. EVIDENCIA POR DOI (identificacion inversa), PARA TODOS LOS rut
 ## ---------------------------------------------------------------------
+## Tambien para los rut con ancla: OpenAlex puede tener parte de la obra de
+## una persona en perfiles sin ORCID (p. ej. Hector Morales, Francisca
+## Concha). La seccion 7 decide como combinar ambas senales.
 
 academicos <- read_xlsx(ruta_input("acad.xlsx"), col_types = "text") |>
   clean_names() |>
@@ -391,8 +417,7 @@ academicos <- read_xlsx(ruta_input("acad.xlsx"), col_types = "text") |>
     )
   ) |>
   select(rut, departamento, nombre_completo, nombre_np, nombre_nnp, nombre_npm, nombre_n2p) |>
-  distinct() |>
-  filter(!rut %in% ruts_con_ancla)   # la ancla ya los resolvio; no gastar evidencia en ellos
+  distinct()
 
 publicaciones <- bind_rows(
   readRDS(ruta_temp("sepavid-publicaciones.rds")),
@@ -448,18 +473,17 @@ for (i in seq_along(dois)) {
     message(str_c("  DOI procesados (incluye cache): ", i, "/", length(dois)))
   }
   if (resultados_oa[[i]]$http_status %in% c(401L, 403L, 429L)) {
-    # Cuota agotada: se corta el lote entero (no stop(), para que el resto
-    # de proc-final.R -- 02c, 03-07 -- alcance a correr con lo que ya hay
-    # cacheado). Lo consultado hasta aqui queda cacheado por DOI
-    # (consultar_doi() cachea archivo por archivo), asi que la proxima
-    # corrida retoma justo donde quedo, no desde cero.
-    message(str_c(
-      "  ADVERTENCIA: OpenAlex respondio HTTP ", resultados_oa[[i]]$http_status,
-      " (cuota probablemente agotada). Se corta la evidencia por DOI: quedan ",
-      length(dois) - i + 1, " DOI pendientes para la proxima corrida."
-    ))
-    n_completados <- i - 1L
-    break
+    # Cuota agotada: se DETIENE la corrida. Seguir con evidencia parcial
+    # dejaria perfiles sin descubrir, y 02c cachearia las obras de ese
+    # conjunto incompleto como si fuera definitivo. Lo consultado hasta aqui
+    # queda cacheado por DOI (consultar_doi() cachea archivo por archivo),
+    # asi que la proxima corrida retoma justo donde quedo, no desde cero.
+    stop(str_c(
+      "OpenAlex respondio HTTP ", resultados_oa[[i]]$http_status,
+      " (cuota agotada). Quedan ", length(dois) - i + 1, " DOI pendientes. ",
+      "Vuelve a correr proc-final.R mas tarde (o define OPENALEX_API_KEY en ",
+      "~/.Renviron); lo ya consultado queda en cache."
+    ), call. = FALSE)
   }
 }
 resultados_oa <- resultados_oa[seq_len(n_completados)]
@@ -598,13 +622,39 @@ oa_perfiles_candidatos <- evidencias |>
 ## ---------------------------------------------------------------------
 ## 7. DESAMBIGUACION ENTRE CANDIDATOS "propuesto_exacto" DEL MISMO rut
 ## ---------------------------------------------------------------------
-## Como ya se excluyeron los rut con ancla (seccion 4), aqui solo llegan
-## academicos sin ORCID conocido: si 2+ candidatos "propuesto_exacto"
-## declaran un ORCID propio distinto entre si, no hay forma de decidir cual
-## es la persona real -> quedan para revision manual, no se usan en la
-## etapa 02c.
+## 7a. rut CON ancla ORCID: la ancla tiene prioridad, pero se aceptan
+##     ademas los perfiles por evidencia de DOI que complementan la obra
+##     (perfiles partidos de la misma persona, sin ORCID en OpenAlex). Un
+##     perfil que declara un ORCID DISTINTO al conocido es otra persona
+##     (caso Catalina Arteaga) y se descarta. Los perfiles que ya trae la
+##     ancla no se repiten.
+## 7b. rut SIN ancla: si 2+ candidatos "propuesto_exacto" declaran un ORCID
+##     propio distinto entre si, no hay forma de decidir cual es la persona
+##     real -> quedan para revision manual, no se usan en la etapa 02c.
 
-propuestos_exactos <- oa_perfiles_candidatos |> filter(estado_perfil == "propuesto_exacto")
+orcid_conocido <- consolidado |> select(rut, orcid_conocido = id_orcid)
+
+oa_perfiles_candidatos <- oa_perfiles_candidatos |>
+  filter(!paste(rut, author_id) %in% paste(candidatos_ancla$rut, candidatos_ancla$author_id)) |>
+  left_join(orcid_conocido, by = "rut") |>
+  mutate(
+    orcid_declarado = str_remove_all(orcid, "https?://orcid\\.org/"),
+    orcid_distinto  = rut %in% ruts_con_ancla &
+                      map2_lgl(orcid_declarado, orcid_conocido, \(d, k) {
+                        !is.na(d) && !is.na(k) && any(str_split_1(d, ";\\s*") != k)
+                      }),
+    estado_perfil = if_else(orcid_distinto, "descartado_orcid_distinto", estado_perfil)
+  ) |>
+  select(-orcid_conocido, -orcid_declarado, -orcid_distinto)
+
+message("  Perfiles por evidencia DOI que complementan la ancla: ",
+        sum(oa_perfiles_candidatos$rut %in% ruts_con_ancla &
+              oa_perfiles_candidatos$estado_perfil == "propuesto_exacto"),
+        " (descartados por ORCID distinto: ",
+        sum(oa_perfiles_candidatos$estado_perfil == "descartado_orcid_distinto"), ")")
+
+propuestos_exactos <- oa_perfiles_candidatos |>
+  filter(estado_perfil == "propuesto_exacto", !rut %in% ruts_con_ancla)
 
 orcid_distintos_por_rut <- propuestos_exactos |>
   filter(!is.na(orcid)) |>
@@ -631,41 +681,71 @@ saveRDS(oa_perfiles_candidatos, ruta_temp("oa-perfiles-candidatos.rds"))
 ## ---------------------------------------------------------------------
 ## 8. SALIDA FINAL: acad-openalex.rds
 ## ---------------------------------------------------------------------
-## Union find de la ancla (prioridad total) + evidencia de DOI ya
-## desambiguada. Un rut puede tener mas de un author_id "aceptado" (perfil
-## partido de la misma persona, ver README del plan): eso es intencional,
-## la etapa 02c consulta todos los author_id de un rut y deduplica por DOI.
+## Ancla ORCID + inclusiones manuales + evidencia de DOI ya desambiguada
+## (seccion 7). Un rut puede tener mas de un author_id "aceptado" (perfil
+## partido de la misma persona): eso es intencional, la etapa 02c consulta
+## todos los author_id de un rut y deduplica por DOI. Si un mismo perfil
+## llega por mas de una via, se conserva la primera (ancla > manual >
+## evidencia), asi una inclusion manual prevalece sobre un descarte
+## automatico (p. ej. "descartado_orcid_distinto").
 
 acad_openalex <- bind_rows(
   candidatos_ancla,
+  inclusiones_manuales |>
+    transmute(rut, author_id, orcid_openalex = NA_character_,
+              n_dois_evidencia = NA_integer_, n_dois_exactos = NA_integer_,
+              metodo = "manual", estado_perfil = "propuesto_manual"),
   oa_perfiles_candidatos |>
     filter(estado_perfil %in% c("propuesto_exacto", "revisar_conflicto",
                                 "revisar_nombre", "revisar_orcid_distinto")) |>
     transmute(rut, author_id,
               # orcid trae el formato URL completo (viene de autoria$author$orcid
               # sin procesar); se normaliza para que calce con el formato de
-              # acad-orcid-consolidado.rds y con las filas resueltas por ancla.
+              # orcid.csv y con las filas resueltas por ancla.
               orcid_openalex = str_remove(orcid, "^https?://orcid\\.org/"),
               n_dois_evidencia, n_dois_exactos,
               metodo = metodos, estado_perfil)
-)
+) |>
+  distinct(rut, author_id, .keep_all = TRUE)
 
 saveRDS(acad_openalex, ruta_temp("acad-openalex.rds"))
+
+
+## ---------------------------------------------------------------------
+## 8b. ORCID SUGERIDOS (para completar orcid.csv a mano)
+## ---------------------------------------------------------------------
+## El pipeline nunca agrega ORCID por su cuenta: orcid.csv es la unica
+## fuente. Si un perfil aceptado por evidencia de DOI declara un ORCID y el
+## academico aun no tiene uno en orcid.csv, se deja como sugerencia. Al
+## copiarlo a orcid.csv, la proxima corrida lo usa como ancla (y 02-orcid.R
+## descarga sus libros y capitulos).
+
+orcid_sugeridos <- acad_openalex |>
+  filter(estado_perfil == "propuesto_exacto", !is.na(orcid_openalex),
+         !rut %in% consolidado$rut,
+         !orcid_openalex %in% consolidado$id_orcid) |>
+  left_join(readRDS(ruta_temp("acad.rds")) |> select(rut, nombre_completo, departamento),
+            by = "rut") |>
+  transmute(rut, nombre_completo, departamento, id_orcid_sugerido = orcid_openalex,
+            author_id, n_dois_exactos) |>
+  arrange(departamento, nombre_completo)
+
+write_excel_csv(orcid_sugeridos, ruta_output("orcid-sugeridos.csv"), na = "")
 
 
 ## ---------------------------------------------------------------------
 ## 9. VERIFICACIONES
 ## ---------------------------------------------------------------------
 
-aceptados <- acad_openalex |> filter(estado_perfil %in% c("propuesto_orcid", "propuesto_exacto"))
+aceptados <- acad_openalex |> filter(estado_perfil %in% ESTADOS_PERFIL_ACEPTADOS)
 
 message("\n  --- Resumen 02b-openalex-autores.R ---")
 message("  Academicos con author_id aceptado : ", n_distinct(aceptados$rut), " de 206")
 message("    - via ancla ORCID   : ", n_distinct(aceptados$rut[aceptados$estado_perfil == "propuesto_orcid"]))
 message("    - via evidencia DOI : ", n_distinct(aceptados$rut[aceptados$estado_perfil == "propuesto_exacto"]))
+message("    - via inclusion manual: ", n_distinct(aceptados$rut[aceptados$estado_perfil == "propuesto_manual"]))
 message("  Rut con >1 author_id aceptado (perfiles partidos)      : ",
         sum(table(aceptados$rut) > 1))
 message("  Rut para revision manual (conflicto/ambiguo/sin ORCID) : ",
-        n_distinct(acad_openalex$rut[!acad_openalex$estado_perfil %in%
-                                     c("propuesto_orcid", "propuesto_exacto")]))
+        n_distinct(acad_openalex$rut[!acad_openalex$estado_perfil %in% ESTADOS_PERFIL_ACEPTADOS]))
 print(count(acad_openalex, estado_perfil))

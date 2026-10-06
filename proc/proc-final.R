@@ -7,14 +7,12 @@
 # FLUJO
 #   01-sepavid       publicaciones declaradas en SEPAVID + planta academica
 #   02-orcid         publicaciones recuperadas desde ORCID/Crossref/OpenAlex
-#   02a-orcid-consolidado  cruce rut <-> ORCID (colab.xlsx + revision manual
-#                          + lo recuperado del perfil de OpenAlex en 02b)
+#                    (ORCID de cada academico: input/original/orcid.csv,
+#                    unica fuente, mantenida a mano)
 #   02b-openalex-autores   cruce rut <-> author_id de OpenAlex (ancla por
-#                          ORCID + evidencia por DOI)
-#   (02a y 02b se corren dos veces: la 1ra pasada resuelve la ancla con lo
-#    que ya trae colab.xlsx; la 2da aprovecha el ORCID que 02b recupero del
-#    propio perfil de OpenAlex para anclar a mas academicos. usar_cache()
-#    hace que la 2da pasada sea rapida: solo consulta lo nuevo)
+#                          ORCID + evidencia por DOI); deja en
+#                          output/orcid-sugeridos.csv los ORCID nuevos que
+#                          vale la pena copiar a orcid.csv
 #   02c-openalex-publicaciones  articulos de revista descubiertos via
 #                          OpenAlex para academicos sin ORCID (o con
 #                          cobertura ORCID incompleta)
@@ -69,10 +67,7 @@ source("proc/00-funciones.R", encoding = "UTF-8")
 etapas <- c(
   "proc/01-sepavid.R",
   "proc/02-orcid.R",
-  "proc/02a-orcid-consolidado.R",
   "proc/02b-openalex-autores.R",
-  "proc/02a-orcid-consolidado.R",   # 2da pasada: incorpora ORCID recuperado por 02b
-  "proc/02b-openalex-autores.R",    # 2da pasada: usa esos ORCID nuevos como ancla
   "proc/02c-openalex-publicaciones.R",
   "proc/03-id-revistas.R",
   "proc/04-indexaciones.R",
@@ -109,19 +104,14 @@ base_final <- readRDS(ruta_temp("base-consolidada.rds")) |>
 
 
 ## ---------------------------------------------------------------------
-## 4. FILTRO FINAL
+## 4. BASE FINAL
 ## ---------------------------------------------------------------------
-## Se conservan:
-##   - todos los articulos de revista;
-##   - los libros y capitulos validados en ORCID por su autor.
-## SEPAVID sobrerregistra libros (mismo volumen declarado como libro y
-## como capitulo, o material que no corresponde), por lo que el registro
-## ORCID del propio academico opera como criterio de validacion.
-
-libros_validados <- readRDS(ruta_temp("orcid-libros.rds"))$clave_pub
-
-base_final <- base_final |>
-  filter(tipo_documento == "journal-article" | clave_pub %in% libros_validados)
+## Se conservan todos los articulos, libros y capitulos. Antes los libros
+## y capitulos de SEPAVID se aceptaban solo si aparecian en el ORCID del
+## autor; en la practica ese filtro descartaba sobre todo obras legitimas
+## ausentes de ORCID, y lo que si evitaba (la misma obra llegando por
+## SEPAVID y por ORCID con claves distintas) ahora lo resuelve la
+## deduplicacion por titulo de 03-id-revistas.R (seccion 1b).
 
 save(base_final, file = ruta_output("base-final.rdata"))
 
@@ -151,11 +141,9 @@ save(consolidado_depto, file = ruta_output("consolidado-depto.rdata"))
 ## facultad, con su afiliacion y pais (etapa 07, via OpenAlex). Solo cubre
 ## las publicaciones con DOI resoluble en OpenAlex.
 
-## coautores.rds se arma sobre base-consolidada.rds (etapa 3), previo al
-## FILTRO FINAL de la seccion 4 (que descarta libros/capitulos no validados
-## por ORCID). Se acota aqui a las publicaciones que sí quedan en
-## base_final, para que describa exactamente el mismo universo que el resto
-## de los productos.
+## coautores.rds se arma sobre base-consolidada.rds (etapa 3). Se acota
+## aqui a las publicaciones que quedan en base_final, para que describa
+## exactamente el mismo universo que el resto de los productos.
 coautores <- readRDS(ruta_temp("coautores.rds")) |>
   filter(clave_pub %in% base_final$clave_pub)
 

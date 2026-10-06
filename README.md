@@ -11,7 +11,6 @@
 │   ├── 00-funciones.R         
 │   ├── 01-sepavid.R
 │   ├── 02-orcid.R
-│   ├── 02a-orcid-consolidado.R # cruce rut <-> ORCID (colab.xlsx + manual + OpenAlex)
 │   ├── 02b-openalex-autores.R  # cruce rut <-> author_id de OpenAlex (ancla ORCID + evidencia DOI)
 │   ├── 02c-openalex-publicaciones.R # articulos descubiertos via OpenAlex
 │   ├── 03-id-revistas.R
@@ -49,9 +48,7 @@
 |------------------------|------------------------|------------------------|
 | `publicaciones-2020.xlsx` … `-2025.xlsx` | reporte anual SEPAVID (194 columnas) | SEPA-VID |
 | `acad.xlsx` | planta académica | Informática FACSO (jelizalde\@uchile.cl) |
-| `orcid-ids.csv` | columna `id_orcid` | `colab.xlsx` |
-| `colab.xlsx` | puente ORCID ↔ apellidos (`id_orcid`, `ap_paterno`, `ap_materno`) | Colaboratorio (renato.soto\@uchile) |
-| `orcid-manual.csv` | ORCID rastreados a mano (`rut`, `id_orcid`); opcional, mantenido por el equipo | ver `output/orcid-pendientes.csv` tras cada corrida |
+| `orcid.csv` | **única fuente de ORCID**: una fila por académico (`rut`, `nombre_completo`, `departamento`, `id_orcid`, `fuente`). `id_orcid` vacío = no se conoce. Se edita a mano; `fuente` es solo informativa (`colab`, `openalex`, `manual`) | armado inicial desde `colab.xlsx` (Colaboratorio, renato.soto\@uchile) + perfiles OpenAlex; se completa con `output/orcid-sugeridos.csv` |
 | `primera_jeraq.rdata` | objeto `primera_jeraq` (`rut_investigador`, `jerarquizacion`) | [CINDAI](https://github.com/facso-investigacion/bases-datos-dip) |
 | `scie-wos.csv`, `ssci-wos.csv`, `ahci-wos.csv` | catálogos Web of Science | <https://www.webofscience.com/wos/mjl/collection-list-downloads> |
 | `scopus-journals.xlsx` | Scopus Source List | <https://www.elsevier.com/products/scopus/content> |
@@ -90,6 +87,9 @@ Consultar a asistenteinvestigacion\@facso.cl
 | `consolidado-wide.rdata` (`consolidado_wide`) | publicación (coautores FACSO en `autor_1 … autor_n`; resumen de coautoría completa: `n_autores_total`, `paises`, `colaboracion_internacional`) |
 | `coautores.rdata` (`coautores`) | autor × publicación (FACSO y externos, con afiliación y país — vía OpenAlex, etapa 07) |
 | `catalogo-revistas.csv` | revista (`revista_id`, nombre, `issn_canonico`) |
-| `orcid-pendientes.csv` | académicos sin ORCID conocido tras `colab.xlsx` + OpenAlex (etapa 02a); lista de trabajo para `orcid-manual.csv` |
+| `orcid-sugeridos.csv` | ORCID que muestran los perfiles de OpenAlex (etapa 02b) para académicos sin ORCID en `orcid.csv`; si se confirman, se copian a `input/original/orcid.csv` |
+| `duplicados-titulo.csv` | pares de registros del mismo académico fusionados como una sola obra por título casi idéntico (etapa 03); para revisión |
+| `orcid-sin-doi.csv` | decisión (aceptado/excluido y motivo) sobre cada artículo ORCID sin DOI (etapa 02) |
+| `orcid-sin-doi-misma-revista.csv` | artículos ORCID sin DOI descartados por tener el académico otro artículo en la misma revista y año, probable título traducido (etapa 03) |
 | `openalex-insumos-por-revisar.csv`, `openalex-estado-dois.csv` | diagnóstico del cruce rut ↔ author_id de OpenAlex (etapa 02b) |
 | `session-info.txt` | entorno de la última corrida |
